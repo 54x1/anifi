@@ -223,7 +223,7 @@ export default {
         this.viewStartDate = new Date(new Date().setMonth(new Date().getMonth() - 1));
       }
       if (!this.viewEndDate) {
-        this.viewEndDate = new Date();
+        this.viewEndDate = new Date(new Date().setMonth(new Date().getMonth() + 1))
       }
     },
     addEntry() {
@@ -371,7 +371,7 @@ filterTransactions() {
       const canvas = document.getElementById("financialChart");
       const ctx = canvas.getContext("2d");
 
-      const labels = this.filteredData.map((entry) => entry.date.toISOString().split("T")[0]);
+      const labels = this.filteredData.map((entry) => this.formatDate(entry.date));
       const balanceData = this.filteredData.map((entry) => entry.balance);
       const incomeData = this.filteredData.map((entry) => entry.income);
       const spentData = this.filteredData.map((entry) => entry.spent);
