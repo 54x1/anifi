@@ -33,15 +33,20 @@
           />
         </div>
         <div v-if="newEntry.type === 'spending'">
-          <label for="spent">Spending Amount:</label>
-          <input type="number" v-model="newEntry.spent" step="0.01" />
-          <label for="spentCategory">Category:</label>
-          <input
-            type="text"
-            v-model="newEntry.spentCategory"
-            placeholder="Category (optional)"
-          />
-        </div>
+  <label for="spent">Spending Amount:</label>
+  <input
+    type="number"
+    v-model="newEntry.spent"
+    @input="formatSpent"
+    step="0.01"
+  />
+  <label for="spentCategory">Category:</label>
+  <input
+    type="text"
+    v-model="newEntry.spentCategory"
+    placeholder="Category (optional)"
+  />
+</div>
         <div>
           <label for="recurring">Set as Recurring:</label>
           <input type="checkbox" v-model="newEntry.recurring" />
@@ -201,6 +206,11 @@ export default {
     this.updateChart();
   },
   methods: {
+    formatSpent() {
+    if (this.newEntry.spent > 0) {
+      this.newEntry.spent = -this.newEntry.spent;
+    }
+  },
     formatDate(date) {
     return new Intl.DateTimeFormat('en-GB', {
       year: 'numeric',
@@ -244,26 +254,34 @@ export default {
     return;
   }
 
+  // Ensure spending is negative
+  if (this.newEntry.type === 'spending' && this.newEntry.spent > 0) {
+    this.newEntry.spent = -this.newEntry.spent;
+  }
+
   // Normalize the selected date to midnight local time
   const selectedDate = new Date(this.newEntry.date);
-  console.log("selectedDate", selectedDate)
   const normalizedDate = new Date(
     selectedDate.getFullYear(),
     selectedDate.getMonth(),
     selectedDate.getDate()
   );
 
+  // Calculate balance
+  const previousBalance = this.processedData.length
+    ? this.processedData[this.processedData.length - 1].balance
+    : 0;
+  const newTransactionBalance =
+    previousBalance +
+    (this.newEntry.type === "income"
+      ? this.newEntry.income
+      : this.newEntry.spent); // Spending is already negative
+
   const newTransaction = {
     ...this.newEntry,
     income: this.newEntry.type === "income" ? this.newEntry.income : 0,
     spent: this.newEntry.type === "spending" ? this.newEntry.spent : 0,
-    balance:
-      (this.processedData.length
-        ? this.processedData[this.processedData.length - 1].balance
-        : 0) +
-      (this.newEntry.type === "income"
-        ? this.newEntry.income
-        : -this.newEntry.spent),
+    balance: newTransactionBalance, // Use the calculated balance
     date: normalizedDate, // Save the normalized date
   };
 
@@ -311,7 +329,7 @@ generateRecurringTransactions(baseTransaction) {
       : 0;
 
   // Add the initial transaction (user-selected date)
-  currentBalance += baseTransaction.income - baseTransaction.spent;
+  currentBalance += baseTransaction.income + baseTransaction.spent; // Add income, subtract spending
 
   this.recurringData.push({
     ...baseTransaction,
@@ -337,11 +355,13 @@ generateRecurringTransactions(baseTransaction) {
       );
     } else {
       // Increment by the defined number of days for daily, weekly, fortnightly
-      currentTransactionDate.setDate(currentTransactionDate.getDate() + frequencyDays[this.newEntry.recurringFrequency]);
+      currentTransactionDate.setDate(
+        currentTransactionDate.getDate() + frequencyDays[this.newEntry.recurringFrequency]
+      );
     }
 
     // Recalculate the balance for each recurring transaction
-    currentBalance += baseTransaction.income - baseTransaction.spent;
+    currentBalance += baseTransaction.income + baseTransaction.spent; // Add income, subtract spending
 
     // Add the new recurring transaction
     this.recurringData.push({
@@ -351,6 +371,7 @@ generateRecurringTransactions(baseTransaction) {
     });
   }
 },
+
 
 filterTransactions() {
   const startDate = new Date(this.viewStartDate);
@@ -366,77 +387,93 @@ filterTransactions() {
   // Combine regular and recurring data for filtering
   const combinedData = [...this.processedData, ...this.recurringData];
 
-  // Sort all transactions to maintain chronological order
+  // Filter transactions within the specified date range
   const transactionsInRange = combinedData
     .filter((entry) => entry.date >= startDate && entry.date <= endDate)
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
+  // Group transactions by date
+  const groupedData = transactionsInRange.reduce((acc, entry) => {
+    const formattedDate = this.formatDate(entry.date); // Format date to avoid duplicates
+    if (!acc[formattedDate]) {
+      acc[formattedDate] = { date: entry.date, income: 0, spent: 0, balance: 0 };
+    }
+    acc[formattedDate].income += entry.income;
+    acc[formattedDate].spent += entry.spent;
+    return acc;
+  }, {});
+
   // Calculate cumulative balance
   let cumulativeBalance = 0;
-  this.filteredData = transactionsInRange.map((entry) => {
-    cumulativeBalance += entry.income - entry.spent;
-    return {
-      ...entry,
-      balance: cumulativeBalance,
-    };
-  });
+  this.filteredData = Object.values(groupedData)
+    .map((entry) => {
+      cumulativeBalance += entry.income + entry.spent; // Add income, subtract spending
+      return {
+        ...entry,
+        balance: cumulativeBalance,
+      };
+    })
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   this.updateChart();
 },
 
-    async updateChart() {
-      if (this.chart) this.chart.destroy();
 
-      await nextTick();
-      const canvas = document.getElementById("financialChart");
-      const ctx = canvas.getContext("2d");
+async updateChart() {
+  if (this.chart) this.chart.destroy();
 
-      const labels = this.filteredData.map((entry) => this.formatDate(entry.date));
-      const balanceData = this.filteredData.map((entry) => entry.balance);
-      const incomeData = this.filteredData.map((entry) => entry.income);
-      const spentData = this.filteredData.map((entry) => entry.spent);
+  await nextTick();
+  const canvas = document.getElementById("financialChart");
+  const ctx = canvas.getContext("2d");
 
-      this.chart = new Chart(ctx, {
-        type: this.chartType,
-        data: {
-          labels,
-          datasets: [
-            {
-              label: "Balance",
-              data: balanceData,
-              borderColor: "blue",
-              backgroundColor: "rgba(66, 135, 245, 0.2)",
-              borderWidth: 1,
-            },
-            {
-              label: "Income",
-              data: incomeData,
-              borderColor: "green",
-              backgroundColor: "rgba(0, 200, 0, 0.2)",
-              borderWidth: 1,
-            },
-            {
-              label: "Spent",
-              data: spentData,
-              borderColor: "red",
-              backgroundColor: "rgba(255, 99, 132, 0.2)",
-              borderWidth: 1,
-            },
-          ],
+  const labels = this.filteredData.map((entry) => this.formatDate(entry.date));
+  const balanceData = this.filteredData.map((entry) => entry.balance);
+  const incomeData = this.filteredData.map((entry) => entry.income);
+  const spentData = this.filteredData.map((entry) => entry.spent);
+
+  this.chart = new Chart(ctx, {
+    type: this.chartType,
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Balance",
+          data: balanceData,
+          borderColor: "blue",
+          backgroundColor: "rgba(66, 135, 245, 0.2)",
+          borderWidth: 1,
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: true },
-          },
-          scales: {
-            x: { title: { display: true, text: "Date" } },
-            y: { title: { display: true, text: "Amount ($)" }, beginAtZero: true },
-          },
+        {
+          label: "Income",
+          data: incomeData,
+          borderColor: "green",
+          backgroundColor: "rgba(0, 200, 0, 0.2)",
+          borderWidth: 1,
         },
-      });
+        {
+          label: "Spent",
+          data: spentData,
+          borderColor: "red",
+          backgroundColor: "rgba(255, 99, 132, 0.2)",
+          borderWidth: 1,
+        },
+      ],
     },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true },
+      },
+      scales: {
+        x: { title: { display: true, text: "Date" } },
+        y: { title: { display: true, text: "Amount ($)" }, beginAtZero: true },
+      },
+    },
+  });
+},
+
+
   },
 };
 </script>
