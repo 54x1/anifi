@@ -151,31 +151,43 @@ export default {
     return "N/A";
   }
 
-  const frequencyDays = {
-    daily: 1,
-    weekly: 7,
-    fortnightly: 14,
-    monthly: 30,
-    quarterly: 90,
-    yearly: 365,
-  };
-
-  const incrementDays = frequencyDays[this.newEntry.recurringFrequency] || 0;
-
-  // Normalize the user-selected date to midnight local time
   const startDate = new Date(
     this.newEntry.date.getFullYear(),
     this.newEntry.date.getMonth(),
     this.newEntry.date.getDate()
   );
 
-  const endDate = new Date(startDate);
-  endDate.setDate(endDate.getDate() + incrementDays * (this.newEntry.recursions-1));
+  let endDate = new Date(startDate);
 
-  // return endDate.toISOString().split("T")[0]; // Format as YYYY-MM-DD
-   // Format the end date to the user's timezone
-   return this.formatDate(endDate);
+  if (this.newEntry.recurringFrequency === "monthly") {
+    // Increment month by (recursions - 1) to calculate the last recurring date
+    endDate = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth() + (this.newEntry.recursions - 1),
+      startDate.getDate()
+    );
+  } else if (this.newEntry.recurringFrequency === "yearly") {
+    // Increment year by (recursions - 1)
+    endDate = new Date(
+      startDate.getFullYear() + (this.newEntry.recursions - 1),
+      startDate.getMonth(),
+      startDate.getDate()
+    );
+  } else {
+    // For daily, weekly, and fortnightly, calculate based on days
+    const frequencyDays = {
+      daily: 1,
+      weekly: 7,
+      fortnightly: 14,
+    };
+    const incrementDays = frequencyDays[this.newEntry.recurringFrequency] || 0;
+    endDate.setDate(endDate.getDate() + incrementDays * (this.newEntry.recursions - 1));
+  }
+
+  // Format the end date using the user's timezone
+  return this.formatDate(endDate);
 }
+
 
   },
   watch: {
@@ -278,20 +290,14 @@ export default {
   };
 },
 
-
 generateRecurringTransactions(baseTransaction) {
   const frequencyDays = {
     daily: 1,
     weekly: 7,
     fortnightly: 14,
-    monthly: 30,
-    quarterly: 90,
-    yearly: 365,
   };
 
-  const incrementDays = frequencyDays[this.newEntry.recurringFrequency] || 0;
-
-  // Start with the normalized user-selected date
+  // Start with the user-selected date
   let currentTransactionDate = new Date(
     baseTransaction.date.getFullYear(),
     baseTransaction.date.getMonth(),
@@ -309,26 +315,40 @@ generateRecurringTransactions(baseTransaction) {
 
   this.recurringData.push({
     ...baseTransaction,
-    date: new Date(currentTransactionDate), // Use the exact start date
-    balance: currentBalance, // Set the calculated balance
+    date: new Date(currentTransactionDate),
+    balance: currentBalance,
   });
 
   // Generate subsequent recurring transactions
   for (let i = 1; i < this.newEntry.recursions; i++) {
-    // Increment the date explicitly by the recurrence interval
-    currentTransactionDate.setDate(currentTransactionDate.getDate() + incrementDays);
+    if (this.newEntry.recurringFrequency === "monthly") {
+      // Increment month while keeping the day the same
+      currentTransactionDate = new Date(
+        currentTransactionDate.getFullYear(),
+        currentTransactionDate.getMonth() + 1,
+        baseTransaction.date.getDate() // Keep the original day of the month
+      );
+    } else if (this.newEntry.recurringFrequency === "yearly") {
+      // Increment year while keeping the month and day the same
+      currentTransactionDate = new Date(
+        currentTransactionDate.getFullYear() + 1,
+        currentTransactionDate.getMonth(),
+        baseTransaction.date.getDate()
+      );
+    } else {
+      // Increment by the defined number of days for daily, weekly, fortnightly
+      currentTransactionDate.setDate(currentTransactionDate.getDate() + frequencyDays[this.newEntry.recurringFrequency]);
+    }
 
     // Recalculate the balance for each recurring transaction
     currentBalance += baseTransaction.income - baseTransaction.spent;
 
     // Add the new recurring transaction
-    const newTransaction = {
+    this.recurringData.push({
       ...baseTransaction,
       date: new Date(currentTransactionDate), // Use the calculated date
       balance: currentBalance, // Update balance
-    };
-
-    this.recurringData.push(newTransaction);
+    });
   }
 },
 
