@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <header>
-      <h1>Financial Data Visualization</h1>
+      <h2>Financial Data Visualization</h2>
     </header>
     <main>
       <!-- Integrate the Chart component -->
