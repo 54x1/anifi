@@ -63,11 +63,11 @@
       <h3>Filter Transactions by Date</h3>
       <div>
         <label for="viewStartDate">Start Date:</label>
-        <vue-datepicker v-model="viewStartDate" id="viewStartDate" @change="filterTransactions" />
+        <vue-datepicker v-model="viewStartDate" @change="updateDateRange(viewStartDate, viewEndDate)" />
       </div>
       <div>
         <label for="viewEndDate">End Date:</label>
-        <vue-datepicker v-model="viewEndDate" id="viewEndDate" @change="filterTransactions" />
+        <vue-datepicker v-model="viewEndDate" @change="updateDateRange(viewStartDate, viewEndDate)" />
       </div>
     </div>
 
@@ -80,10 +80,13 @@
         <option value="monthly">Monthly</option>
         <option value="yearly">Yearly</option>
       </select>
-      <label for="chartType">Select Chart Type:</label>
-      <select v-model="chartType" id="chartType" @change="updateChart">
+      <label for="chartType">Chart Type:</label>
+      <select v-model="chartType" @change="updateChart(groupedData)">
         <option value="line">Line</option>
         <option value="bar">Bar</option>
+        <option value="radar">Radar</option>
+        <option value="pie">Pie</option>
+        <option value="doughnut">Doughnut</option>
       </select>
       <div class="category-filter">
   <label for="categoryFilter">Filter by Categories:</label>
@@ -204,11 +207,11 @@ export default {
     searchQuery: "",
     filterType: "",
     viewStartDate: localStorage.getItem("viewStartDate")
-      ? new Date(localStorage.getItem("viewStartDate"))
-      : new Date(new Date().setMonth(new Date().getMonth() - 1)), // Default to one month ago
-    viewEndDate: localStorage.getItem("viewEndDate")
-      ? new Date(localStorage.getItem("viewEndDate"))
-      : new Date(new Date().setMonth(new Date().getMonth() + 1)), // Default to one month ahead
+        ? new Date(localStorage.getItem("viewStartDate"))
+        : new Date(new Date().setMonth(new Date().getMonth() - 1)), // Default to one month ago
+      viewEndDate: localStorage.getItem("viewEndDate")
+        ? new Date(localStorage.getItem("viewEndDate"))
+        : new Date(new Date().setMonth(new Date().getMonth() + 1)), // Default to one month ahead
     groupBy: "daily",
     chart: null,
     chartType: "line",
@@ -345,25 +348,38 @@ computed:{
 },
   watch: {
     viewStartDate: {
-    handler(newVal) {
-      localStorage.setItem("viewStartDate", newVal.toISOString()); // Save to localStorage
-      this.filterTransactions(); // Reapply filters
+      handler(newVal) {
+        if (newVal instanceof Date && !isNaN(newVal.getTime())) {
+          localStorage.setItem("viewStartDate", newVal.toISOString());
+          this.updateChart(); // Update the chart when the start date changes
+        }
+      },
+      immediate: true, // Trigger immediately on mount
     },
-    immediate: true,
-  },
-  viewEndDate: {
-    handler(newVal) {
-      localStorage.setItem("viewEndDate", newVal.toISOString()); // Save to localStorage
-      this.filterTransactions(); // Reapply filters
+    // Watch for changes to viewEndDate
+    viewEndDate: {
+      handler(newVal) {
+        if (newVal instanceof Date && !isNaN(newVal.getTime())) {
+          localStorage.setItem("viewEndDate", newVal.toISOString());
+          this.updateChart(); // Update the chart when the end date changes
+        }
+      },
+      immediate: true, // Trigger immediately on mount
     },
-    immediate: true,
-  },
     selectedCategories: {
     handler() {
       this.filterTransactions(); // Update filtered data
       this.updateChart(); // Update the chart
     },
     deep: true,
+  },
+  chartType: {
+    handler(newType) {
+      console.log("Chart type changed to:", newType);
+      const groupedData = this.processData(); // Reprocess the data
+      this.updateChart(groupedData); // Update the chart with the new type
+    },
+    immediate: true,
   },
   },
   mounted() {
@@ -389,6 +405,15 @@ computed:{
     }
   },
   methods: {
+    updateDateRange(startDate, endDate) {
+      if (startDate) {
+        this.viewStartDate = new Date(startDate); // Update start date
+      }
+      if (endDate) {
+        this.viewEndDate = new Date(endDate); // Update end date
+      }
+      this.updateChart(); // Update the chart with the new date range
+    },
     processData() {
   const dataFromStorage = JSON.parse(localStorage.getItem("financialData")) || [];
   const groupedData = {};
@@ -1089,7 +1114,7 @@ filterTransactions() {
 },
 
 
-async updateChart(groupedData) {
+async updateChart3(groupedData) {
   console.log("Grouped Data for Chart:", groupedData);
 
   if (!groupedData || Object.keys(groupedData).length === 0) {
@@ -1229,7 +1254,217 @@ async updateChart(groupedData) {
 },
 
 
-  },
+
+async updateChart(groupedData = null) {
+  // Load start and end dates from localStorage if not already set
+  const startDate = new Date(this.viewStartDate);
+  const endDate = new Date(this.viewEndDate);
+
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+    console.warn("Invalid date range.");
+    return;
+  }
+
+  if (!groupedData) {
+    groupedData = this.processData();
+  }
+
+  // Filter grouped data based on the selected date range
+  groupedData = Object.keys(groupedData)
+    .filter((date) => {
+      const current = new Date(date);
+      return current >= startDate && current <= endDate;
+    })
+    .reduce((acc, key) => {
+      acc[key] = groupedData[key];
+      return acc;
+    }, {});
+
+  console.log("Filtered Grouped Data:", groupedData);
+
+  if (!groupedData || Object.keys(groupedData).length === 0) {
+    console.warn("No data available to plot after date filtering.");
+    return;
+  }
+
+  if (this.chart) {
+    this.chart.destroy(); // Destroy existing chart
+    this.chart = null;
+  }
+  await nextTick();
+
+  const canvas = this.$refs.financialChart;
+  if (!canvas) {
+    console.error("Canvas element not found!");
+    return;
+  }
+
+  const ctx = canvas.getContext("2d");
+
+  const labels = Object.keys(groupedData)
+    .filter((date) => dayjs(date).isValid())
+    .sort((a, b) => dayjs(a).diff(dayjs(b))); // Sort dates
+
+  if (labels.length === 0) {
+    console.warn("No valid labels for the chart.");
+    return;
+  }
+
+  const isCircularChart = ["pie", "doughnut"].includes(this.chartType);
+
+  // Prepare datasets
+  let datasets = [];
+  if (isCircularChart) {
+    // Aggregate data for circular charts
+    const categoryTotals = this.selectedCategories.map((category) =>
+      labels.reduce(
+        (sum, date) => sum + (groupedData[date]?.categories?.[category] || 0),
+        0
+      )
+    );
+
+    datasets = [
+      {
+        label: "Categories",
+        data: categoryTotals,
+        backgroundColor: this.selectedCategories.map(
+          (category) => this.categoryColors[category] || this.generateRandomColor()
+        ),
+        hidden: this.selectedCategories.map(
+          (category) => this.hiddenCategories[category] || false
+        ),
+      },
+    ];
+  } else {
+    // Line, bar, etc.
+    datasets = [
+      {
+        label: "Balance",
+        data: labels.map((date) => groupedData[date]?.balance || 0),
+        borderColor: "#00ffff",
+        backgroundColor: "rgba(0, 255, 255, 0.2)",
+        borderWidth: 2,
+        hidden: this.hiddenCategories["Balance"] || false,
+      },
+      {
+        label: "Income",
+        data: labels.map((date) => groupedData[date]?.income || 0),
+        borderColor: "#00ff00",
+        backgroundColor: "rgba(0, 255, 0, 0.2)",
+        borderWidth: 2,
+        hidden: this.hiddenCategories["Income"] || false,
+      },
+      {
+        label: "Spent",
+        data: labels.map((date) => groupedData[date]?.spent || 0),
+        borderColor: "#ff4500",
+        backgroundColor: "rgba(255, 69, 0, 0.2)",
+        borderWidth: 2,
+        hidden: this.hiddenCategories["Spent"] || false,
+      },
+    ];
+
+    this.selectedCategories.forEach((category) => {
+      const categoryData = labels.map((date) =>
+        groupedData[date]?.categories?.[category] || 0
+      );
+
+      datasets.push({
+        label: category,
+        data: categoryData,
+        borderColor: this.categoryColors[category] || this.generateRandomColor(),
+        backgroundColor: `${this.categoryColors[category] || this.generateRandomColor()}33`,
+        borderWidth: 2,
+        hidden: this.hiddenCategories[category] || false,
+      });
+    });
+  }
+
+  const isDarkMode = this.theme === "dark";
+
+  // Create the chart
+  this.chart = new Chart(ctx, {
+    type: this.chartType,
+    data: {
+      labels: isCircularChart
+        ? this.selectedCategories
+        : labels.map((date) => dayjs(date).format("DD/MM/YYYY")),
+      datasets,
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animations: false, // Disable animations
+      plugins: {
+        legend: {
+          labels: {
+            color: isDarkMode ? "#ffffff" : "#000000",
+          },
+          onClick: (e, legendItem, legend) => {
+            const chart = legend.chart;
+
+            if (isCircularChart) {
+              const index = legendItem.index;
+              const meta = chart.getDatasetMeta(0);
+              meta.data[index].hidden = !meta.data[index].hidden;
+
+              const categoryLabel = chart.data.labels[index];
+              this.hiddenCategories[categoryLabel] = meta.data[index].hidden;
+              localStorage.setItem(
+                "hiddenCategories",
+                JSON.stringify(this.hiddenCategories)
+              );
+            } else {
+              const datasetIndex = legendItem.datasetIndex;
+              const dataset = chart.data.datasets[datasetIndex];
+              dataset.hidden = !dataset.hidden;
+
+              this.hiddenCategories[dataset.label] = dataset.hidden;
+              localStorage.setItem(
+                "hiddenCategories",
+                JSON.stringify(this.hiddenCategories)
+              );
+            }
+
+            chart.update();
+          },
+        },
+      },
+      scales: isCircularChart
+        ? {}
+        : {
+            x: {
+              ticks: {
+                color: isDarkMode ? "#ffffff" : "#000000",
+              },
+              grid: {
+                color: isDarkMode ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.1)",
+              },
+            },
+            y: {
+              ticks: {
+                color: isDarkMode ? "#ffffff" : "#000000",
+              },
+              grid: {
+                color: isDarkMode ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.1)",
+              },
+            },
+          },
+    },
+  });
+},
+
+
+
+
+
+
+
+
+
+
+  }
+
 };
 </script>
 
