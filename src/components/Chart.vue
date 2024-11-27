@@ -85,6 +85,33 @@
         <option value="line">Line</option>
         <option value="bar">Bar</option>
       </select>
+      <div class="category-filter">
+  <label for="categoryFilter">Filter by Categories:</label>
+  <multiselect
+  v-model="selectedCategories"
+  :options="availableCategories"
+  :multiple="true"
+  placeholder="Select categories"
+  :close-on-select="false"
+  tag-placeholder="Add a category"
+></multiselect>
+  <button @click="toggleSelectAllCategories">
+    {{ allCategoriesSelected ? "Unselect All" : "Select All" }}
+  </button>
+  <div>
+    <label for="categoryColors">Set Category Colors:</label>
+  <div v-for="category in availableCategories" :key="category" class="category-color-row">
+    <span>{{ category }}</span>
+    <input
+      type="color"
+      v-model="categoryColors[category]"
+      @input="setCustomColor(category, categoryColors[category])"
+    />
+    <button @click="setCustomColor(category, generateRandomColor())">🎲 Random</button>
+  </div>
+</div>
+
+</div>
       <div class="chart-container">
         <canvas ref="financialChart"></canvas>
       </div>
@@ -137,6 +164,9 @@
 
 
 <script>
+import dayjs from "dayjs"; 
+import Multiselect from "vue-multiselect";
+import "vue-multiselect/dist/vue-multiselect.min.css";
 import { Chart, registerables } from "chart.js";
 import Datepicker from "vue3-datepicker";
 import { ref, watch, computed, onMounted, onBeforeUnmount, nextTick } from "vue";
@@ -147,6 +177,7 @@ Chart.register(...registerables);
 export default {
   components: {
     vueDatepicker: Datepicker,
+    Multiselect,
   },
   setup() {
     const financialChart = ref(null);
@@ -157,6 +188,7 @@ export default {
     theme: "light",
     processedData: [],
     recurringData: [],
+    hiddenCategories: JSON.parse(localStorage.getItem("hiddenCategories")) || {},
     newEntry: {
       date: new Date(),
       type: "spending",
@@ -171,16 +203,27 @@ export default {
     editingRecurringIndex: null,
     searchQuery: "",
     filterType: "",
-    viewStartDate: new Date(new Date().setMonth(new Date().getMonth() - 1)),
-    viewEndDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+    viewStartDate: localStorage.getItem("viewStartDate")
+      ? new Date(localStorage.getItem("viewStartDate"))
+      : new Date(new Date().setMonth(new Date().getMonth() - 1)), // Default to one month ago
+    viewEndDate: localStorage.getItem("viewEndDate")
+      ? new Date(localStorage.getItem("viewEndDate"))
+      : new Date(new Date().setMonth(new Date().getMonth() + 1)), // Default to one month ahead
     groupBy: "daily",
     chart: null,
     chartType: "line",
     sortField: "date", // Default sort field
     sortOrder: "asc", // Default sort order
+    selectedCategories: [],
+    allCategoriesSelected: false,
+    categoryColors: {}, // Stores colors for each category
+    customColorInput: '', 
   };
 },
+
 computed:{
+
+
   calculatedEndDate() {
       if (!this.newEntry.recurring || !this.newEntry.date || !this.newEntry.recursions) {
         return "N/A";
@@ -222,6 +265,21 @@ computed:{
       // Format the end date using the user's timezone
       return this.formatDate(endDate);
     },
+    availableCategories() {
+      const combinedData = [...(this.processedData || []), ...(this.recurringData || [])];
+
+      const categories = combinedData.flatMap((entry) => {
+        if (entry.type === "income") {
+          return entry.incomeCategory?.trim() || "Uncategorized";
+        } else if (entry.type === "spending") {
+          return entry.spentCategory?.trim() || "Uncategorized";
+        }
+        return [];
+      });
+
+      return [...new Set(categories)];
+    },
+
 
     filteredTransactions() {
     const combinedData = [...this.processedData, ...this.recurringData];
@@ -286,170 +344,241 @@ computed:{
   },
 },
   watch: {
-    viewStartDate: "filterTransactions",
-    viewEndDate: "filterTransactions",
+    viewStartDate: {
+    handler(newVal) {
+      localStorage.setItem("viewStartDate", newVal.toISOString()); // Save to localStorage
+      this.filterTransactions(); // Reapply filters
+    },
+    immediate: true,
+  },
+  viewEndDate: {
+    handler(newVal) {
+      localStorage.setItem("viewEndDate", newVal.toISOString()); // Save to localStorage
+      this.filterTransactions(); // Reapply filters
+    },
+    immediate: true,
+  },
+    selectedCategories: {
+    handler() {
+      this.filterTransactions(); // Update filtered data
+      this.updateChart(); // Update the chart
+    },
+    deep: true,
+  },
   },
   mounted() {
     this.loadData();
-    this.setDefaultDate();
-    this.filterTransactions();
-    this.updateChart();
+  this.setDefaultDate(); // Ensure defaults if dates are missing
+  this.setRandomColorsForCategories();
+  this.selectedCategories = [...this.availableCategories];
+  this.allCategoriesSelected = true;
+  this.filterTransactions(); // Apply filters on mount
+  
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    this.theme = savedTheme;
+    document.documentElement.className = this.theme;
+  }
 
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      this.theme = savedTheme;
-      document.documentElement.className = this.theme; // Apply saved theme to <html>
-    }
-  },
+  const groupedData = this.processData();
+  this.updateChart(groupedData);
+},
   beforeUnmount() {
     if (this.chart) {
       this.chart.destroy();
     }
   },
   methods: {
-    filterTransactions2() {
-      
-  const startDate = new Date(this.viewStartDate);
-  const endDate = new Date(this.viewEndDate);
+    processData() {
+  const dataFromStorage = JSON.parse(localStorage.getItem("financialData")) || [];
+  const groupedData = {};
 
-  if (!startDate || !endDate || startDate > endDate) {
-    console.warn("Invalid date range");
-    this.filteredTransactions = [];
-    this.updateChart();
-    return;
-  }
+  let cumulativeBalance = 0;
 
-  // Combine processed and recurring transactions
-  const combinedData = [...this.processedData, ...this.recurringData];
+  // Sort data by date
+  const sortedData = dataFromStorage.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  // Filter transactions within the date range
-  const filtered = combinedData.filter((entry) => {
-    const inRange = entry.date >= startDate && entry.date <= endDate;
-    const matchesSearch = !this.searchQuery || (
-      entry.incomeCategory?.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-      entry.spentCategory?.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
-    const matchesType = !this.filterType || entry.type === this.filterType;
+  sortedData.forEach((entry) => {
+    const dateKey = dayjs(entry.date).format("YYYY-MM-DD"); // Group by YYYY-MM-DD format
 
-    return inRange && matchesSearch && matchesType;
+    // Ensure groupedData has the necessary structure
+    if (!groupedData[dateKey]) {
+      groupedData[dateKey] = { income: 0, spent: 0, balance: cumulativeBalance, categories: {} };
+    }
+
+    // Update income, spent, and categories
+    if (entry.type === "income") {
+      groupedData[dateKey].income += entry.income || 0;
+      groupedData[dateKey].categories[entry.incomeCategory || "Uncategorized"] =
+        (groupedData[dateKey].categories[entry.incomeCategory || "Uncategorized"] || 0) +
+        entry.income;
+    } else if (entry.type === "spending") {
+      groupedData[dateKey].spent += entry.spent || 0;
+      groupedData[dateKey].categories[entry.spentCategory || "Uncategorized"] =
+        (groupedData[dateKey].categories[entry.spentCategory || "Uncategorized"] || 0) +
+        entry.spent;
+    }
+
+    // Calculate the cumulative balance
+    cumulativeBalance += (entry.income || 0) + (entry.spent || 0);
+    groupedData[dateKey].balance = cumulativeBalance;
   });
 
-  // Sort filtered transactions
-  this.filteredTransactions = filtered;
-  this.sortBy(this.sortField); // Apply current sorting
-
-  // Update the chart
-  this.updateChart();
+  console.log("Processed Grouped Data:", groupedData);
+  return groupedData;
 },
-filterTransactions() {
+    generateRandomColor() {
+    return `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+  },
 
-  const startDate = new Date(this.viewStartDate);
-  const endDate = new Date(this.viewEndDate);
-
-  if (!startDate || !endDate || startDate > endDate) {
-    console.warn("Invalid date range");
-    this.filteredData = []; // Clear data if invalid range
-    this.updateChart(); // Update chart with no data
-    return;
-  }
-
-  // Combine regular and recurring transactions
-  const combinedData = [...this.processedData, ...this.recurringData];
-
-  // Filter transactions within the date range
-  const filteredTransactions = combinedData.filter(
-    (entry) => new Date(entry.date) >= startDate && new Date(entry.date) <= endDate
-  );
-
-  // Deduplicate transactions by a unique key
-  const uniqueTransactions = Array.from(
-    new Map(
-      filteredTransactions.map((entry) => [`${entry.date}-${entry.type}-${entry.income || entry.spent}`, entry])
-    ).values()
-  );
-
-  // Sort by date
-  this.filteredTransactions = uniqueTransactions.sort(
-    (a, b) => new Date(a.date) - new Date(b.date)
-  );
-
-
-
-  // Group transactions by date and calculate cumulative totals
-  const groupedByDate = filteredTransactions.reduce((acc, entry) => {
-    const dateKey = entry.date.toISOString().split("T")[0]; // Use YYYY-MM-DD as the key
-    if (!acc[dateKey]) {
-      acc[dateKey] = { date: entry.date, income: 0, spent: 0, balance: 0 };
+setRandomColorsForCategories() {
+  this.availableCategories.forEach((category) => {
+    if (!this.categoryColors[category]) {
+      this.categoryColors[category] = this.generateRandomColor();
     }
-    acc[dateKey].income += entry.income || 0;
-    acc[dateKey].spent += entry.spent || 0;
+  });
+},
+
+  setCustomColor(category, color) {
+    if (/^#([0-9A-F]{3}){1,2}$/i.test(color)) {
+      this.categoryColors[category] = color;
+    } else {
+      alert("Invalid hex color. Please enter a valid hex code (e.g., #ff5733).");
+    }
+  },
+    toggleSelectAllCategories() {
+    if (this.allCategoriesSelected) {
+      this.selectedCategories = []; // Deselect all
+    } else {
+      this.selectedCategories = [...this.availableCategories]; // Select all
+    }
+    this.allCategoriesSelected = !this.allCategoriesSelected;
+  },
+    updateChartData(transactionsInRange) {
+  const groupedData = transactionsInRange.reduce((acc, entry) => {
+    const formattedDate = this.formatDate(entry.date);
+    if (!acc[formattedDate]) {
+      acc[formattedDate] = { date: entry.date, income: 0, spent: 0, balance: 0 };
+    }
+    acc[formattedDate].income += entry.income || 0;
+    acc[formattedDate].spent += entry.spent || 0;
     return acc;
   }, {});
 
-  // Calculate balances for each date
   let cumulativeBalance = 0;
-  const groupedTransactions = Object.values(groupedByDate)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
+  this.filteredData = Object.values(groupedData)
     .map((entry) => {
       cumulativeBalance += entry.income + entry.spent;
-      return { ...entry, balance: cumulativeBalance };
-    });
+      return {
+        ...entry,
+        balance: cumulativeBalance,
+      };
+    })
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-  this.filteredData = groupedTransactions; // Update filtered data for the chart
-  this.updateChart(); // Refresh the chart
+  this.updateChart(); // Update the chart with new data
 },
 
 
-    setDefaultDate() {
-      if (!this.viewStartDate) {
-        this.viewStartDate = new Date(new Date().setMonth(new Date().getMonth() - 1));
-      }
-      if (!this.viewEndDate) {
-        this.viewEndDate = new Date(new Date().setMonth(new Date().getMonth() + 1))
-      }
-    },
+filterTransactions() {
+  const startDate = new Date(this.viewStartDate);
+  const endDate = new Date(this.viewEndDate);
+
+  if (!startDate || !endDate || isNaN(startDate.getTime()) || isNaN(endDate.getTime()) || startDate > endDate) {
+    console.warn("Invalid date range:", startDate, endDate);
+    this.filteredData = [];
+    this.updateChart({}); // Clear chart
+    return;
+  }
+
+  const combinedData = [...this.processedData, ...this.recurringData];
+  console.log("Combined Data:", combinedData);
+
+  const filteredTransactions = combinedData.filter((entry) => {
+    const entryDate = new Date(entry.date);
+    if (isNaN(entryDate.getTime())) {
+      console.warn("Invalid transaction date:", entry.date);
+      return false;
+    }
+    return entryDate >= startDate && entryDate <= endDate;
+  });
+
+  console.log("Filtered Transactions:", filteredTransactions);
+
+  const groupedData = filteredTransactions.reduce((acc, entry) => {
+    const entryDate = new Date(entry.date);
+    if (isNaN(entryDate.getTime())) return acc; // Skip invalid dates
+
+    const formattedDate = entryDate.toISOString().split("T")[0];
+    if (!acc[formattedDate]) {
+      acc[formattedDate] = { date: entryDate, income: 0, spent: 0, balance: 0 };
+    }
+
+    acc[formattedDate].income += entry.income || 0;
+    acc[formattedDate].spent += entry.spent || 0;
+
+    return acc;
+  }, {});
+
+  console.log("Grouped Data:", groupedData);
+
+  let cumulativeBalance = 0;
+  this.filteredData = Object.values(groupedData)
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .map((entry) => {
+      cumulativeBalance += entry.income + entry.spent;
+      return {
+        ...entry,
+        balance: cumulativeBalance,
+      };
+    });
+    this.updateChart(groupedData);
+  },
+
     formatSpent() {
       if (this.newEntry.spent > 0) {
         this.newEntry.spent = -this.newEntry.spent;
       }
     },
     formatDate(date) {
-      return new Intl.DateTimeFormat('en-GB', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      }).format(new Date(date));
+      return dayjs(date).isValid() ? dayjs(date).format("DD/MM/YYYY") : "Invalid Date";
     },
+    setDefaultDate() {
+      if (!this.viewStartDate) {
+        this.viewStartDate = dayjs().subtract(1, "month").toDate();
+      }
+      if (!this.viewEndDate) {
+        this.viewEndDate = dayjs().add(1, "month").toDate();
+      }
+    },
+
     saveData() {
       localStorage.setItem("financialData", JSON.stringify(this.processedData));
       localStorage.setItem("recurringData", JSON.stringify(this.recurringData));
     },
+    
     loadData() {
-      const storedData = localStorage.getItem("financialData");
-      const storedRecurringData = localStorage.getItem("recurringData");
+  const storedData = localStorage.getItem("financialData");
+  const storedRecurringData = localStorage.getItem("recurringData");
 
-      if (storedData) {
-        this.processedData = JSON.parse(storedData).map((entry) => ({
-          ...entry,
-          date: new Date(entry.date),
-        }));
-      }
-      if (storedRecurringData) {
-        this.recurringData = JSON.parse(storedRecurringData).map((entry) => ({
-          ...entry,
-          date: new Date(entry.date),
-        }));
-      }
-    },
-    setDefaultDate() {
-      if (!this.viewStartDate) {
-        this.viewStartDate = new Date(new Date().setMonth(new Date().getMonth() - 1));
-      }
-      if (!this.viewEndDate) {
-        this.viewEndDate = new Date(new Date().setMonth(new Date().getMonth() + 1))
-      }
-    },
+  if (storedData) {
+    this.processedData = JSON.parse(storedData).map((entry) => ({
+      ...entry,
+      date: new Date(entry.date), // Ensure valid Date objects
+    }));
+  }
+  if (storedRecurringData) {
+    this.recurringData = JSON.parse(storedRecurringData).map((entry) => ({
+      ...entry,
+      date: new Date(entry.date),
+    }));
+  }
+
+  console.log("Processed Data:", this.processedData);
+  console.log("Recurring Data:", this.recurringData);
+},
+
+
     resetForm() {
       this.newEntry = {
         date: new Date(),
@@ -554,67 +683,64 @@ filterTransactions() {
       this.resetForm();
     },
     addEntry() {
-      if (!this.newEntry.date) {
-        console.error("Date is required.");
-        return;
-      }
+  if (!this.newEntry.date) {
+    console.error("Date is required.");
+    return;
+  }
 
-      // Ensure spending is negative
-      if (this.newEntry.type === 'spending' && this.newEntry.spent > 0) {
-        this.newEntry.spent = -this.newEntry.spent;
-      }
+  // Ensure spending is negative
+  if (this.newEntry.type === 'spending' && this.newEntry.spent > 0) {
+    this.newEntry.spent = -this.newEntry.spent;
+  }
 
-      this.processedData.push({ ...this.newEntry });
-      this.resetForm();
+  // Normalize the selected date to midnight local time
+  const selectedDate = new Date(this.newEntry.date);
+  const normalizedDate = new Date(
+    selectedDate.getFullYear(),
+    selectedDate.getMonth(),
+    selectedDate.getDate()
+  );
 
-      // Normalize the selected date to midnight local time
-      const selectedDate = new Date(this.newEntry.date);
-      const normalizedDate = new Date(
-        selectedDate.getFullYear(),
-        selectedDate.getMonth(),
-        selectedDate.getDate()
-      );
+  // Calculate balance
+  const previousBalance = this.processedData.length
+    ? this.processedData[this.processedData.length - 1].balance
+    : 0;
+  const newTransactionBalance =
+    previousBalance +
+    (this.newEntry.type === "income"
+      ? this.newEntry.income
+      : this.newEntry.spent); // Spending is already negative
 
-      // Calculate balance
-      const previousBalance = this.processedData.length
-        ? this.processedData[this.processedData.length - 1].balance
-        : 0;
-      const newTransactionBalance =
-        previousBalance +
-        (this.newEntry.type === "income"
-          ? this.newEntry.income
-          : this.newEntry.spent); // Spending is already negative
+  const newTransaction = {
+    ...this.newEntry,
+    income: this.newEntry.type === "income" ? this.newEntry.income : 0,
+    spent: this.newEntry.type === "spending" ? this.newEntry.spent : 0,
+    balance: newTransactionBalance, // Use the calculated balance
+    date: normalizedDate, // Save the normalized date
+  };
 
-      const newTransaction = {
-        ...this.newEntry,
-        income: this.newEntry.type === "income" ? this.newEntry.income : 0,
-        spent: this.newEntry.type === "spending" ? this.newEntry.spent : 0,
-        balance: newTransactionBalance, // Use the calculated balance
-        date: normalizedDate, // Save the normalized date
-      };
+  if (this.newEntry.recurring) {
+    this.generateRecurringTransactions(newTransaction);
+  } else {
+    this.processedData.push(newTransaction);
+  }
 
-      if (this.newEntry.recurring) {
-        this.generateRecurringTransactions(newTransaction);
-      } else {
-        this.processedData.push(newTransaction);
-      }
+  this.saveData();
+  this.filterTransactions();
 
-      this.saveData();
-      this.filterTransactions();
-
-      // Reset the form
-      this.newEntry = {
-        date: new Date(), // Default to today
-        type: "income",
-        income: 0,
-        incomeCategory: "",
-        spent: 0,
-        spentCategory: "",
-        recurring: false,
-        recurringFrequency: "daily",
-        recursions: 1,
-      };
-    },
+  // Reset the form
+  this.newEntry = {
+    date: new Date(), // Default to today
+    type: "income",
+    income: 0,
+    incomeCategory: "",
+    spent: 0,
+    spentCategory: "",
+    recurring: false,
+    recurringFrequency: "daily",
+    recursions: 1,
+  };
+},
     sortBy(field) {
     if (this.sortField === field) {
       // Toggle sort order if the same field is clicked again
@@ -663,7 +789,7 @@ filterTransactions() {
   },
 
 
-    generateRecurringTransactions(baseTransaction) {
+  generateRecurringTransactions(baseTransaction) {
       const frequencyDays = {
         daily: 1,
         weekly: 7,
@@ -726,9 +852,69 @@ filterTransactions() {
         });
       }
     },
+ 
 
-
+    
     filterTransactions() {
+  const startDate = new Date(this.viewStartDate);
+  const endDate = new Date(this.viewEndDate);
+
+  if (!startDate || !endDate || startDate > endDate) {
+    console.warn("Invalid date range");
+    this.filteredData = [];
+    this.updateChart({}); // Clear chart if invalid date range
+    return;
+  }
+
+  // Combine processed and recurring data
+  const combinedData = [...this.processedData, ...this.recurringData];
+  console.log("Combined Data:", combinedData);
+
+  // Filter transactions within the specified date range
+  const filteredTransactions = combinedData.filter((entry) => {
+    const entryDate = new Date(entry.date);
+    return entryDate >= startDate && entryDate <= endDate;
+  });
+  console.log("Filtered Transactions:", filteredTransactions);
+
+  // Group transactions by date
+  const groupedData = filteredTransactions.reduce((acc, entry) => {
+    const dateKey = dayjs(entry.date).format("YYYY-MM-DD"); // Group by formatted date
+    if (!acc[dateKey]) {
+      acc[dateKey] = { income: 0, spent: 0, balance: 0, categories: {} };
+    }
+
+    // Aggregate income, spent, and categories
+    if (entry.type === "income") {
+      acc[dateKey].income += entry.income || 0;
+      acc[dateKey].categories[entry.incomeCategory || "Uncategorized"] =
+        (acc[dateKey].categories[entry.incomeCategory || "Uncategorized"] || 0) + entry.income;
+    } else if (entry.type === "spending") {
+      acc[dateKey].spent += entry.spent || 0;
+      acc[dateKey].categories[entry.spentCategory || "Uncategorized"] =
+        (acc[dateKey].categories[entry.spentCategory || "Uncategorized"] || 0) + entry.spent;
+    }
+
+    return acc;
+  }, {});
+  console.log("Grouped Data:", groupedData);
+
+  // Calculate cumulative balance
+  let cumulativeBalance = 0;
+  Object.keys(groupedData)
+    .sort((a, b) => new Date(a) - new Date(b)) // Sort dates
+    .forEach((dateKey) => {
+      cumulativeBalance += groupedData[dateKey].income + groupedData[dateKey].spent;
+      groupedData[dateKey].balance = cumulativeBalance;
+    });
+
+  // Update the chart with grouped data
+  this.updateChart(groupedData);
+},
+
+
+
+    filterTransactions2() {
       // Parse start and end dates
       const startDate = new Date(this.viewStartDate);
       const endDate = new Date(this.viewEndDate);
@@ -744,9 +930,10 @@ filterTransactions() {
       const combinedData = [...this.processedData, ...this.recurringData];
 
       // Filter transactions within the date range
-      const filteredTransactions = combinedData.filter(
+         const filteredTransactions = combinedData.filter(
         (entry) => entry.date >= startDate && entry.date <= endDate
-      );
+    );
+
 
       // Sort by date
       const sortedTransactions = filteredTransactions.sort(
@@ -781,17 +968,23 @@ filterTransactions() {
       this.updateChart(); // Update the chart with the new theme
     },
 
+ 
 
+    async updateChart2(groupedData) {
+  console.log("Grouped Data for Chart:", groupedData);
 
-    async updateChart() {
+  if (!groupedData || Object.keys(groupedData).length === 0) {
+    console.warn("No data available to plot.");
+    return;
+  }
+
   if (this.chart) {
-    this.chart.destroy();
+    this.chart.destroy(); // Destroy existing chart
     this.chart = null;
   }
   await nextTick();
 
   const canvas = this.$refs.financialChart;
-
   if (!canvas) {
     console.error("Canvas element not found!");
     return;
@@ -799,64 +992,68 @@ filterTransactions() {
 
   const ctx = canvas.getContext("2d");
 
-  // Combine regular and recurring transactions
-  const combinedData = [...this.processedData, ...this.recurringData];
+  // Generate chart labels (sorted dates)
+  const labels = Object.keys(groupedData)
+    .filter((date) => dayjs(date).isValid())
+    .sort((a, b) => dayjs(a).diff(dayjs(b))); // Sort dates
 
-  // Group transactions by date
-  const groupedByDate = combinedData.reduce((acc, entry) => {
-    const dateKey = new Date(entry.date).toISOString().split("T")[0]; // Use YYYY-MM-DD as the key
-    if (!acc[dateKey]) {
-      acc[dateKey] = { date: new Date(entry.date), income: 0, spent: 0, balance: 0 };
-    }
-    acc[dateKey].income += entry.income || 0;
-    acc[dateKey].spent += entry.spent || 0;
-    return acc;
-  }, {});
+  if (labels.length === 0) {
+    console.warn("No valid labels for the chart.");
+    return;
+  }
 
-  // Calculate cumulative balance and sort by date
-  let cumulativeBalance = 0;
-  const aggregatedData = Object.values(groupedByDate)
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .map((entry) => {
-      cumulativeBalance += entry.income + entry.spent;
-      return { ...entry, balance: cumulativeBalance };
+  // Prepare datasets for balance, income, and spent
+  const datasets = [
+    {
+      label: "Balance",
+      data: labels.map((date) => groupedData[date]?.balance || 0),
+      borderColor: "#00ffff",
+      backgroundColor: "rgba(0, 255, 255, 0.2)",
+      borderWidth: 2,
+      fill: false,
+    },
+    {
+      label: "Income",
+      data: labels.map((date) => groupedData[date]?.income || 0),
+      borderColor: "#00ff00",
+      backgroundColor: "rgba(0, 255, 0, 0.2)",
+      borderWidth: 2,
+      fill: false,
+    },
+    {
+      label: "Spent",
+      data: labels.map((date) => groupedData[date]?.spent || 0),
+      borderColor: "#ff4500",
+      backgroundColor: "rgba(255, 69, 0, 0.2)",
+      borderWidth: 2,
+      fill: false,
+    },
+  ];
+
+  // Dynamically add datasets for each selected category
+  this.selectedCategories.forEach((category) => {
+    const categoryData = labels.map((date) =>
+      groupedData[date]?.categories?.[category] || 0
+    );
+
+    datasets.push({
+      label: category,
+      data: categoryData,
+      borderColor: this.categoryColors[category] || this.generateRandomColor(),
+      backgroundColor: `${this.categoryColors[category] || this.generateRandomColor()}33`,
+      borderWidth: 2,
+      fill: false,
     });
+  });
 
-  // Prepare data for the chart
-  const labels = aggregatedData.map((entry) => this.formatDate(entry.date));
-  const balanceData = aggregatedData.map((entry) => entry.balance);
-  const incomeData = aggregatedData.map((entry) => entry.income);
-  const spentData = aggregatedData.map((entry) => entry.spent);
-
+  // Create the chart
   const isDarkMode = this.theme === "dark";
 
   this.chart = new Chart(ctx, {
     type: this.chartType,
     data: {
-      labels,
-      datasets: [
-        {
-          label: "Balance",
-          data: balanceData,
-          borderColor: isDarkMode ? "#00ffff" : "blue",
-          backgroundColor: isDarkMode ? "rgba(0, 255, 255, 0.2)" : "rgba(66, 135, 245, 0.2)",
-          borderWidth: 2,
-        },
-        {
-          label: "Income",
-          data: incomeData,
-          borderColor: isDarkMode ? "#00ff00" : "green",
-          backgroundColor: isDarkMode ? "rgba(0, 255, 0, 0.2)" : "rgba(0, 200, 0, 0.2)",
-          borderWidth: 2,
-        },
-        {
-          label: "Spent",
-          data: spentData,
-          borderColor: isDarkMode ? "#ff4500" : "red",
-          backgroundColor: isDarkMode ? "rgba(255, 69, 0, 0.2)" : "rgba(255, 99, 132, 0.2)",
-          borderWidth: 2,
-        },
-      ],
+      labels: labels.map((date) => dayjs(date).format("DD/MM/YYYY")), // Format labels
+      datasets,
     },
     options: {
       responsive: true,
@@ -866,6 +1063,146 @@ filterTransactions() {
         legend: {
           labels: {
             color: isDarkMode ? "#ffffff" : "#000000",
+          },
+        },
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: isDarkMode ? "#ffffff" : "#000000",
+          },
+          grid: {
+            color: isDarkMode ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.1)",
+          },
+        },
+        y: {
+          ticks: {
+            color: isDarkMode ? "#ffffff" : "#000000",
+          },
+          grid: {
+            color: isDarkMode ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.1)",
+          },
+        },
+      },
+    },
+  });
+},
+
+
+async updateChart(groupedData) {
+  console.log("Grouped Data for Chart:", groupedData);
+
+  if (!groupedData || Object.keys(groupedData).length === 0) {
+    console.warn("No data available to plot.");
+    return;
+  }
+
+  if (this.chart) {
+    this.chart.destroy(); // Destroy existing chart
+    this.chart = null;
+  }
+  await nextTick();
+
+  const canvas = this.$refs.financialChart;
+  if (!canvas) {
+    console.error("Canvas element not found!");
+    return;
+  }
+
+  const ctx = canvas.getContext("2d");
+
+  // Generate chart labels (sorted dates)
+  const labels = Object.keys(groupedData)
+    .filter((date) => dayjs(date).isValid())
+    .sort((a, b) => dayjs(a).diff(dayjs(b))); // Sort dates
+
+  if (labels.length === 0) {
+    console.warn("No valid labels for the chart.");
+    return;
+  }
+
+  // Prepare datasets for balance, income, and spent
+  const datasets = [
+    {
+      label: "Balance",
+      data: labels.map((date) => groupedData[date]?.balance || 0),
+      borderColor: "#00ffff",
+      backgroundColor: "rgba(0, 255, 255, 0.2)",
+      borderWidth: 2,
+      fill: false,
+      hidden: this.hiddenCategories["Balance"] || false, // Restore hidden state
+    },
+    {
+      label: "Income",
+      data: labels.map((date) => groupedData[date]?.income || 0),
+      borderColor: "#00ff00",
+      backgroundColor: "rgba(0, 255, 0, 0.2)",
+      borderWidth: 2,
+      fill: false,
+      hidden: this.hiddenCategories["Income"] || false, // Restore hidden state
+    },
+    {
+      label: "Spent",
+      data: labels.map((date) => groupedData[date]?.spent || 0),
+      borderColor: "#ff4500",
+      backgroundColor: "rgba(255, 69, 0, 0.2)",
+      borderWidth: 2,
+      fill: false,
+      hidden: this.hiddenCategories["Spent"] || false, // Restore hidden state
+    },
+  ];
+
+  // Dynamically add datasets for each selected category
+  this.selectedCategories.forEach((category) => {
+    const categoryData = labels.map((date) =>
+      groupedData[date]?.categories?.[category] || 0
+    );
+
+    datasets.push({
+      label: category,
+      data: categoryData,
+      borderColor: this.categoryColors[category] || this.generateRandomColor(),
+      backgroundColor: `${this.categoryColors[category] || this.generateRandomColor()}33`,
+      borderWidth: 2,
+      fill: false,
+      hidden: this.hiddenCategories[category] || false, // Restore hidden state
+    });
+  });
+
+  // Create the chart
+  const isDarkMode = this.theme === "dark";
+
+  this.chart = new Chart(ctx, {
+    type: this.chartType,
+    data: {
+      labels: labels.map((date) => dayjs(date).format("DD/MM/YYYY")), // Format labels
+      datasets,
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animations: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: isDarkMode ? "#ffffff" : "#000000",
+          },
+          onClick: (e, legendItem, legend) => {
+            const datasetIndex = legendItem.datasetIndex;
+            const chart = legend.chart;
+            const dataset = chart.data.datasets[datasetIndex];
+
+            // Toggle visibility
+            dataset.hidden = !dataset.hidden;
+
+            // Update and save hiddenCategories
+            this.hiddenCategories[dataset.label] = dataset.hidden;
+            localStorage.setItem(
+              "hiddenCategories",
+              JSON.stringify(this.hiddenCategories)
+            );
+
+            chart.update();
           },
         },
       },
@@ -1073,5 +1410,31 @@ body,
 .search-controls select {
   padding: 5px;
   font-size: 1rem;
+}
+
+.category-color-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 5px;
+}
+
+.category-color-row input[type="color"] {
+  border: none;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.category-color-row button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #eee;
+  cursor: pointer;
+}
+
+.category-color-row button:hover {
+  background-color: #ddd;
 }
 </style>
