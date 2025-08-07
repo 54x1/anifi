@@ -5,7 +5,7 @@
 
 
 ### As of 2025 currently Supports* - Westpac | Nab | ANZ | CommBank | St Geroge | ING | Macquarie | Up | UBank | and more too come...
-* *Need more testers 
+  *Need more testers 
 
 ### Fixes:
 * Fix - Auto select all categories present when loading Chart Page
