@@ -602,6 +602,22 @@
           </div>
         </div>
       </section>
+
+
+<!-- About Section -->
+<section v-show="activeTab === 'about'" class="card bg-base-100 shadow-xl max-w-2xl mx-auto mt-8">
+  <div class="card-body">
+    <h2 class="card-title">ℹ️ About This App</h2>
+    <div v-if="loadingAbout" class="text-center my-6">
+      <span class="loading loading-spinner loading-lg"></span>
+    </div>
+    <div v-else v-html="aboutHtml" class="prose max-w-none"></div>
+    <div class="text-xs text-base-content/50 mt-4 text-right">
+      Source: <a :href="githubReadmeUrl" class="link" target="_blank" rel="noopener">GitHub README.md</a>
+    </div>
+  </div>
+</section>
+
     </main>
   </div>
 </template>
@@ -609,6 +625,27 @@
 
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { marked } from 'marked'   
+
+// README.md 
+const githubRawUrl = 'https://myanifi.hello-nathan.com/'
+
+const githubReadmeUrl = githubRawUrl
+const aboutHtml = ref('')
+const loadingAbout = ref(false)
+
+async function fetchAboutMarkdown() {
+  loadingAbout.value = true
+  try {
+    const res = await fetch(githubRawUrl)
+    if (!res.ok) throw new Error('Failed to fetch README.md')
+    const md = await res.text()
+    aboutHtml.value = marked.parse(md)
+  } catch (err) {
+    aboutHtml.value = '<p class="text-error">Could not load About info from GitHub.</p>'
+  }
+  loadingAbout.value = false
+}
 
 
 export type TransactionType = "income" | "spending";
@@ -742,7 +779,8 @@ const tabs = [
   { id: 'import', label: 'Import', icon: '📥' },
   { id: 'add', label: 'Add Transaction', icon: '➕' },
   { id: 'chart', label: 'Chart', icon: '📊' },
-  { id: 'transactions', label: 'Transactions', icon: '📋' }
+  { id: 'transactions', label: 'Transactions', icon: '📋' },
+  { id: 'about', label: 'About', icon: 'ℹ️' }
 ]
 
 // ===== DATA MANAGEMENT =====
@@ -1497,6 +1535,13 @@ const renderChart = async () => {
 
 
 // ===== WATCHERS =====
+
+watch(activeTab, (tab) => {
+  if (tab === 'about' && !aboutHtml.value) {
+    fetchAboutMarkdown()
+  }
+})
+
 watch(selectedCategories, () => {
   localStorage.setItem('financial-tracker-selected-categories', JSON.stringify(selectedCategories.value))
 }, { deep: true })
