@@ -820,8 +820,7 @@ import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { marked } from "marked";
 
 // README.md
-const githubRawUrl = "https://raw.githack.com/54x1/anifi/refs/heads/main/README.md?token=GHSAT0AAAAAADIQZKHHKPYHC5L4VONRGA4W2EUZ5BQ";
-
+const githubRawUrl = "";
 const githubReadmeUrl = githubRawUrl;
 const aboutHtml = ref("");
 const loadingAbout = ref(false);
@@ -832,10 +831,126 @@ async function fetchAboutMarkdown() {
     const res = await fetch(githubRawUrl);
     if (!res.ok) throw new Error("Failed to fetch README.md");
     const md = await res.text();
-    aboutHtml.value = marked.parse(md);
+    aboutHtml.value = aboutHtml.value = `
+    <h2>AniFi - MVP_Ver1.01</h2>
+</br>
+  <h3>Does not read any personal finances; everything is stored locally on your own machine and only reads in your own local browser!!!</h3>
+</br>
+  <h3>As of 2025 currently Supports* - Westpac | Nab | ANZ | CommBank | St George | ING | Macquarie | Up | UBank | and more to come...
+    <br><em>*Need more testers</em>
+  </h3>
+</br>
+  <h3>Fixes:</h3>
+  <ul>
+    <li>Fix - Auto select all categories present when loading Chart Page</li>
+    <li>Fix - Type padding CSS</li>
+    <li>Fix - Bulk Actions - eg BULK CRUD</li>
+    <li>Fix - UI date to local browser settings / hard code dd-mm-yyyy / or both mm-dd-yyyy</li>
+  </ul>
+</br>
+  <h3>Future:</h3>
+  <ul>
+    <li>Add - Custom user categories</li>
+    <li>Add - Custom user colors</li>
+  </ul>
+</br>
+  <h3>Prerequisites</h3>
+  <ul>
+    <li>Node.js 22.12+</li>
+    <li>npm or yarn</li>
+  </ul>
+</br>
+  <h3>Installation</h3>
+  <pre><code># Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+</code></pre>
+
+  <h3>Development Server</h3>
+  <p>The application will be available at <b>localhost:3000</b></p>
+
+  <h2>Customization</h2>
+
+  <h3>Adding New Themes</h3>
+  <p>Add custom themes to <code>tailwind.config.js</code>:</p>
+  <pre><code> daisyui: {
+  themes: [
+    // ... existing themes
+    {
+      "custom": {
+        "primary": "#your-color",
+        "secondary": "#your-color",
+        // ... more colors
+      }
+    }
+  ]
+}
+</code></pre>`;
   } catch (err) {
-    aboutHtml.value =
-      '<p class="text-error">Could not load About info from GitHub.</p>';
+    aboutHtml.value = `  <h2>AniFi - MVP_Ver1.01</h2>
+
+  <h3>Does not read any personal finances; everything is stored locally on your own machine and only reads in your own local browser!!!</h3>
+
+  <h3>As of 2025 currently Supports* - Westpac | Nab | ANZ | CommBank | St George | ING | Macquarie | Up | UBank | and more to come...
+    <br><em>*Need more testers</em>
+  </h3>
+
+  <h3>Fixes:</h3>
+  <ul>
+    <li>Fix - Auto select all categories present when loading Chart Page</li>
+    <li>Fix - Type padding CSS</li>
+    <li>Fix - Bulk Actions - eg BULK CRUD</li>
+    <li>Fix - UI date to local browser settings / hard code dd-mm-yyyy / or both mm-dd-yyyy</li>
+  </ul>
+
+  <h3>Future:</h3>
+  <ul>
+    <li>Add - Custom user categories</li>
+    <li>Add - Custom user colors</li>
+  </ul>
+
+  <h3>Prerequisites</h3>
+  <ul>
+    <li>Node.js 22.12+</li>
+    <li>npm or yarn</li>
+  </ul>
+
+  <h3>Installation</h3>
+  <pre><code># Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+</code></pre>
+
+  <h3>Development Server</h3>
+  <p>The application will be available at <code>http://localhost:3000</code></p>
+
+  <h2>🔧 Customization</h2>
+
+  <h3>Adding New Themes</h3>
+  <p>Add custom themes to <code>tailwind.config.js</code>:</p>
+  <pre><code> daisyui: {
+  themes: [
+    // ... existing themes
+    {
+      "custom": {
+        "primary": "#your-color",
+        "secondary": "#your-color",
+        // ... more colors
+      }
+    }
+  ]
+}
+</code></pre>`;
   }
   loadingAbout.value = false;
 }
