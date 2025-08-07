@@ -850,6 +850,7 @@ async function fetchAboutMarkdown() {
 </br>
   <h3>Future:</h3>
   <ul>
+    <li>Add - Mobile first UI/UX centric</li>
     <li>Add - Custom user categories</li>
     <li>Add - Custom user colors</li>
   </ul>
