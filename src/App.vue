@@ -820,7 +820,7 @@ import { ref, computed, watch, onMounted, nextTick } from "vue";
 import { marked } from "marked";
 
 // README.md
-const githubRawUrl = "https://raw.githubusercontent.com/54x1/anifi/refs/heads/main/README.md?token=GHSAT0AAAAAADIQZKHHKPYHC5L4VONRGA4W2EUZ5BQ";
+const githubRawUrl = "https://raw.githack.com/54x1/anifi/refs/heads/main/README.md?token=GHSAT0AAAAAADIQZKHHKPYHC5L4VONRGA4W2EUZ5BQ";
 
 const githubReadmeUrl = githubRawUrl;
 const aboutHtml = ref("");
