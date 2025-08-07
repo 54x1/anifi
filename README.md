@@ -1,5 +1,56 @@
-# Vue 3 + TypeScript + Vite
+### AniFi - MVP_Ver1.0
+### Does not read any personal finances everything is stored locally on your own machine and only reads in your owe local browser!!!
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+### As of 2025 currently Supports* - Westpac | Nab | ANZ | CommBank | St Geroge | ING | Macquarie | Up | UBank | and more too come...
+### * Need more testers 
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+### Fixes:
+### Fix - Auto select all categories present when loading Chart Page
+### Fix - Type padding CSS 
+### Fix - Bulk Actions - eg BULK CRUD
+### Fix - UI date to local browser settings / hard code dd-mm-yyyy  /or both mm-dd-yyyy
+### Future:
+### Add - Custom user categoies 
+### Add - Custom user colors
+
+
+
+### Prerequisites
+- Node.js 16+ 
+- npm or yarn
+
+### Installation
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+```
+
+### Development Server
+The application will be available at `http://localhost:3000`
+
+
+## 🔧 Customization
+
+### Adding New Themes
+Add custom themes to `tailwind.config.js`:
+```javascript
+daisyui: {
+  themes: [
+    // ... existing themes
+    {
+      "custom": {
+        "primary": "#your-color",
+        "secondary": "#your-color",
+        // ... more colors
+      }
+    }
+  ]
+}
+
+
