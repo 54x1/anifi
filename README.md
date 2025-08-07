@@ -1,14 +1,19 @@
 ### AniFi - MVP_Ver1.0
+
+
 ### Does not read any personal finances everything is stored locally on your own machine and only reads in your owe local browser!!!
 
+
 ### As of 2025 currently Supports* - Westpac | Nab | ANZ | CommBank | St Geroge | ING | Macquarie | Up | UBank | and more too come...
-### * Need more testers 
+* Need more testers 
 
 ### Fixes:
 ### Fix - Auto select all categories present when loading Chart Page
 ### Fix - Type padding CSS 
 ### Fix - Bulk Actions - eg BULK CRUD
 ### Fix - UI date to local browser settings / hard code dd-mm-yyyy  /or both mm-dd-yyyy
+
+
 ### Future:
 ### Add - Custom user categoies 
 ### Add - Custom user colors
@@ -16,7 +21,7 @@
 
 
 ### Prerequisites
-- Node.js 16+ 
+- Node.js 22.12+ 
 - npm or yarn
 
 ### Installation
