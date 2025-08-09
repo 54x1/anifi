@@ -1,4 +1,4 @@
-### AniFi - MVP_Ver1.2
+### AniFi - MVP_Ver1.3
 
 
 ### Does not read any personal finances everything is stored locally on your own machine and only reads in your owe local browser!!!

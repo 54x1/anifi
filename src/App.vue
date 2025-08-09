@@ -949,7 +949,7 @@ async function fetchAboutMarkdown() {
     const md = await res.text();
     // keeping static HTML content for now
     aboutHtml.value = `
-      <h2>AniFi - MVP_Ver1.2</h2>
+      <h2>AniFi - MVP_Ver1.3</h2>
       </br>
       <h3>Does not read any personal finances; everything is stored locally on your own machine and only reads in your own local browser!!!</h3>
       </br>
