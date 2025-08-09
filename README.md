@@ -1,10 +1,10 @@
-### AniFi - MVP_Ver1.01
+### AniFi - MVP_Ver1.2
 
 
 ### Does not read any personal finances everything is stored locally on your own machine and only reads in your owe local browser!!!
 
 
-### As of 2025 currently Supports* - Westpac | Nab | ANZ | CommBank | St Geroge | ING | Macquarie | Up | UBank | and more too come...
+### As of 2025 currently Supports* - Westpac✅ | Nab✅ | ANZ✅ | CommBank✅ | St Geroge✅ | ING✅ | Macquarie✅ | Up Bank✅ | UBank✅ | and more too come...
   *Need more testers 
 
 ### Fixes:
