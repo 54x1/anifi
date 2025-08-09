@@ -817,7 +817,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted, nextTick } from "vue";
-import { marked } from "marked";
+// import { marked } from "marked";
 
 // README.md
 const githubRawUrl = "";
@@ -974,6 +974,212 @@ export interface Transaction {
   recurring?: boolean;
   frequency?: RecurringFrequency;
   recursions?: number;
+  description: string;
+}
+
+// ==== Bank parsing: helpers + types ====
+type BankId =
+  | "ING"
+  | "UBANK"
+  | "WESTPAC"
+  | "UPBANK"
+  | "MACQUARIE"
+  | "COMM_BANK"
+  | "ST_GEORGE";
+
+type UnifiedTx = {
+  bank: BankId;
+  dateISO: string;
+  dateRaw: string;
+  description: string;
+  amount: number; // signed: credit − debit
+  debit: number;
+  credit: number;
+  balance?: number | null;
+  account?: string | null;
+  category?: string | null;
+  subCategory?: string | null;
+  original?: string | null;
+};
+
+function toNumber(x: any): number {
+  if (x === null || x === undefined) return 0;
+  const s = String(x).replace(/[, ]/g, "");
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function parseAusDateToISO(input: string): string {
+  const s = (input || "").trim().replace(/\s+/g, " ");
+  // "06 Mar 2025"
+  if (/^\d{1,2}\s+[A-Za-z]{3,}\s+\d{2,4}$/.test(s)) {
+    const d = new Date(Date.parse(s));
+    return isNaN(+d) ? "" : d.toISOString();
+  }
+  // "5/01/2023"
+  const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+  if (m) {
+    const [, d, mo, y] = m;
+    const yyyy = y.length === 2 ? `20${y}` : y;
+    const dt = new Date(Number(yyyy), Number(mo) - 1, Number(d));
+    return isNaN(+dt) ? "" : dt.toISOString();
+  }
+  const t = Date.parse(s);
+  return isNaN(t) ? "" : new Date(t).toISOString();
+}
+
+// Detect bank by headers (lowercased)
+function detectBankByHeaders(headers: string[]): BankId | null {
+  const H = headers.map((h) => h.trim().toLowerCase());
+
+  // Existing banks (ING/UBANK/WESTPAC/UPBANK) — keep your current checks as-is above/below
+  // New ones:
+
+  // Macquarie
+  if (
+    H.includes("transaction date") &&
+    H.includes("details") &&
+    H.includes("debit") &&
+    H.includes("credit")
+  )
+    return "MACQUARIE";
+
+  // CommBank (often 4 cols without real headers)
+  if (
+    headers.length === 4 &&
+    !H.some((h) => /(date|amount|description|balance)/.test(h))
+  )
+    return "COMM_BANK";
+  if (["date", "amount", "description", "balance"].every((k) => H.includes(k)))
+    return "COMM_BANK";
+
+  // St.George
+  if (
+    H.includes("debit") &&
+    H.includes("credit") &&
+    (H.includes("subcategory") || H.includes("subCategory".toLowerCase()))
+  )
+    return "ST_GEORGE";
+
+  // Westpac
+  if (
+    H.includes("bank account") &&
+    H.includes("narrative") &&
+    H.includes("debit amount") &&
+    H.includes("credit amount")
+  ) {
+    return "WESTPAC";
+  }
+  return null;
+}
+
+// Macquarie (MacTransactions.csv)
+function parseMacquarie(rows: Record<string, string>[]): UnifiedTx[] {
+  return rows.map((r) => {
+    const dateRaw = r["Transaction Date"] ?? "";
+    const debit = toNumber(r["Debit"]);
+    const credit = toNumber(r["Credit"]);
+    return {
+      bank: "MACQUARIE",
+      dateISO: parseAusDateToISO(dateRaw),
+      dateRaw,
+      description: (r["Details"] || r["Original Description"] || "").trim(),
+      amount: credit - debit,
+      debit: Math.max(0, debit),
+      credit: Math.max(0, credit),
+      balance: r["Balance"] != null ? toNumber(r["Balance"]) : null,
+      account: r["Account"] || null,
+      category: r["Category"] || null,
+      subCategory: (r["Subcategory"] || r["SubCategory"] || null) as any,
+      original: r["Original Description"] || r["Notes"] || null,
+    };
+  });
+}
+
+// CommBank (4 columns: Date, Amount, Description, Balance; debits negative)
+function parseCommBank(rows: Record<string, string>[]): UnifiedTx[] {
+  return rows.map((r) => {
+    const dateRaw = r["Date"] ?? "";
+    const amt = toNumber(r["Amount"]);
+    return {
+      bank: "COMM_BANK",
+      dateISO: parseAusDateToISO(dateRaw),
+      dateRaw,
+      description: (r["Description"] || "").trim(),
+      amount: amt,
+      debit: amt < 0 ? Math.abs(amt) : 0,
+      credit: amt > 0 ? amt : 0,
+      balance: r["Balance"] != null ? toNumber(r["Balance"]) : null,
+    };
+  });
+}
+
+// St.George (Date, Description, Debit, Credit, Balance, Category, SubCategory)
+function parseStGeorge(rows: Record<string, string>[]): UnifiedTx[] {
+  return rows.map((r) => {
+    const dateRaw = r["Date"] ?? "";
+    const debit = toNumber(r["Debit"]);
+    const credit = toNumber(r["Credit"]);
+    return {
+      bank: "ST_GEORGE",
+      dateISO: parseAusDateToISO(dateRaw),
+      dateRaw,
+      description: (r["Description"] || "").trim(),
+      amount: credit - debit,
+      debit: Math.max(0, debit),
+      credit: Math.max(0, credit),
+      balance: r["Balance"] != null ? toNumber(r["Balance"]) : null,
+      category: r["Category"] || null,
+      subCategory: r["SubCategory"] || null,
+    };
+  });
+}
+
+// Westpac
+function parseWestpac(rows: Record<string, string>[]): UnifiedTx[] {
+  return rows.map((r) => {
+    const dateRaw = r["Date"] ?? "";
+    const debit = toNumber(r["Debit Amount"]);
+    const credit = toNumber(r["Credit Amount"]);
+    const balance = r["Balance"] != null ? toNumber(r["Balance"]) : null;
+
+    return {
+      bank: "WESTPAC",
+      dateISO: parseAusDateToISO(dateRaw),
+      dateRaw,
+      description: (r["Narrative"] || "").trim(),
+      amount: credit - debit, // signed
+      debit: Math.max(0, debit),
+      credit: Math.max(0, credit),
+      balance,
+      account: r["Bank Account"] || null,
+      category: r["Categories"] || null,
+      subCategory: null,
+      original: r["Serial"] || null,
+    };
+  });
+}
+
+// Normalize: route to the right parser
+function normalizeParsedRows(
+  headers: string[],
+  rows: Record<string, string>[]
+): UnifiedTx[] {
+  const bank = detectBankByHeaders(headers);
+  switch (bank) {
+    case "MACQUARIE":
+      return parseMacquarie(rows);
+    case "COMM_BANK":
+      return parseCommBank(rows);
+    case "ST_GEORGE":
+      return parseStGeorge(rows);
+    case "WESTPAC":
+      return parseWestpac(rows);
+
+    // keep your existing cases here for ING/UBANK/WESTPAC/UPBANK
+    default:
+      return [];
+  }
 }
 
 // ===== CATEGORY ARRAYS & MAPPING =====
@@ -1182,144 +1388,128 @@ function parseTransactionDate(dateStr: string, bankType: string): string {
   return new Date().toISOString().split("T")[0];
 }
 
-// CSV parsing logic as before, no need to change for TS, only typed.
+// CSV parsing logic
 function parseCSV(csvText: string) {
   try {
     importStatus.value = "Parsing CSV data...";
-    const rows = csvText.split("\n").filter((line) => line.trim());
-    if (rows.length < 2) {
+
+    // Split into lines and figure out header row
+    const lines = csvText.split(/\r?\n/).filter((l) => l.trim().length > 0);
+    if (lines.length < 2) {
       importStatus.value = "CSV file appears to be empty or invalid";
       return;
     }
-    let importedCount = 0;
-    let bankType = "unknown";
-    const firstRow = rows[0];
-    if (firstRow.includes("Debit")) bankType = "debit_bank";
-    else if (firstRow.includes("Time")) bankType = "upbank";
-    debugInfo.value = `Bank Type: ${bankType}\nFirst Row: ${firstRow}\nTotal Rows: ${rows.length}`;
 
-    if (bankType === "debit_bank") {
-      const dataRows = rows.slice(1).filter((row) => row.trim());
-      for (const row of dataRows) {
-        const columns = row.split(",");
-        if (columns.length < 4) continue;
-        let amount = 0,
-          description = "",
-          date = "";
-        if (!isNaN(parseFloat(columns[3]))) {
-          if (columns[3] && columns[3].includes("-")) {
-            date = columns[0];
-            description = columns[1]?.split("-")[0] || "Unknown";
-            amount = parseFloat(columns[3].split("-")[1]) || 0;
-          } else if (columns[1] && columns[1].includes("/")) {
-            date = columns[1];
-            description = columns[2]?.replace(/"/g, "") || "Unknown";
-            amount = parseFloat(columns[3]) || 0;
-          }
-        } else if (!isNaN(parseFloat(columns[2]?.split("$")[1]))) {
-          date = columns[0];
-          description = columns[1] || "Unknown";
-          amount = parseFloat(columns[2].split("$")[1]) || 0;
-        }
-        if (amount > 0) {
-          const transaction: Transaction = {
-            id: Date.now().toString() + importedCount,
-            date: parseTransactionDate(date, bankType),
-            type: "spending",
-            amount,
-            category: categorizeTransaction(description),
-            description,
-            recurring: false,
-          };
-          transactions.value.push(transaction);
-          importedCount++;
-        }
-      }
-    } else if (bankType === "upbank") {
-      const dataRows = rows.slice(1, rows.length - 1);
-      for (const row of dataRows) {
-        const columns = row.split(",");
-        if (columns.length >= 10) {
-          let amount = 0;
-          if (columns[10] && columns[10].includes("-")) {
-            amount = parseFloat(columns[10].split("-")[1]) || 0;
-          } else if (columns[9] && columns[9].includes("-")) {
-            amount = parseFloat(columns[9].split("-")[1]) || 0;
-          } else if (columns[8] && columns[8].includes("-")) {
-            amount = parseFloat(columns[8].split("-")[1]) || 0;
-          }
-          if (amount > 0) {
-            const date = columns[0]?.split("T")[0] || "";
-            const description = `${columns[4] || ""} ${columns[5] || ""}`
-              .replace(/"/g, "")
-              .trim();
-            const transaction: Transaction = {
-              id: Date.now().toString() + importedCount,
-              date: parseTransactionDate(date, bankType),
-              type: "spending",
-              amount,
-              category: categorizeTransaction(description),
-              description,
-              recurring: false,
-            };
-            transactions.value.push(transaction);
-            importedCount++;
-          }
-        }
-      }
-    } else {
-      const headers = rows[0]
-        .split(",")
-        .map((h) => h.trim().toLowerCase().replace(/"/g, ""));
-      const dateIndex = headers.findIndex((h) => h.includes("date"));
-      const descriptionIndex = headers.findIndex(
-        (h) =>
-          h.includes("description") ||
-          h.includes("detail") ||
-          h.includes("merchant")
+    // Try to read headers. If first row looks like data (CommBank), synthesize headers.
+    let headers = lines[0]
+      .split(",")
+      .map((h) => h.replace(/^"|"$/g, "").trim());
+    const firstHeaderLooksLikeDate =
+      /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(headers[0]) ||
+      /^[0-9-]{8,10}$/.test(headers[0]);
+    if (firstHeaderLooksLikeDate && headers.length === 4) {
+      // CommBank style without headers
+      headers = ["Date", "Amount", "Description", "Balance"];
+    }
+
+    // Build row objects (very simple CSV split; if you need quotes/commas-inside-fields robustly, plug PapaParse here)
+    const rowsObj: Record<string, string>[] = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(","); // NOTE: upgrade to a real CSV parser if needed
+      if (cols.length < 2) continue;
+      const o: Record<string, string> = {};
+      headers.forEach((h, idx) => {
+        o[h] = (cols[idx] ?? "").replace(/^"|"$/g, "").trim();
+      });
+      rowsObj.push(o);
+    }
+
+    // Detect + normalize into UnifiedTx
+    const unified = normalizeParsedRows(headers, rowsObj);
+
+    // If detector didn’t match, fall back to your current generic logic
+    if (unified.length === 0) {
+      // === your old generic block, but simplified ===
+      const hLower = headers.map((h) => h.toLowerCase());
+      const dateIndex = hLower.findIndex((h) => h.includes("date"));
+      const descIndex = hLower.findIndex((h) =>
+        /(description|detail|merchant)/.test(h)
       );
-      const amountIndex = headers.findIndex(
-        (h) =>
-          h.includes("amount") || h.includes("debit") || h.includes("value")
-      );
-      if (dateIndex === -1 || descriptionIndex === -1 || amountIndex === -1) {
+      const amtIndex = hLower.findIndex((h) => /(amount|debit|value)/.test(h));
+      if (dateIndex === -1 || descIndex === -1 || amtIndex === -1) {
         importStatus.value =
           "Could not find required columns (Date, Description, Amount)";
         return;
       }
-      for (let i = 1; i < rows.length; i++) {
-        const columns = rows[i].split(",");
-        if (
-          columns.length > Math.max(dateIndex, descriptionIndex, amountIndex)
-        ) {
-          const dateStr = columns[dateIndex]?.trim();
-          const description =
-            columns[descriptionIndex]?.trim().replace(/"/g, "") || "Unknown";
-          const amountStr = columns[amountIndex]?.trim();
-          const amount = Math.abs(
-            parseFloat(amountStr?.replace(/[^-\d.]/g, "")) || 0
-          );
-          if (amount > 0) {
-            const transaction: Transaction = {
-              id: Date.now().toString() + importedCount,
-              date: parseTransactionDate(dateStr, "generic"),
-              type: "spending",
-              amount,
-              category: categorizeTransaction(description),
-              description,
-              recurring: false,
-            };
-            transactions.value.push(transaction);
-            importedCount++;
-          }
+      let importedCount = 0;
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(",");
+        if (cols.length <= Math.max(dateIndex, descIndex, amtIndex)) continue;
+        const rawDate = cols[dateIndex]?.trim() || "";
+        const desc =
+          (cols[descIndex] || "").replace(/"/g, "").trim() || "Unknown";
+        const amount = Math.abs(
+          parseFloat((cols[amtIndex] || "").replace(/[^-\d.]/g, "")) || 0
+        );
+        if (amount > 0) {
+          const tx: Transaction = {
+            id: Date.now().toString() + importedCount,
+            date: parseTransactionDate(rawDate, "generic"),
+            type: "spending",
+            amount,
+            category: categorizeTransaction(desc),
+            description: desc,
+            recurring: false,
+          };
+          transactions.value.push(tx);
+          importedCount++;
         }
       }
+      importStatus.value = `Successfully imported ${importedCount} transactions`;
+      return;
     }
-    importStatus.value = `Successfully imported ${importedCount} transactions`;
-    setTimeout(() => {
-      importStatus.value = "";
-      debugInfo.value = "";
-    }, 5000);
+
+    // Map UnifiedTx -> your Transaction model
+    let imported = 0;
+    for (const u of unified) {
+      const iso = u.dateISO
+        ? u.dateISO.slice(0, 10)
+        : parseTransactionDate(u.dateRaw, "generic");
+      let type: TransactionType = "spending";
+      let amountAbs = Math.abs(u.amount);
+
+      if (u.amount < 0) {
+        type = "income"; // treat negatives as income in your app model
+        amountAbs = Math.abs(u.amount);
+      } else if (u.amount === 0 && u.debit > 0) {
+        type = "spending";
+        amountAbs = u.debit;
+      } else if (u.amount === 0 && u.credit > 0) {
+        type = "income";
+        amountAbs = u.credit;
+      }
+
+      // Only add positive amounts, following your existing behavior
+      if (amountAbs > 0) {
+        const desc = u.description || u.original || "Unknown";
+        const tx: Transaction = {
+          id: Date.now().toString() + imported,
+          date: iso,
+          type,
+          amount: amountAbs,
+          category: categorizeTransaction(desc),
+          description: desc,
+          recurring: false,
+        };
+        transactions.value.push(tx);
+        imported++;
+      }
+    }
+
+    importStatus.value = `Successfully imported ${imported} transactions`;
+    debugInfo.value = `Detected via headers: ${
+      detectBankByHeaders(headers) ?? "generic"
+    }`;
   } catch (error: any) {
     importStatus.value = "Error parsing CSV: " + error.message;
     debugInfo.value = error.stack;
