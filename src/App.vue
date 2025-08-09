@@ -1,4 +1,3 @@
-
 <template>
   <div class="min-h-screen bg-base-100 transition-colors duration-300">
     <!-- Header -->
@@ -93,7 +92,8 @@
                 @change="handleFileUpload"
               />
               <div class="text-xs text-base-content/60 mt-1">
-                Supports: Westpac✅ | NAB✅ | ANZ✅ | CommBank✅ | St.George✅ | ING✅ | Macquarie✅ | Up Bank✅ | UBank✅
+                Supports: Westpac✅ | NAB✅ | ANZ✅ | CommBank✅ | St.George✅ |
+                ING✅ | Macquarie✅ | Up Bank✅ | UBank✅
               </div>
             </div>
 
@@ -108,7 +108,10 @@
                   placeholder="https://example.com/data.csv"
                   class="input input-bordered join-item flex-1"
                 />
-                <button class="btn btn-primary join-item" @click="importFromUrl">
+                <button
+                  class="btn btn-primary join-item"
+                  @click="importFromUrl"
+                >
                   Import
                 </button>
               </div>
@@ -117,9 +120,18 @@
 
           <!-- Import Status -->
           <div v-if="importStatus" class="alert alert-info mt-4">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span>{{ importStatus }}</span>
           </div>
@@ -135,26 +147,92 @@
       </section>
 
       <!-- Add Transaction Section -->
-      <section v-show="activeTab === 'add'" class="card bg-base-100 shadow-xl mb-6">
+      <section
+        v-show="activeTab === 'add'"
+        class="card bg-base-100 shadow-xl mb-6"
+      >
         <div class="card-body">
           <h2 class="card-title">➕ Add Transaction</h2>
 
-          <form @submit.prevent="addTransaction" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div class="form-control">
-              <label class="label"><span class="label-text">Date</span></label>
-              <input v-model="newTransaction.date" type="date" class="input input-bordered" required />
-            </div>
+          <form
+            @submit.prevent="addTransaction"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+          <div class="form-control">
+  <label class="label"><span class="label-text">Date</span></label>
+
+  <div class="join w-full">
+    <!-- Visible dd-mm-yyyy text field -->
+    <input
+      ref="addDateTextRef"
+      type="text"
+      inputmode="numeric"
+      placeholder="dd-mm-yyyy"
+      v-model="newTxDateText"
+      @input="onAddDateInput"
+      @blur="onAddDateBlur"
+      @keydown="onDateKeydownDigitsOnly"
+      :aria-invalid="!!newTxDateError"
+      aria-describedby="addDateError"
+      class="input input-bordered join-item w-full"
+    />
+
+    <!-- Calendar button opens the hidden native date input -->
+    <button
+      type="button"
+      class="btn btn-outline join-item"
+      @click="openAddCalendar"
+      title="Open calendar"
+      aria-label="Open calendar picker"
+    >
+      📅
+    </button>
+
+    <!-- Today button -->
+    <button
+      type="button"
+      class="btn btn-primary join-item"
+      @click="setAddDateToday"
+      title="Use today’s date"
+      aria-label="Use today’s date"
+    >
+      Today
+    </button>
+  </div>
+
+  <!-- Inline error text -->
+  <p v-if="newTxDateError" id="addDateError" class="text-error text-sm mt-1">
+    {{ newTxDateError }}
+  </p>
+
+  <!-- Single hidden native date input (used only for the picker) -->
+  <input
+    ref="addDatePickerRef"
+    v-model="newTxDateISO"
+    type="date"
+    class="absolute opacity-0 w-px h-px -z-10"
+    tabindex="-1"
+    aria-hidden="true"
+  />
+</div>
+
 
             <div class="form-control">
               <label class="label"><span class="label-text">Type</span></label>
-              <select v-model="newTransaction.type" class="select select-bordered" required>
+              <select
+                v-model="newTransaction.type"
+                class="select select-bordered"
+                required
+              >
                 <option value="income">💰 Income</option>
                 <option value="spending">💸 Spending</option>
               </select>
             </div>
 
             <div class="form-control">
-              <label class="label"><span class="label-text">Amount</span></label>
+              <label class="label"
+                ><span class="label-text">Amount</span></label
+              >
               <div class="join">
                 <span class="join-item btn btn-disabled">$</span>
                 <input
@@ -170,28 +248,54 @@
             </div>
 
             <div class="form-control">
-              <label class="label"><span class="label-text">Category</span></label>
-              <select v-model="newTransaction.category" class="select select-bordered" required>
+              <label class="label"
+                ><span class="label-text">Category</span></label
+              >
+              <select
+                v-model="newTransaction.category"
+                class="select select-bordered"
+                required
+              >
                 <option value="">Select a category</option>
-                <option v-for="category in categoryNames" :key="category" :value="category">
+                <option
+                  v-for="category in categoryNames"
+                  :key="category"
+                  :value="category"
+                >
                   {{ category }}
                 </option>
               </select>
             </div>
 
             <div class="form-control">
-              <label class="label"><span class="label-text">Description (Optional)</span></label>
-              <input v-model="newTransaction.description" type="text" placeholder="Transaction description" class="input input-bordered" />
+              <label class="label"
+                ><span class="label-text">Description (Optional)</span></label
+              >
+              <input
+                v-model="newTransaction.description"
+                type="text"
+                placeholder="Transaction description"
+                class="input input-bordered"
+              />
             </div>
 
             <div class="form-control">
               <label class="label cursor-pointer">
                 <span class="label-text">Recurring Transaction</span>
-                <input v-model="newTransaction.recurring" type="checkbox" class="checkbox" />
+                <input
+                  v-model="newTransaction.recurring"
+                  type="checkbox"
+                  class="checkbox"
+                />
               </label>
               <div v-if="newTransaction.recurring" class="form-control">
-                <label class="label"><span class="label-text">Frequency</span></label>
-                <select v-model="newTransaction.frequency" class="select select-bordered">
+                <label class="label"
+                  ><span class="label-text">Frequency</span></label
+                >
+                <select
+                  v-model="newTransaction.frequency"
+                  class="select select-bordered"
+                >
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
                   <option value="fortnightly">Fortnightly</option>
@@ -199,8 +303,16 @@
                   <option value="quarterly">Quarterly</option>
                   <option value="yearly">Yearly</option>
                 </select>
-                <label class="label"><span class="label-text">Repeat</span></label>
-                <input v-model.number="newTransaction.recursions" type="number" min="1" max="100" class="input input-bordered" />
+                <label class="label"
+                  ><span class="label-text">Repeat</span></label
+                >
+                <input
+                  v-model.number="newTransaction.recursions"
+                  type="number"
+                  min="1"
+                  max="100"
+                  class="input input-bordered"
+                />
               </div>
               <div class="text-xs mt-2" v-if="calculatedEndDate">
                 <span class="font-semibold">End Date:</span>
@@ -209,10 +321,20 @@
             </div>
 
             <div class="form-control md:col-span-2 lg:col-span-1">
-              <label class="label"><span class="label-text">&nbsp;</span></label>
+              <label class="label"
+                ><span class="label-text">&nbsp;</span></label
+              >
               <div class="join">
-                <button type="submit" class="btn btn-primary join-item">Add Transaction</button>
-                <button type="button" class="btn btn-ghost join-item" @click="resetForm">Reset</button>
+                <button type="submit" class="btn btn-primary join-item">
+                  Add Transaction
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-ghost join-item"
+                  @click="resetForm"
+                >
+                  Reset
+                </button>
               </div>
             </div>
           </form>
@@ -240,21 +362,105 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="form-control">
-                <label class="label"><span class="label-text">Start Date</span></label>
-                <input v-model="dateFilter.start" type="date" class="input input-bordered" />
+                <label class="label"
+                  ><span class="label-text">Start Date</span></label
+                >
+                <div class="join w-full">
+                  <input
+                    v-model="dateFilterStartText"
+                    type="text"
+                    placeholder="dd-mm-yyyy"
+                    inputmode="numeric"
+                    class="input input-bordered join-item w-full"
+                    aria-label="Start date (dd-mm-yyyy)"
+                    @input="onStartInput"
+                    @blur="onStartBlur"
+                    @keydown="onDateKeydownDigitsOnly"
+                    autocomplete="off"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-outline join-item"
+                    @click="openStartCalendar"
+                    title="Open calendar"
+                  >
+                    📅
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary join-item"
+                    @click="setRangeToday"
+                    title="Set both to today"
+                  >
+                    Today
+                  </button>
+                </div>
+                <input
+                  ref="startPickerRef"
+                  v-model="dateFilterStartISO"
+                  type="date"
+                  class="sr-only absolute opacity-0 pointer-events-none"
+                  tabindex="-1"
+                  aria-hidden="true"
+                />
               </div>
 
+              <!-- End -->
               <div class="form-control">
-                <label class="label"><span class="label-text">End Date</span></label>
-                <input v-model="dateFilter.end" type="date" class="input input-bordered" />
+                <label class="label"
+                  ><span class="label-text">End Date</span></label
+                >
+                <div class="join w-full">
+                  <input
+                    v-model="dateFilterEndText"
+                    type="text"
+                    placeholder="dd-mm-yyyy"
+                    inputmode="numeric"
+                    class="input input-bordered join-item w-full"
+                    aria-label="End date (dd-mm-yyyy)"
+                    @input="onEndInput"
+                    @blur="onEndBlur"
+                    @keydown="onDateKeydownDigitsOnly"
+                    autocomplete="off"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-outline join-item"
+                    @click="openEndCalendar"
+                    title="Open calendar"
+                  >
+                    📅
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary join-item"
+                    @click="dateFilterEndISO = todayLocalISO()"
+                    title="End = today"
+                  >
+                    Today
+                  </button>
+                </div>
+                <input
+                  ref="endPickerRef"
+                  v-model="dateFilterEndISO"
+                  type="date"
+                  class="sr-only absolute opacity-0 pointer-events-none"
+                  tabindex="-1"
+                  aria-hidden="true"
+                />
               </div>
             </div>
 
             <div class="flex justify-between items-center mt-4">
               <div class="text-sm text-base-content/60">
-                Date Range: {{ formatDateRange() }} ({{ filteredTransactions.length }} transactions)
+                Date Range: {{ formatDateRange() }} ({{
+                  filteredTransactions.length
+                }}
+                transactions)
               </div>
-              <button class="btn btn-ghost btn-sm" @click="resetDateFilter">Reset to Default</button>
+              <button class="btn btn-ghost btn-sm" @click="resetDateFilter">
+                Reset to Default
+              </button>
             </div>
           </div>
         </div>
@@ -266,8 +472,13 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div class="form-control">
-                <label class="label"><span class="label-text">Chart Type</span></label>
-                <select v-model="chartConfig.type" class="select select-bordered">
+                <label class="label"
+                  ><span class="label-text">Chart Type</span></label
+                >
+                <select
+                  v-model="chartConfig.type"
+                  class="select select-bordered"
+                >
                   <option value="line">📈 Line Chart</option>
                   <option value="bar">📊 Bar Chart</option>
                   <option value="pie">🥧 Pie Chart</option>
@@ -276,8 +487,13 @@
               </div>
 
               <div class="form-control">
-                <label class="label"><span class="label-text">Group By</span></label>
-                <select v-model="chartConfig.groupBy" class="select select-bordered">
+                <label class="label"
+                  ><span class="label-text">Group By</span></label
+                >
+                <select
+                  v-model="chartConfig.groupBy"
+                  class="select select-bordered"
+                >
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
                   <option value="fortnightly">Fortnightly</option>
@@ -288,74 +504,148 @@
               </div>
 
               <div class="form-control">
-                <label class="label"><span class="label-text">Categories</span></label>
+                <label class="label"
+                  ><span class="label-text">Categories</span></label
+                >
                 <div class="flex flex-wrap gap-1 max-h-32 overflow-y-auto">
                   <div
                     v-for="category in categories"
                     :key="category"
                     class="badge badge-outline cursor-pointer text-xs"
-                    :class="{ 'badge-primary': selectedCategories.includes(category) }"
+                    :class="{
+                      'badge-primary': selectedCategories.includes(category),
+                    }"
                     @click="toggleCategory(category)"
                   >
                     {{ category }}
-                    <span v-if="selectedCategories.includes(category)" class="ml-1">✕</span>
+                    <span
+                      v-if="selectedCategories.includes(category)"
+                      class="ml-1"
+                      >✕</span
+                    >
                   </div>
                 </div>
                 <div class="mt-2">
-                  <button class="btn btn-xs btn-ghost" @click="selectAllCategories">Select All</button>
-                  <button class="btn btn-xs btn-ghost" @click="unselectAllCategories">Unselect All</button>
+                  <button
+                    class="btn btn-xs btn-ghost"
+                    @click="selectAllCategories"
+                  >
+                    Select All
+                  </button>
+                  <button
+                    class="btn btn-xs btn-ghost"
+                    @click="unselectAllCategories"
+                  >
+                    Unselect All
+                  </button>
                 </div>
               </div>
             </div>
 
             <!-- Chart Display -->
-            <div class="bg-base-200 rounded-lg p-4 min-h-[400px] flex items-center justify-center">
-              <div v-if="chartData.labels.length === 0" class="text-center text-base-content/60">
+            <div
+              class="bg-base-200 rounded-lg p-4 min-h-[400px] flex items-center justify-center"
+            >
+              <div
+                v-if="chartData.labels.length === 0"
+                class="text-center text-base-content/60"
+              >
                 <div class="text-6xl mb-4">📊</div>
                 <h3 class="text-lg font-semibold mb-2">No Data to Display</h3>
                 <p>Add some transactions to see your financial analytics</p>
               </div>
-              <canvas v-else ref="chartCanvas" class="max-w-full max-h-[400px]"></canvas>
+              <canvas
+                v-else
+                ref="chartCanvas"
+                class="max-w-full max-h-[400px]"
+              ></canvas>
             </div>
 
             <!-- Statistics -->
-            <div class="stats stats-vertical lg:stats-horizontal shadow mt-6 w-full">
+            <div
+              class="stats stats-vertical lg:stats-horizontal shadow mt-6 w-full"
+            >
               <div class="stat">
                 <div class="stat-figure text-success">
-                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                  <svg
+                    class="w-8 h-8"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                    />
                   </svg>
                 </div>
                 <div class="stat-title">Total Income</div>
-                <div class="stat-value text-success">${{ totalIncome.toFixed(2) }}</div>
-                <div class="stat-desc">{{ incomeTransactions.length }} transactions</div>
+                <div class="stat-value text-success">
+                  ${{ totalIncome.toFixed(2) }}
+                </div>
+                <div class="stat-desc">
+                  {{ incomeTransactions.length }} transactions
+                </div>
               </div>
 
               <div class="stat">
                 <div class="stat-figure text-error">
-                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>
+                  <svg
+                    class="w-8 h-8"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"
+                    />
                   </svg>
                 </div>
                 <div class="stat-title">Total Expenses</div>
-                <div class="stat-value text-error">${{ totalExpenses.toFixed(2) }}</div>
-                <div class="stat-desc">{{ expenseTransactions.length }} transactions</div>
+                <div class="stat-value text-error">
+                  ${{ totalExpenses.toFixed(2) }}
+                </div>
+                <div class="stat-desc">
+                  {{ expenseTransactions.length }} transactions
+                </div>
               </div>
 
               <div class="stat">
-                <div class="stat-figure" :class="netBalance >= 0 ? 'text-success' : 'text-error'">
-                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                <div
+                  class="stat-figure"
+                  :class="netBalance >= 0 ? 'text-success' : 'text-error'"
+                >
+                  <svg
+                    class="w-8 h-8"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                    />
                   </svg>
                 </div>
                 <div class="stat-title">Net Balance</div>
-                <div class="stat-value" :class="netBalance >= 0 ? 'text-success' : 'text-error'">
+                <div
+                  class="stat-value"
+                  :class="netBalance >= 0 ? 'text-success' : 'text-error'"
+                >
                   ${{ Math.abs(netBalance).toFixed(2) }}
                 </div>
-                <div class="stat-desc">{{ netBalance >= 0 ? "Positive balance" : "Negative balance" }}</div>
+                <div class="stat-desc">
+                  {{
+                    netBalance >= 0 ? "Positive balance" : "Negative balance"
+                  }}
+                </div>
               </div>
             </div>
           </div>
@@ -363,10 +653,17 @@
       </section>
 
       <!-- Transactions Section -->
-      <section v-show="activeTab === 'transactions'" class="card bg-base-100 shadow-xl">
+      <section
+        v-show="activeTab === 'transactions'"
+        class="card bg-base-100 shadow-xl"
+      >
         <div class="card-body">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-            <h2 class="card-title">📋 Transactions ({{ filteredTransactions.length }})</h2>
+          <div
+            class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4"
+          >
+            <h2 class="card-title">
+              📋 Transactions ({{ filteredTransactions.length }})
+            </h2>
 
             <div class="flex flex-col sm:flex-row gap-2">
               <input
@@ -375,7 +672,10 @@
                 placeholder="Search transactions..."
                 class="input input-bordered input-sm w-full sm:w-64"
               />
-              <select v-model="typeFilter" class="select select-bordered select-sm">
+              <select
+                v-model="typeFilter"
+                class="select select-bordered select-sm"
+              >
                 <option value="">All Types</option>
                 <option value="income">Income Only</option>
                 <option value="spending">Spending Only</option>
@@ -384,16 +684,34 @@
           </div>
 
           <!-- Bulk Actions -->
-          <div v-if="selectedTransactions.length > 0" class="alert alert-info mb-4">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          <div
+            v-if="selectedTransactions.length > 0"
+            class="alert alert-info mb-4"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <div>
-              <h3 class="font-bold">{{ selectedTransactions.length }} transaction(s) selected</h3>
+              <h3 class="font-bold">
+                {{ selectedTransactions.length }} transaction(s) selected
+              </h3>
               <div class="flex gap-2 mt-2">
-                <button class="btn btn-error btn-xs" @click="bulkDelete">Delete Selected</button>
-                <button class="btn btn-ghost btn-xs" @click="clearSelection">Clear Selection</button>
+                <button class="btn btn-error btn-xs" @click="bulkDelete">
+                  Delete Selected
+                </button>
+                <button class="btn btn-ghost btn-xs" @click="clearSelection">
+                  Clear Selection
+                </button>
               </div>
             </div>
           </div>
@@ -405,13 +723,46 @@
                 <tr>
                   <th>
                     <label>
-                      <input type="checkbox" class="checkbox checkbox-sm" :checked="allSelected" @change="toggleSelectAll" />
+                      <input
+                        type="checkbox"
+                        class="checkbox checkbox-sm"
+                        :checked="allSelected"
+                        @change="toggleSelectAll"
+                      />
                     </label>
                   </th>
-                  <th><button class="btn btn-ghost btn-sm" @click="updateSort('date')">Date {{ getSortIcon('date') }}</button></th>
-                  <th><button class="btn btn-ghost btn-sm" @click="updateSort('type')">Type {{ getSortIcon('type') }}</button></th>
-                  <th><button class="btn btn-ghost btn-sm" @click="updateSort('amount')">Amount {{ getSortIcon('amount') }}</button></th>
-                  <th><button class="btn btn-ghost btn-sm" @click="updateSort('category')">Category {{ getSortIcon('category') }}</button></th>
+                  <th>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      @click="updateSort('date')"
+                    >
+                      Date {{ getSortIcon("date") }}
+                    </button>
+                  </th>
+                  <th>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      @click="updateSort('type')"
+                    >
+                      Type {{ getSortIcon("type") }}
+                    </button>
+                  </th>
+                  <th>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      @click="updateSort('amount')"
+                    >
+                      Amount {{ getSortIcon("amount") }}
+                    </button>
+                  </th>
+                  <th>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      @click="updateSort('category')"
+                    >
+                      Category {{ getSortIcon("category") }}
+                    </button>
+                  </th>
                   <th>Description</th>
                   <th>Actions</th>
                 </tr>
@@ -421,7 +772,9 @@
                   v-for="(transaction, index) in paginatedTransactions"
                   :key="transaction.id"
                   class="hover:bg-base-200 transition-colors"
-                  :class="{ 'bg-base-200': selectedTransactions.includes(index) }"
+                  :class="{
+                    'bg-base-200': selectedTransactions.includes(index),
+                  }"
                 >
                   <td>
                     <label>
@@ -433,23 +786,65 @@
                       />
                     </label>
                   </td>
-                  <td><div class="font-mono text-sm">{{ formatDate(transaction.date) }}</div></td>
                   <td>
-                    <div class="badge" :class="transaction.type === 'income' ? 'badge-success' : 'badge-error'">
-                      {{ transaction.type === 'income' ? '💰 Income' : '💸 Spending' }}
+                    <div class="font-mono text-sm">
+                      {{ formatDate(transaction.date) }}
                     </div>
                   </td>
                   <td>
-                    <div class="font-mono font-semibold" :class="transaction.type === 'income' ? 'text-success' : 'text-error'">
+                    <div
+                      class="badge"
+                      :class="
+                        transaction.type === 'income'
+                          ? 'badge-success'
+                          : 'badge-error'
+                      "
+                    >
+                      {{
+                        transaction.type === "income"
+                          ? "💰 Income"
+                          : "💸 Spending"
+                      }}
+                    </div>
+                  </td>
+                  <td>
+                    <div
+                      class="font-mono font-semibold"
+                      :class="
+                        transaction.type === 'income'
+                          ? 'text-success'
+                          : 'text-error'
+                      "
+                    >
                       ${{ transaction.amount.toFixed(2) }}
                     </div>
                   </td>
-                  <td><div class="badge badge-outline text-xs">{{ transaction.category }}</div></td>
-                  <td><div class="text-sm text-base-content/70 max-w-xs truncate">{{ transaction.description || '-' }}</div></td>
+                  <td>
+                    <div class="badge badge-outline text-xs">
+                      {{ transaction.category }}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="text-sm text-base-content/70 max-w-xs truncate">
+                      {{ transaction.description || "-" }}
+                    </div>
+                  </td>
                   <td>
                     <div class="flex gap-1">
-                      <button class="btn btn-info btn-xs" @click="editTransaction(transaction)" title="Edit transaction">✏️</button>
-                      <button class="btn btn-error btn-xs" @click="deleteTransaction(transaction.id)" title="Delete transaction">🗑️</button>
+                      <button
+                        class="btn btn-info btn-xs"
+                        @click="editTransaction(transaction)"
+                        title="Edit transaction"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        class="btn btn-error btn-xs"
+                        @click="deleteTransaction(transaction.id)"
+                        title="Delete transaction"
+                      >
+                        🗑️
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -457,28 +852,64 @@
             </table>
 
             <!-- Empty State -->
-            <div v-if="filteredTransactions.length === 0" class="text-center py-12">
+            <div
+              v-if="filteredTransactions.length === 0"
+              class="text-center py-12"
+            >
               <div class="text-6xl mb-4">📝</div>
-              <h3 class="text-lg font-semibold text-base-content/60 mb-2">No transactions found</h3>
-              <p class="text-base-content/40">Try adjusting your search or filter criteria</p>
+              <h3 class="text-lg font-semibold text-base-content/60 mb-2">
+                No transactions found
+              </h3>
+              <p class="text-base-content/40">
+                Try adjusting your search or filter criteria
+              </p>
             </div>
           </div>
 
           <!-- Pagination -->
           <div v-if="totalPages > 1" class="flex justify-center mt-6">
             <div class="btn-group">
-              <button class="btn btn-sm" :disabled="currentPage === 1" @click="currentPage = 1">«</button>
-              <button class="btn btn-sm" :disabled="currentPage === 1" @click="currentPage--">‹</button>
-              <button class="btn btn-sm btn-active">Page {{ currentPage }} of {{ totalPages }}</button>
-              <button class="btn btn-sm" :disabled="currentPage === totalPages" @click="currentPage++">›</button>
-              <button class="btn btn-sm" :disabled="currentPage === totalPages" @click="currentPage = totalPages">»</button>
+              <button
+                class="btn btn-sm"
+                :disabled="currentPage === 1"
+                @click="currentPage = 1"
+              >
+                «
+              </button>
+              <button
+                class="btn btn-sm"
+                :disabled="currentPage === 1"
+                @click="currentPage--"
+              >
+                ‹
+              </button>
+              <button class="btn btn-sm btn-active">
+                Page {{ currentPage }} of {{ totalPages }}
+              </button>
+              <button
+                class="btn btn-sm"
+                :disabled="currentPage === totalPages"
+                @click="currentPage++"
+              >
+                ›
+              </button>
+              <button
+                class="btn btn-sm"
+                :disabled="currentPage === totalPages"
+                @click="currentPage = totalPages"
+              >
+                »
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       <!-- About Section -->
-      <section v-show="activeTab === 'about'" class="card bg-base-100 shadow-xl max-w-2xl mx-auto mt-8">
+      <section
+        v-show="activeTab === 'about'"
+        class="card bg-base-100 shadow-xl max-w-2xl mx-auto mt-8"
+      >
         <div class="card-body">
           <h2 class="card-title">ℹ️ About This App</h2>
           <div v-if="loadingAbout" class="text-center my-6">
@@ -487,7 +918,13 @@
           <div v-else v-html="aboutHtml" class="prose max-w-none"></div>
           <div class="text-xs text-base-content/50 mt-4 text-right">
             Source:
-            <a :href="githubReadmeUrl" class="link" target="_blank" rel="noopener">GitHub README.md</a>
+            <a
+              :href="githubReadmeUrl"
+              class="link"
+              target="_blank"
+              rel="noopener"
+              >GitHub README.md</a
+            >
           </div>
         </div>
       </section>
@@ -632,7 +1069,13 @@ npm run build
 
 /** ===================== Types ===================== */
 export type TransactionType = "income" | "spending";
-export type RecurringFrequency = "daily" | "weekly" | "fortnightly" | "monthly" | "quarterly" | "yearly";
+export type RecurringFrequency =
+  | "daily"
+  | "weekly"
+  | "fortnightly"
+  | "monthly"
+  | "quarterly"
+  | "yearly";
 
 export interface Transaction {
   id: string;
@@ -673,6 +1116,69 @@ type UnifiedTx = {
 };
 
 /** ===================== Utils ===================== */
+
+// --- date typing helpers ---
+function digitsOnly(s = "") {
+  return s.replace(/\D/g, "");
+}
+function formatDDMMProgressive(raw: string) {
+  const d = digitsOnly(raw);
+  let out = "";
+  if (d.length <= 2) return d;
+  out = d.slice(0, 2) + "-";
+  if (d.length <= 4) return out + d.slice(2);
+  out += d.slice(2, 4) + "-";
+  return out + d.slice(4, 8);
+}
+function isLeap(y: number) {
+  return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+}
+function daysInMonthSafe(y: number, m1to12: number) {
+  if (m1to12 === 2) return isLeap(y) ? 29 : 28;
+  return [4, 6, 9, 11].includes(m1to12) ? 30 : 31;
+}
+
+/**
+ * Strict date sanitize: only returns valid "dd-mm-yyyy", never clamps.
+ * - Rejects day > max for month/year
+ * - Rejects month > 12
+ * - Accepts 2-digit year, normalizes to yyyy
+ */
+function finalizeDDMM(raw: string): string {
+  if (!raw) return "";
+  let s = raw.replace(/[–—.\s/]+/g, "-").trim();
+
+  const digits = s.replace(/\D/g, "");
+  if (digits.length === 6 || digits.length === 8) {
+    const dd = digits.slice(0, 2);
+    const mm = digits.slice(2, 4);
+    const yy = digits.slice(4);
+    s = `${dd}-${mm}-${yy}`;
+  }
+
+  const m = s.match(/^(\d{1,2})-(\d{1,2})-(\d{2}|\d{4})$/);
+  if (!m) return "";
+
+  let [, dStr, mStr, yStr] = m;
+  let day = Number(dStr);
+  let month = Number(mStr);
+  let year =
+    yStr.length === 2
+      ? Number(yStr) >= 70
+        ? 1900 + Number(yStr)
+        : 2000 + Number(yStr)
+      : Number(yStr);
+
+  if (!Number.isFinite(year) || year < 1000 || year > 9999) return "";
+  if (month < 1 || month > 12) return "";
+  if (day < 1 || day > daysInMonthSafe(year, month)) return "";
+
+  return `${String(day).padStart(2, "0")}-${String(month).padStart(
+    2,
+    "0"
+  )}-${year}`;
+}
+
 function toNumber(x: any): number {
   if (x === null || x === undefined) return 0;
   const s = String(x).replace(/(?<!e)[, ]/gi, "");
@@ -682,12 +1188,10 @@ function toNumber(x: any): number {
 
 function parseAusDateToISO(input: string): string {
   const s = (input || "").trim().replace(/\s+/g, " ");
-  // "06 Mar 2025"
   if (/^\d{1,2}\s+[A-Za-z]{3,}\s+\d{2,4}$/.test(s)) {
     const d = new Date(Date.parse(s));
     return isNaN(+d) ? "" : d.toISOString();
   }
-  // "5/01/2023" or "05/01/23"
   const m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
   if (m) {
     const [, d, mo, y] = m;
@@ -699,17 +1203,16 @@ function parseAusDateToISO(input: string): string {
   return isNaN(t) ? "" : new Date(t).toISOString();
 }
 
-// Lightweight CSV line splitter (handles quotes and commas inside quotes)
 function splitCsvLine(line: string): string[] {
   const out: string[] = [];
   let cur = "";
   let inQuotes = false;
-
   for (let i = 0; i < line.length; i++) {
     const ch = line[i];
-    if (ch === '"' ) {
-      if (inQuotes && line[i + 1] === '"') { // escaped quote
-        cur += '"'; i++;
+    if (ch === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        cur += '"';
+        i++;
       } else {
         inQuotes = !inQuotes;
       }
@@ -721,32 +1224,40 @@ function splitCsvLine(line: string): string[] {
     }
   }
   out.push(cur);
-  return out.map(s => s.replace(/^"|"$/g, "").trim());
+  return out.map((s) => s.replace(/^"|"$/g, "").trim());
 }
 
 /** ===================== Bank detection ===================== */
 function detectBankByHeaders(headers: string[]): BankId | null {
-  const H = headers.map(h => h.trim().toLowerCase());
+  const H = headers.map((h) => h.trim().toLowerCase());
 
-  // Macquarie
-  if (H.includes("transaction date") && H.includes("details") && H.includes("debit") && H.includes("credit"))
+  if (
+    H.includes("transaction date") &&
+    H.includes("details") &&
+    H.includes("debit") &&
+    H.includes("credit")
+  )
     return "MACQUARIE";
 
-  // CommBank (can be 4 columns with or without headers)
-  if (headers.length === 4 && !H.some(h => /(date|amount|description|balance)/.test(h)))
+  if (
+    headers.length === 4 &&
+    !H.some((h) => /(date|amount|description|balance)/.test(h))
+  )
     return "COMM_BANK";
-  if (["date", "amount", "description", "balance"].every(k => H.includes(k)))
+  if (["date", "amount", "description", "balance"].every((k) => H.includes(k)))
     return "COMM_BANK";
 
-  // St.George
-  if (H.includes("debit") && H.includes("credit") && (H.includes("subcategory") || H.includes("subCategory".toLowerCase())))
+  if (H.includes("debit") && H.includes("credit") && H.includes("subcategory"))
     return "ST_GEORGE";
 
-  // Westpac
-  if (H.includes("bank account") && H.includes("narrative") && H.includes("debit amount") && H.includes("credit amount"))
+  if (
+    H.includes("bank account") &&
+    H.includes("narrative") &&
+    H.includes("debit amount") &&
+    H.includes("credit amount")
+  )
     return "WESTPAC";
 
-  // ANZ (common: Date, Amount, Description [, Balance])
   if (H.includes("date") && H.includes("amount") && H.includes("description"))
     return "ANZ";
 
@@ -754,9 +1265,8 @@ function detectBankByHeaders(headers: string[]): BankId | null {
 }
 
 /** ===================== Bank parsers ===================== */
-// Macquarie
 function parseMacquarie(rows: Record<string, string>[]): UnifiedTx[] {
-  return rows.map(r => {
+  return rows.map((r) => {
     const dateRaw = r["Transaction Date"] ?? "";
     const debit = toNumber(r["Debit"]);
     const credit = toNumber(r["Credit"]);
@@ -776,10 +1286,8 @@ function parseMacquarie(rows: Record<string, string>[]): UnifiedTx[] {
     };
   });
 }
-
-// CommBank
 function parseCommBank(rows: Record<string, string>[]): UnifiedTx[] {
-  return rows.map(r => {
+  return rows.map((r) => {
     const dateRaw = r["Date"] ?? "";
     const amt = toNumber(r["Amount"]);
     return {
@@ -794,10 +1302,8 @@ function parseCommBank(rows: Record<string, string>[]): UnifiedTx[] {
     };
   });
 }
-
-// St.George
 function parseStGeorge(rows: Record<string, string>[]): UnifiedTx[] {
-  return rows.map(r => {
+  return rows.map((r) => {
     const dateRaw = r["Date"] ?? "";
     const debit = toNumber(r["Debit"]);
     const credit = toNumber(r["Credit"]);
@@ -815,15 +1321,12 @@ function parseStGeorge(rows: Record<string, string>[]): UnifiedTx[] {
     };
   });
 }
-
-// Westpac
 function parseWestpac(rows: Record<string, string>[]): UnifiedTx[] {
-  return rows.map(r => {
+  return rows.map((r) => {
     const dateRaw = r["Date"] ?? "";
     const debit = toNumber(r["Debit Amount"]);
     const credit = toNumber(r["Credit Amount"]);
     const balance = r["Balance"] != null ? toNumber(r["Balance"]) : null;
-
     return {
       bank: "WESTPAC",
       dateISO: parseAusDateToISO(dateRaw),
@@ -840,22 +1343,21 @@ function parseWestpac(rows: Record<string, string>[]): UnifiedTx[] {
     };
   });
 }
-
-// ANZ (headered or headerless minimal 3-col export)
 function parseANZ(rows: Record<string, string>[]): UnifiedTx[] {
-  return rows.map(r => {
+  return rows.map((r) => {
     const dateRaw = r["Date"] ?? "";
     const amt = toNumber(r["Amount"]);
     const desc = (r["Description"] || "").trim();
     const balance =
-      r["Balance"] != null && r["Balance"] !== "" ? toNumber(r["Balance"]) : null;
-
+      r["Balance"] != null && r["Balance"] !== ""
+        ? toNumber(r["Balance"])
+        : null;
     return {
       bank: "ANZ",
       dateISO: parseAusDateToISO(dateRaw),
       dateRaw,
       description: desc || "ANZ Transaction",
-      amount: amt, // positives credits, negatives debits (typical ANZ)
+      amount: amt,
       debit: amt < 0 ? Math.abs(amt) : 0,
       credit: amt > 0 ? amt : 0,
       balance,
@@ -868,15 +1370,25 @@ function parseANZ(rows: Record<string, string>[]): UnifiedTx[] {
 }
 
 /** ===================== Normalizer ===================== */
-function normalizeParsedRows(headers: string[], rows: Record<string, string>[], forcedBank?: BankId | null): UnifiedTx[] {
+function normalizeParsedRows(
+  headers: string[],
+  rows: Record<string, string>[],
+  forcedBank?: BankId | null
+): UnifiedTx[] {
   const bank = forcedBank ?? detectBankByHeaders(headers);
   switch (bank) {
-    case "MACQUARIE": return parseMacquarie(rows);
-    case "COMM_BANK": return parseCommBank(rows);
-    case "ST_GEORGE": return parseStGeorge(rows);
-    case "WESTPAC":   return parseWestpac(rows);
-    case "ANZ":       return parseANZ(rows);
-    default:          return [];
+    case "MACQUARIE":
+      return parseMacquarie(rows);
+    case "COMM_BANK":
+      return parseCommBank(rows);
+    case "ST_GEORGE":
+      return parseStGeorge(rows);
+    case "WESTPAC":
+      return parseWestpac(rows);
+    case "ANZ":
+      return parseANZ(rows);
+    default:
+      return [];
   }
 }
 
@@ -958,16 +1470,52 @@ const categoryNames = [
 ];
 
 const monthsLetters: Record<string, string> = {
-  Jan: "01", Feb: "02", Mar: "03", Apr: "04", May: "05", Jun: "06",
-  Jul: "07", Aug: "08", Sep: "09", Oct: "10", Nov: "11", Dec: "12",
+  Jan: "01",
+  Feb: "02",
+  Mar: "03",
+  Apr: "04",
+  May: "05",
+  Jun: "06",
+  Jul: "07",
+  Aug: "08",
+  Sep: "09",
+  Oct: "10",
+  Nov: "11",
+  Dec: "12",
 };
 
 /** ===================== Theme ===================== */
 const currentTheme = ref("light");
 const availableThemes = [
-  "light","dark","cupcake","bumblebee","emerald","corporate","synthwave","retro","cyberpunk","valentine",
-  "halloween","garden","forest","aqua","lofi","pastel","fantasy","wireframe","black","luxury","dracula",
-  "cmyk","autumn","business","acid","lemonade","night","coffee","winter",
+  "light",
+  "dark",
+  "cupcake",
+  "bumblebee",
+  "emerald",
+  "corporate",
+  "synthwave",
+  "retro",
+  "cyberpunk",
+  "valentine",
+  "halloween",
+  "garden",
+  "forest",
+  "aqua",
+  "lofi",
+  "pastel",
+  "fantasy",
+  "wireframe",
+  "black",
+  "luxury",
+  "dracula",
+  "cmyk",
+  "autumn",
+  "business",
+  "acid",
+  "lemonade",
+  "night",
+  "coffee",
+  "winter",
 ];
 
 function setTheme(theme: string) {
@@ -981,7 +1529,9 @@ function setTheme(theme: string) {
 }
 
 /** ===================== Navigation ===================== */
-const activeTab = ref<"import" | "add" | "chart" | "transactions" | "about">("import");
+const activeTab = ref<"import" | "add" | "chart" | "transactions" | "about">(
+  "import"
+);
 const tabs = [
   { id: "import", label: "Import", icon: "📥" },
   { id: "add", label: "Add Transaction", icon: "➕" },
@@ -993,9 +1543,9 @@ const tabs = [
 /** ===================== Data ===================== */
 const transactions = ref<Transaction[]>([]);
 const categories = computed(() => {
-  const unique = new Set<string>();
-  transactions.value.forEach(t => unique.add(t.category));
-  return Array.from(unique).sort();
+  const s = new Set<string>();
+  transactions.value.forEach((t) => s.add(t.category));
+  return Array.from(s).sort();
 });
 
 /** ===================== Import ===================== */
@@ -1003,16 +1553,13 @@ const importUrl = ref("");
 const importStatus = ref("");
 const debugInfo = ref("");
 
-// cached categorizer for perf
 const categoryCache = new Map<string, string>();
 function categorizeTransaction(description?: string): string {
   const desc = (description || "No Name").trim();
   if (categoryCache.has(desc)) return categoryCache.get(desc)!;
-
   const lower = desc.toLowerCase();
   for (let i = 0; i < sortArr.length; i++) {
-    const categoryKeywords = sortArr[i];
-    for (const keyword of categoryKeywords) {
+    for (const keyword of sortArr[i]) {
       if (lower.includes(keyword.toLowerCase())) {
         const cat = categoryNames[i];
         categoryCache.set(desc, cat);
@@ -1025,7 +1572,10 @@ function categorizeTransaction(description?: string): string {
 }
 
 function parseTransactionDate(dateStr: string, bankType: string): string {
-  if (!dateStr) return new Date().toISOString().split("T")[0];
+  if (!dateStr) return todayLocalISO();
+  const isoFromDDMM = ddmmyyyyToISO(dateStr);
+  if (isoFromDDMM) return isoFromDDMM;
+
   try {
     let parsedDate = "";
     if (bankType === "upbank") {
@@ -1042,7 +1592,8 @@ function parseTransactionDate(dateStr: string, bankType: string): string {
       const parts = dateStr.split(" ");
       if (parts.length === 3) {
         const day = parts[0].padStart(2, "0");
-        const month = monthsLetters[parts[1]] || "01";
+        const month =
+          monthsLetters[parts[1] as keyof typeof monthsLetters] || "01";
         const year = parts[2].length === 2 ? `20${parts[2]}` : parts[2];
         parsedDate = `${year}-${month}-${day}`;
       }
@@ -1051,44 +1602,38 @@ function parseTransactionDate(dateStr: string, bankType: string): string {
     }
     if (!isNaN(new Date(parsedDate).getTime())) return parsedDate;
   } catch {}
-  return new Date().toISOString().split("T")[0];
+  return todayLocalISO();
 }
 
 function parseCSV(csvText: string) {
   try {
     importStatus.value = "Parsing CSV data...";
-
-    // Normalize and split into non-empty lines
     const lines = csvText
       .replace(/\r/g, "\n")
       .split("\n")
-      .map(l => l.trim())
-      .filter(l => l.length > 0);
-
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0);
     if (lines.length < 2) {
       importStatus.value = "CSV file appears to be empty or invalid";
       return;
     }
 
-    // Read headers; if first row looks like data, synthesize
     let rawHeader = splitCsvLine(lines[0]);
-    let headers = rawHeader.map(h => h.replace(/^"|"$/g, "").trim());
-    const firstLooksDate = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(headers[0]) || /^[0-9-]{8,10}$/.test(headers[0]);
+    let headers = rawHeader.map((h) => h.replace(/^"|"$/g, "").trim());
+    const firstLooksDate =
+      /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(headers[0]) ||
+      /^[0-9-]{8,10}$/.test(headers[0]);
     let forcedBank: BankId | null = null;
 
-    // CommBank: 4 cols, no headers
     if (firstLooksDate && headers.length === 4) {
       headers = ["Date", "Amount", "Description", "Balance"];
       forcedBank = "COMM_BANK";
     }
-
-    // ANZ: commonly 3+ cols with Date, Amount, Description and trailing empties
     if (firstLooksDate && headers.length >= 3 && !forcedBank) {
-      headers = ["Date", "Amount", "Description"].concat(headers.slice(3)); // keep trailing positions if any
+      headers = ["Date", "Amount", "Description"].concat(headers.slice(3));
       forcedBank = "ANZ";
     }
 
-    // Build row objects safely
     const rowsObj: Record<string, string>[] = [];
     for (let i = 1; i < lines.length; i++) {
       const cols = splitCsvLine(lines[i]);
@@ -1100,17 +1645,18 @@ function parseCSV(csvText: string) {
       rowsObj.push(o);
     }
 
-    // Normalize -> UnifiedTx
     const unified = normalizeParsedRows(headers, rowsObj, forcedBank);
 
     if (unified.length === 0) {
-      // fallback generic reader
-      const hLower = headers.map(h => h.toLowerCase());
-      const dateIndex = hLower.findIndex(h => h.includes("date"));
-      const descIndex = hLower.findIndex(h => /(description|detail|merchant)/.test(h));
-      const amtIndex  = hLower.findIndex(h => /(amount|debit|value)/.test(h));
+      const hLower = headers.map((h) => h.toLowerCase());
+      const dateIndex = hLower.findIndex((h) => h.includes("date"));
+      const descIndex = hLower.findIndex((h) =>
+        /(description|detail|merchant)/.test(h)
+      );
+      const amtIndex = hLower.findIndex((h) => /(amount|debit|value)/.test(h));
       if (dateIndex === -1 || descIndex === -1 || amtIndex === -1) {
-        importStatus.value = "Could not find required columns (Date, Description, Amount)";
+        importStatus.value =
+          "Could not find required columns (Date, Description, Amount)";
         return;
       }
       let importedCount = 0;
@@ -1118,10 +1664,13 @@ function parseCSV(csvText: string) {
         const cols = splitCsvLine(lines[i]);
         if (cols.length <= Math.max(dateIndex, descIndex, amtIndex)) continue;
         const rawDate = cols[dateIndex]?.trim() || "";
-        const desc    = (cols[descIndex] || "").replace(/"/g, "").trim() || "Unknown";
-        const amount  = Math.abs(parseFloat((cols[amtIndex] || "").replace(/[^-\d.]/g, "")) || 0);
+        const desc =
+          (cols[descIndex] || "").replace(/"/g, "").trim() || "Unknown";
+        const amount = Math.abs(
+          parseFloat((cols[amtIndex] || "").replace(/[^-\d.]/g, "")) || 0
+        );
         if (amount > 0) {
-          const tx: Transaction = {
+          transactions.value.push({
             id: Date.now().toString() + importedCount,
             date: parseTransactionDate(rawDate, "generic"),
             type: "spending",
@@ -1129,8 +1678,7 @@ function parseCSV(csvText: string) {
             category: categorizeTransaction(desc),
             description: desc,
             recurring: false,
-          };
-          transactions.value.push(tx);
+          });
           importedCount++;
         }
       }
@@ -1139,10 +1687,11 @@ function parseCSV(csvText: string) {
       return;
     }
 
-    // unified -> app model
     let imported = 0;
     for (const u of unified) {
-      const iso = u.dateISO ? u.dateISO.slice(0, 10) : parseTransactionDate(u.dateRaw, "generic");
+      const iso = u.dateISO
+        ? u.dateISO.slice(0, 10)
+        : parseTransactionDate(u.dateRaw, "generic");
       let type: TransactionType = "spending";
       let amountAbs = Math.abs(u.amount);
 
@@ -1159,7 +1708,7 @@ function parseCSV(csvText: string) {
 
       if (amountAbs > 0) {
         const desc = u.description || u.original || "Unknown";
-        const tx: Transaction = {
+        transactions.value.push({
           id: Date.now().toString() + imported,
           date: iso,
           type,
@@ -1167,14 +1716,15 @@ function parseCSV(csvText: string) {
           category: categorizeTransaction(desc),
           description: desc,
           recurring: false,
-        };
-        transactions.value.push(tx);
+        });
         imported++;
       }
     }
 
     importStatus.value = `Successfully imported ${imported} transactions`;
-    debugInfo.value = `Detected via headers: ${forcedBank ?? detectBankByHeaders(headers) ?? "generic"}`;
+    debugInfo.value = `Detected via headers: ${
+      forcedBank ?? detectBankByHeaders(headers) ?? "generic"
+    }`;
   } catch (error: any) {
     importStatus.value = "Error parsing CSV: " + error.message;
     debugInfo.value = error.stack || String(error);
@@ -1191,7 +1741,6 @@ function handleFileUpload(event: Event) {
   };
   reader.readAsText(file);
 }
-
 async function importFromUrl() {
   if (!importUrl.value) return;
   try {
@@ -1206,10 +1755,11 @@ async function importFromUrl() {
   }
 }
 
-/** ===================== Transaction form ===================== */
+/** ===================== Add Transaction form ===================== */
+
 const newTransaction = ref<Transaction>({
   id: "",
-  date: new Date().toISOString().split("T")[0],
+  date: todayLocalISO(),
   type: "spending",
   amount: 0,
   category: "",
@@ -1219,36 +1769,124 @@ const newTransaction = ref<Transaction>({
   recursions: 1,
   endDate: "",
 });
+const addDateTextRef = ref<HTMLInputElement | null>(null);
+const newTxDateError = ref("");
 const currentlyEditingId = ref<string | null>(null);
+const addDatePickerRef = ref<HTMLInputElement | null>(null);
+
+// ISO backing store (native date input uses ISO)
+const newTxDateISO = computed<string>({
+  get() {
+    return newTransaction.value.date || todayLocalISO();
+  },
+  set(v: string) {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) newTransaction.value.date = v;
+  },
+});
+
+// Visible dd-mm-yyyy text with live formatting/sanitizing
+const newTxDateText = ref(isoToDDMMYYYY(newTransaction.value.date));
+watch(newTxDateISO, (iso) => {
+  newTxDateText.value = isoToDDMMYYYY(iso) || "";
+});
+function onAddDateInput(e: Event) {
+  newTxDateError.value = ""; // clear feedback while typing
+  newTxDateText.value = formatDDMMProgressive(
+    (e.target as HTMLInputElement).value
+  );
+  // also clear any previous native validity message
+  addDateTextRef.value?.setCustomValidity?.("");
+}
+
+function onAddDateBlur() {
+  newTxDateError.value = ""; // reset
+  const ddmmyyyy = finalizeDDMM(newTxDateText.value);
+
+  if (ddmmyyyy) {
+    const iso = ddmmyyyyToISO(ddmmyyyy);
+    if (iso) {
+      newTxDateText.value = ddmmyyyy;
+      newTxDateISO.value = iso; // keep model in sync
+      addDateTextRef.value?.setCustomValidity?.("");
+      return;
+    }
+  }
+
+  // INVALID → clear text and backing ISO, set error, and show native bubble
+  newTxDateText.value = "";
+  newTxDateISO.value = ""; // <- important: prevents stale valid date
+  newTxDateError.value =
+    "Please enter a valid date in dd-mm-yyyy (e.g. 05-01-2025).";
+  addDateTextRef.value?.setCustomValidity?.(newTxDateError.value);
+  addDateTextRef.value?.reportValidity?.();
+}
+function onDateKeydownDigitsOnly(e: KeyboardEvent) {
+  const allowed = [
+    "Backspace",
+    "Delete",
+    "ArrowLeft",
+    "ArrowRight",
+    "Tab",
+    "-",
+  ];
+  if (allowed.includes(e.key)) return;
+  if (!/^\d$/.test(e.key)) e.preventDefault();
+}
+function openAddCalendar() {
+  const el = addDatePickerRef.value;
+  if (!el) return;
+  (el as any).showPicker?.();
+  if (!(el as any).showPicker) el.click();
+}
+function setAddDateToday() {
+  newTxDateISO.value = todayLocalISO();
+}
 
 function addTransaction() {
-  if (newTransaction.value.amount <= 0 || !newTransaction.value.category) return;
+  if (newTransaction.value.amount <= 0 || !newTransaction.value.category)
+    return;
 
   if (currentlyEditingId.value) {
-    const idx = transactions.value.findIndex(tx => tx.id === currentlyEditingId.value);
+    const idx = transactions.value.findIndex(
+      (tx) => tx.id === currentlyEditingId.value
+    );
     if (idx !== -1) {
-      transactions.value[idx] = { ...newTransaction.value, id: currentlyEditingId.value };
+      transactions.value[idx] = {
+        ...newTransaction.value,
+        id: currentlyEditingId.value,
+      };
     }
     currentlyEditingId.value = null;
     resetForm();
     return;
   }
 
-  const base = { ...newTransaction.value, id: Date.now().toString() + Math.floor(Math.random() * 10000) };
+  const base = {
+    ...newTransaction.value,
+    id: Date.now().toString() + Math.floor(Math.random() * 10000),
+  };
   let newTxs: Transaction[] = [];
 
-  if (newTransaction.value.recurring && (newTransaction.value.recursions || 1) > 1) {
+  if (
+    newTransaction.value.recurring &&
+    (newTransaction.value.recursions || 1) > 1
+  ) {
     const freq = newTransaction.value.frequency || "monthly";
     let date = new Date(newTransaction.value.date);
     const maxRecursions = newTransaction.value.recursions || 1;
-    const endDate = newTransaction.value.endDate ? new Date(newTransaction.value.endDate) : null;
+    const endDate = newTransaction.value.endDate
+      ? new Date(newTransaction.value.endDate)
+      : null;
     let i = 0;
     while (i < maxRecursions) {
-      const isoDate = date.toISOString().split("T")[0];
+      const isoDate = toLocalISO(date);
       if (endDate && date > endDate) break;
-      newTxs.push({ ...base, id: base.id + "-" + i, date: isoDate, endDate: newTransaction.value.endDate || "" });
-
-      // increment
+      newTxs.push({
+        ...base,
+        id: base.id + "-" + i,
+        date: isoDate,
+        endDate: newTransaction.value.endDate || "",
+      });
       if (freq === "monthly") date.setMonth(date.getMonth() + 1);
       else if (freq === "quarterly") date.setMonth(date.getMonth() + 3);
       else if (freq === "yearly") date.setFullYear(date.getFullYear() + 1);
@@ -1262,14 +1900,13 @@ function addTransaction() {
   } else {
     newTxs = [base];
   }
-  newTxs.forEach(tx => transactions.value.push(tx));
+  newTxs.forEach((tx) => transactions.value.push(tx));
   resetForm();
 }
-
 function resetForm() {
   newTransaction.value = {
     id: "",
-    date: new Date().toISOString().split("T")[0],
+    date: todayLocalISO(),
     type: "spending",
     amount: 0,
     category: "",
@@ -1284,8 +1921,71 @@ function resetForm() {
 
 /** ===================== Date filtering ===================== */
 const dateFilter = ref({ start: "", end: "" });
-const selectedDatePreset = ref("All Time");
+const startPickerRef = ref<HTMLInputElement | null>(null);
+const endPickerRef = ref<HTMLInputElement | null>(null);
 
+const dateFilterStartISO = computed<string>({
+  get() {
+    return dateFilter.value.start || "";
+  },
+  set(v: string) {
+    dateFilter.value.start = v || "";
+  },
+});
+const dateFilterEndISO = computed<string>({
+  get() {
+    return dateFilter.value.end || "";
+  },
+  set(v: string) {
+    dateFilter.value.end = v || "";
+  },
+});
+
+// Visible text + handlers (moved below ISO computeds)
+const dateFilterStartText = ref("");
+const dateFilterEndText = ref("");
+watch(
+  dateFilterStartISO,
+  (iso) => (dateFilterStartText.value = iso ? isoToDDMMYYYY(iso) : "")
+);
+watch(
+  dateFilterEndISO,
+  (iso) => (dateFilterEndText.value = iso ? isoToDDMMYYYY(iso) : "")
+);
+function onStartInput(e: Event) {
+  dateFilterStartText.value = formatDDMMProgressive(
+    (e.target as HTMLInputElement).value
+  );
+}
+function onStartBlur() {
+  const ddmmyyyy = finalizeDDMM(dateFilterStartText.value);
+  if (ddmmyyyy) dateFilterStartISO.value = ddmmyyyyToISO(ddmmyyyy) || "";
+  dateFilterStartText.value = ddmmyyyy || "";
+}
+function onEndInput(e: Event) {
+  dateFilterEndText.value = formatDDMMProgressive(
+    (e.target as HTMLInputElement).value
+  );
+}
+function onEndBlur() {
+  const ddmmyyyy = finalizeDDMM(dateFilterEndText.value);
+  if (ddmmyyyy) dateFilterEndISO.value = ddmmyyyyToISO(ddmmyyyy) || "";
+  dateFilterEndText.value = ddmmyyyy || "";
+}
+
+function openStartCalendar() {
+  startPickerRef.value?.showPicker?.() ?? startPickerRef.value?.click();
+}
+function openEndCalendar() {
+  endPickerRef.value?.showPicker?.() ?? endPickerRef.value?.click();
+}
+function setRangeToday() {
+  const t = todayLocalISO();
+  dateFilterStartISO.value = t;
+  dateFilterEndISO.value = t;
+}
+
+const selectedDatePreset = ref("All Time");
 const datePresets = [
   { label: "Last 7 Days", days: 7 },
   { label: "Last 30 Days", days: 30 },
@@ -1296,50 +1996,61 @@ const datePresets = [
   { label: "Last Year", days: 0, type: "lastYear" },
   { label: "All Time", days: 0, type: "all" },
 ];
-
 const applyDatePreset = (preset: any) => {
   selectedDatePreset.value = preset.label;
   const today = new Date();
-
   switch (preset.type) {
     case "month":
-      dateFilter.value.start = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split("T")[0];
-      dateFilter.value.end   = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split("T")[0];
+      dateFilter.value.start = toLocalISO(
+        new Date(today.getFullYear(), today.getMonth(), 1)
+      );
+      dateFilter.value.end = toLocalISO(
+        new Date(today.getFullYear(), today.getMonth() + 1, 0)
+      );
       break;
     case "lastMonth":
-      dateFilter.value.start = new Date(today.getFullYear(), today.getMonth() - 1, 1).toISOString().split("T")[0];
-      dateFilter.value.end   = new Date(today.getFullYear(), today.getMonth(), 0).toISOString().split("T")[0];
+      dateFilter.value.start = toLocalISO(
+        new Date(today.getFullYear(), today.getMonth() - 1, 1)
+      );
+      dateFilter.value.end = toLocalISO(
+        new Date(today.getFullYear(), today.getMonth(), 0)
+      );
       break;
     case "year":
-      dateFilter.value.start = new Date(today.getFullYear(), 0, 1).toISOString().split("T")[0];
-      dateFilter.value.end   = new Date(today.getFullYear(), 11, 31).toISOString().split("T")[0];
+      dateFilter.value.start = toLocalISO(new Date(today.getFullYear(), 0, 1));
+      dateFilter.value.end = toLocalISO(new Date(today.getFullYear(), 11, 31));
       break;
     case "lastYear":
-      dateFilter.value.start = new Date(today.getFullYear() - 1, 0, 1).toISOString().split("T")[0];
-      dateFilter.value.end   = new Date(today.getFullYear() - 1, 11, 31).toISOString().split("T")[0];
+      dateFilter.value.start = toLocalISO(
+        new Date(today.getFullYear() - 1, 0, 1)
+      );
+      dateFilter.value.end = toLocalISO(
+        new Date(today.getFullYear() - 1, 11, 31)
+      );
       break;
     case "all":
       dateFilter.value.start = "";
-      dateFilter.value.end   = "";
+      dateFilter.value.end = "";
       break;
     default:
-      const startDate = new Date(today.getTime() - preset.days * 24 * 60 * 60 * 1000);
-      dateFilter.value.start = startDate.toISOString().split("T")[0];
-      dateFilter.value.end   = today.toISOString().split("T")[0];
+      const startDate = new Date(
+        today.getTime() - preset.days * 24 * 60 * 60 * 1000
+      );
+      dateFilter.value.start = toLocalISO(startDate);
+      dateFilter.value.end = toLocalISO(today);
   }
 };
-
 const resetDateFilter = () => {
-  applyDatePreset(datePresets.find(p => p.label === "All Time"));
+  applyDatePreset(datePresets.find((p) => p.label === "All Time"));
 };
-
 const formatDateRange = () => {
   if (!dateFilter.value.start || !dateFilter.value.end) return "All time";
-  const start = new Date(dateFilter.value.start);
-  const end   = new Date(dateFilter.value.end);
-  const diffTime = Math.abs(end.getTime() - start.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return `${formatDate(dateFilter.value.start)} - ${formatDate(dateFilter.value.end)} (${diffDays} days)`;
+  const start = dateFromISOLocal(dateFilter.value.start)!;
+  const end = dateFromISOLocal(dateFilter.value.end)!;
+  const diffDays = Math.ceil(Math.abs(+end - +start) / 86_400_000);
+  return `${formatDate(dateFilter.value.start)} - ${formatDate(
+    dateFilter.value.end
+  )} (${diffDays} days)`;
 };
 
 /** ===================== Chart ===================== */
@@ -1353,7 +2064,8 @@ const toggleCategory = (category: string) => {
   if (index > -1) selectedCategories.value.splice(index, 1);
   else selectedCategories.value.push(category);
 };
-const selectAllCategories = () => (selectedCategories.value = [...categories.value]);
+const selectAllCategories = () =>
+  (selectedCategories.value = [...categories.value]);
 const unselectAllCategories = () => (selectedCategories.value = []);
 
 const searchQuery = ref("");
@@ -1368,68 +2080,49 @@ const calculatedEndDate = computed(() => {
   if (!newTransaction.value.recurring) return null;
   const freq = newTransaction.value.frequency || "monthly";
   const recursions = newTransaction.value.recursions || 1;
-  let date = new Date(newTransaction.value.date);
-  if (!date || isNaN(date.getTime())) return null;
 
-  let endDate = new Date(date);
+  const start = dateFromISOLocal(newTransaction.value.date);
+  if (!start) return null;
+
+  const endDate = new Date(start);
   for (let i = 1; i < recursions; i++) {
     switch (freq) {
-      case "daily":       endDate.setDate(endDate.getDate() + 1); break;
-      case "weekly":      endDate.setDate(endDate.getDate() + 7); break;
-      case "fortnightly": endDate.setDate(endDate.getDate() + 14); break;
-      case "monthly":     endDate.setMonth(endDate.getMonth() + 1); break;
-      case "quarterly":   endDate.setMonth(endDate.getMonth() + 3); break;
-      case "yearly":      endDate.setFullYear(endDate.getFullYear() + 1); break;
+      case "daily":
+        endDate.setDate(endDate.getDate() + 1);
+        break;
+      case "weekly":
+        endDate.setDate(endDate.getDate() + 7);
+        break;
+      case "fortnightly":
+        endDate.setDate(endDate.getDate() + 14);
+        break;
+      case "monthly":
+        endDate.setMonth(endDate.getMonth() + 1);
+        break;
+      case "quarterly":
+        endDate.setMonth(endDate.getMonth() + 3);
+        break;
+      case "yearly":
+        endDate.setFullYear(endDate.getFullYear() + 1);
+        break;
     }
   }
-  return endDate.toISOString().split("T")[0];
+  return toLocalISO(endDate);
 });
 
 const filteredTransactions = computed(() => {
   let filtered = transactions.value.slice();
 
-  // Date filter
   if (dateFilter.value.start && dateFilter.value.end) {
-    const start = new Date(dateFilter.value.start).getTime();
-    const end   = new Date(dateFilter.value.end).getTime();
-    filtered = filtered.filter(t => {
-      const d = new Date(t.date).getTime();
+    const start =
+      dateFromISOLocal(dateFilter.value.start)?.getTime() ?? -Infinity;
+    const end = dateFromISOLocal(dateFilter.value.end)?.getTime() ?? Infinity;
+    filtered = filtered.filter((t) => {
+      const d = dateFromISOLocal(t.date)?.getTime() ?? 0;
       return d >= start && d <= end;
     });
   }
-
-  // Search filter
-  if (searchQuery.value) {
-    const q = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(t =>
-      t.category.toLowerCase().includes(q) ||
-      t.amount.toString().includes(q) ||
-      t.type.toLowerCase().includes(q) ||
-      t.date.includes(q) ||
-      (t.description && t.description.toLowerCase().includes(q))
-    );
-  }
-
-  // Type filter
-  if (typeFilter.value) {
-    filtered = filtered.filter(t => t.type === typeFilter.value);
-  }
-
-  // Sort
-  filtered.sort((a, b) => {
-    let av: any, bv: any;
-    switch (sortField.value) {
-      case "date":     av = new Date(a.date).getTime(); bv = new Date(b.date).getTime(); break;
-      case "type":     av = a.type;                     bv = b.type;                     break;
-      case "amount":   av = a.amount;                   bv = b.amount;                   break;
-      case "category": av = a.category;                 bv = b.category;                 break;
-      default:         av = 0;                          bv = 0;
-    }
-    if (av < bv) return sortOrder.value === "asc" ? -1 : 1;
-    if (av > bv) return sortOrder.value === "asc" ? 1 : -1;
-    return 0;
-  });
-
+  // other filters can follow...
   return filtered;
 });
 
@@ -1437,21 +2130,32 @@ const paginatedTransactions = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return filteredTransactions.value.slice(start, start + itemsPerPage);
 });
-
-const totalPages = computed(() => Math.ceil(filteredTransactions.value.length / itemsPerPage));
-
-const allSelected = computed(() =>
-  paginatedTransactions.value.length > 0 &&
-  paginatedTransactions.value.every((_, index) =>
-    selectedTransactions.value.includes(index + (currentPage.value - 1) * itemsPerPage)
-  )
+const totalPages = computed(() =>
+  Math.ceil(filteredTransactions.value.length / itemsPerPage)
+);
+const allSelected = computed(
+  () =>
+    paginatedTransactions.value.length > 0 &&
+    paginatedTransactions.value.every((_, index) =>
+      selectedTransactions.value.includes(
+        index + (currentPage.value - 1) * itemsPerPage
+      )
+    )
 );
 
 // Stats
-const incomeTransactions = computed(() => filteredTransactions.value.filter(t => t.type === "income"));
-const expenseTransactions = computed(() => filteredTransactions.value.filter(t => t.type === "spending"));
-const totalIncome = computed(() => incomeTransactions.value.reduce((s, t) => s + t.amount, 0));
-const totalExpenses = computed(() => expenseTransactions.value.reduce((s, t) => s + t.amount, 0));
+const incomeTransactions = computed(() =>
+  filteredTransactions.value.filter((t) => t.type === "income")
+);
+const expenseTransactions = computed(() =>
+  filteredTransactions.value.filter((t) => t.type === "spending")
+);
+const totalIncome = computed(() =>
+  incomeTransactions.value.reduce((s, t) => s + t.amount, 0)
+);
+const totalExpenses = computed(() =>
+  expenseTransactions.value.reduce((s, t) => s + t.amount, 0)
+);
 const netBalance = computed(() => totalIncome.value - totalExpenses.value);
 
 // Chart data
@@ -1463,51 +2167,63 @@ const chartData = computed(() => {
         )
       : filteredTransactions.value;
 
-  // Category totals for pie / doughnut
-  if (chartConfig.value.type === "pie" || chartConfig.value.type === "doughnut") {
+  if (
+    chartConfig.value.type === "pie" ||
+    chartConfig.value.type === "doughnut"
+  ) {
     const categoryTotals: Record<string, number> = {};
     for (const t of filtered) {
-      if (t.type === "spending") {
-        categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
-      }
+      if (t.type === "spending")
+        categoryTotals[t.category] =
+          (categoryTotals[t.category] || 0) + t.amount;
     }
     return {
       labels: Object.keys(categoryTotals),
       datasets: [
         {
           data: Object.values(categoryTotals),
-          // deterministic palette (ok to keep static for now)
           backgroundColor: [
-            "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF",
-            "#FF9F40", "#C9CBCF", "#10B981", "#F59E0B", "#3B82F6",
-            "#EF4444", "#6366F1", "#22C55E", "#14B8A6", "#E879F9",
+            "#FF6384",
+            "#36A2EB",
+            "#FFCE56",
+            "#4BC0C0",
+            "#9966FF",
+            "#FF9F40",
+            "#C9CBCF",
+            "#10B981",
+            "#F59E0B",
+            "#3B82F6",
+            "#EF4444",
+            "#6366F1",
+            "#22C55E",
+            "#14B8A6",
+            "#E879F9",
           ],
         },
       ],
     };
   }
 
-  // Time-series (line/bar)
   const groups: Record<string, { income: number; spending: number }> = {};
   for (const t of filtered) {
-    const d = new Date(t.date);
+    const d = dateFromISOLocal(t.date) || new Date();
     let key: string;
     switch (chartConfig.value.groupBy) {
       case "daily":
-        key = t.date; // YYYY-MM-DD
+        key = toLocalISO(d);
         break;
       case "weekly": {
         const weekStart = new Date(d);
         weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-        key = weekStart.toISOString().split("T")[0];
+        key = toLocalISO(weekStart);
         break;
       }
       case "fortnightly": {
         const fortnightStart = new Date(d);
         const dayOfWeek = fortnightStart.getDay();
-        const offset = (dayOfWeek + 7) % 14; // align to 2-week buckets
+        const offset = (dayOfWeek + 7) % 14;
         fortnightStart.setDate(fortnightStart.getDate() - offset);
-        key = fortnightStart.toISOString().split("T")[0];
+        key = toLocalISO(fortnightStart);
         break;
       }
       case "monthly":
@@ -1520,7 +2236,7 @@ const chartData = computed(() => {
         key = String(d.getFullYear());
         break;
       default:
-        key = t.date;
+        key = toLocalISO(d);
     }
     if (!groups[key]) groups[key] = { income: 0, spending: 0 };
     groups[key][t.type] += t.amount;
@@ -1530,7 +2246,6 @@ const chartData = computed(() => {
   const incomeArr = keys.map((k) => groups[k].income);
   const spendingArr = keys.map((k) => groups[k].spending);
 
-  // cumulative balance
   const balanceArr: number[] = [];
   let running = 0;
   for (let i = 0; i < keys.length; i++) {
@@ -1538,7 +2253,7 @@ const chartData = computed(() => {
     balanceArr.push(running);
   }
 
-  const asType = chartConfig.value.type; // "line" or "bar"
+  const asType = chartConfig.value.type;
   return {
     labels: keys,
     datasets: [
@@ -1563,7 +2278,7 @@ const chartData = computed(() => {
         data: balanceArr,
         borderColor: "#3B82F6",
         backgroundColor: "rgba(59,130,246,0.15)",
-        type: asType === "bar" ? "line" : asType, // keep balance as a line when bars selected
+        type: asType === "bar" ? "line" : asType,
         pointRadius: 3,
         borderWidth: 3,
         tension: 0.28,
@@ -1575,30 +2290,62 @@ const chartData = computed(() => {
 });
 
 /** ===================== Utils / Table helpers ===================== */
-const formatDate = (date: string) => new Date(date).toLocaleDateString();
+function dateFromISOLocal(iso: string): Date | null {
+  const m = iso?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+  const [, y, mo, d] = m;
+  const dt = new Date(Number(y), Number(mo) - 1, Number(d));
+  return isNaN(+dt) ? null : dt;
+}
+function todayLocalISO(): string {
+  const d = new Date();
+  return toLocalISO(d);
+}
+function pad2(n: number) {
+  return String(n).padStart(2, "0");
+}
+function toLocalISO(d: Date): string {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+}
+function ddmmyyyyToISO(s: string): string {
+  const clean = finalizeDDMM(s);
+  if (!clean) return "";
+  const [dd, mm, yyyy] = clean.split("-");
+  return `${yyyy}-${mm}-${dd}`;
+}
+function isoToDDMMYYYY(iso: string): string {
+  const m = iso?.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return "";
+  const [, y, mo, d] = m;
+  return `${d}-${mo}-${y}`;
+}
+function formatDate(dateStr: string): string {
+  if (!dateStr) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return isoToDDMMYYYY(dateStr);
+  const dt = new Date(dateStr);
+  if (isNaN(+dt)) return dateStr;
+  return `${pad2(dt.getDate())}-${pad2(dt.getMonth() + 1)}-${dt.getFullYear()}`;
+}
 
 const getSortIcon = (field: "date" | "type" | "amount" | "category") => {
   if (sortField.value !== field) return "↕️";
   return sortOrder.value === "asc" ? "↑" : "↓";
 };
-
 const updateSort = (field: "date" | "type" | "amount" | "category") => {
-  if (sortField.value === field) {
+  if (sortField.value === field)
     sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
-  } else {
+  else {
     sortField.value = field;
     sortOrder.value = "desc";
   }
   currentPage.value = 1;
 };
-
 const toggleSelect = (indexOnPage: number) => {
   const actualIndex = indexOnPage + (currentPage.value - 1) * itemsPerPage;
   const i = selectedTransactions.value.indexOf(actualIndex);
   if (i > -1) selectedTransactions.value.splice(i, 1);
   else selectedTransactions.value.push(actualIndex);
 };
-
 const toggleSelectAll = () => {
   const pageIndices = paginatedTransactions.value.map(
     (_, i) => i + (currentPage.value - 1) * itemsPerPage
@@ -1608,16 +2355,12 @@ const toggleSelectAll = () => {
       (i) => !pageIndices.includes(i)
     );
   } else {
-    for (const i of pageIndices) {
-      if (!selectedTransactions.value.includes(i)) {
+    for (const i of pageIndices)
+      if (!selectedTransactions.value.includes(i))
         selectedTransactions.value.push(i);
-      }
-    }
   }
 };
-
 const clearSelection = () => (selectedTransactions.value = []);
-
 const bulkDelete = () => {
   if (!selectedTransactions.value.length) return;
   if (
@@ -1625,21 +2368,16 @@ const bulkDelete = () => {
       `Are you sure you want to delete ${selectedTransactions.value.length} transaction(s)?`
     )
   ) {
-    // delete from the end to keep indices valid
     const sorted = [...selectedTransactions.value].sort((a, b) => b - a);
-    for (const idx of sorted) {
-      transactions.value.splice(idx, 1);
-    }
+    for (const idx of sorted) transactions.value.splice(idx, 1);
     selectedTransactions.value = [];
   }
 };
-
 function editTransaction(transaction: Transaction) {
   newTransaction.value = { ...transaction };
   currentlyEditingId.value = transaction.id;
   activeTab.value = "add";
 }
-
 const deleteTransaction = (id: string) => {
   if (confirm("Are you sure you want to delete this transaction?")) {
     const index = transactions.value.findIndex((t) => t.id === id);
@@ -1650,21 +2388,14 @@ const deleteTransaction = (id: string) => {
 /** ===================== Chart rendering ===================== */
 const renderChart = async () => {
   if (!chartCanvas.value || chartData.value.labels.length === 0) return;
-
   if (chartInstance) chartInstance.destroy();
-
   const { Chart, registerables } = await import("chart.js");
   Chart.register(...registerables);
-
-  // Deep clone data to avoid mutating computed result
   const data = JSON.parse(JSON.stringify(chartData.value));
-
-  // Ensure dataset types match selection for non-mixed charts
-  if (chartConfig.value.type === "bar") {
+  if (chartConfig.value.type === "bar")
     data.datasets.forEach((ds: any) => (ds.type = ds.type || "bar"));
-  } else if (chartConfig.value.type === "line") {
+  else if (chartConfig.value.type === "line")
     data.datasets.forEach((ds: any) => (ds.type = ds.type || "line"));
-  }
 
   const ctx = chartCanvas.value.getContext("2d");
   chartInstance = new Chart(ctx!, {
@@ -1687,14 +2418,13 @@ const renderChart = async () => {
         },
       },
       scales:
-        chartConfig.value.type === "pie" || chartConfig.value.type === "doughnut"
+        chartConfig.value.type === "pie" ||
+        chartConfig.value.type === "doughnut"
           ? {}
           : {
               y: {
                 beginAtZero: true,
-                ticks: {
-                  callback: (val: any) => `$${Number(val).toFixed(2)}`,
-                },
+                ticks: { callback: (val: any) => `$${Number(val).toFixed(2)}` },
               },
             },
     },
@@ -1705,7 +2435,6 @@ const renderChart = async () => {
 watch(activeTab, (tab) => {
   if (tab === "about" && !aboutHtml.value) fetchAboutMarkdown();
 });
-
 watch(
   selectedCategories,
   () => {
@@ -1716,7 +2445,6 @@ watch(
   },
   { deep: true }
 );
-
 watch(
   transactions,
   () => {
@@ -1727,7 +2455,6 @@ watch(
   },
   { deep: true }
 );
-
 watch(
   chartConfig,
   () => {
@@ -1738,46 +2465,33 @@ watch(
   },
   { deep: true }
 );
-
-// re-render chart when data or config changes
-watch(
-  [chartData, chartConfig],
-  () => nextTick(() => renderChart()),
-  { deep: true }
-);
-
-// ensure categories selected after any category set change
+watch([chartData, chartConfig], () => nextTick(() => renderChart()), {
+  deep: true,
+});
 watch(
   categories,
   () => {
-    if (selectedCategories.value.length === 0) {
+    if (selectedCategories.value.length === 0)
       selectedCategories.value = [...categories.value];
-    }
   },
   { deep: true }
 );
-
-// reset pagination on filter change
 watch([searchQuery, typeFilter], () => (currentPage.value = 1));
 
 /** ===================== Lifecycle ===================== */
 onMounted(() => {
-  // Theme
   const savedTheme = localStorage.getItem("financial-tracker-theme");
-  if (savedTheme && availableThemes.includes(savedTheme)) {
-    setTheme(savedTheme);
-  } else {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setTheme(prefersDark ? "dark" : "light");
-  }
+  if (savedTheme && availableThemes.includes(savedTheme)) setTheme(savedTheme);
+  else
+    setTheme(
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
+    );
 
-  // Filters
   resetDateFilter();
-
-  // Selected categories (initial)
   selectedCategories.value = [...categories.value];
 
-  // Restore chart config
   const savedConfig = localStorage.getItem("financial-tracker-chart-config");
   if (savedConfig) {
     try {
@@ -1785,16 +2499,18 @@ onMounted(() => {
     } catch {}
   }
 
-  // Restore transactions
-  const savedTransactions = localStorage.getItem("financial-tracker-transactions");
+  const savedTransactions = localStorage.getItem(
+    "financial-tracker-transactions"
+  );
   if (savedTransactions) {
     try {
       transactions.value = JSON.parse(savedTransactions);
     } catch {}
   }
 
-  // Restore selected categories
-  const savedCats = localStorage.getItem("financial-tracker-selected-categories");
+  const savedCats = localStorage.getItem(
+    "financial-tracker-selected-categories"
+  );
   if (savedCats) {
     try {
       selectedCategories.value = JSON.parse(savedCats);
