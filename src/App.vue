@@ -4099,7 +4099,7 @@ async function fetchAboutMarkdown() {
   loadingAbout.value = true;
   try {
     aboutHtml.value = `
-      <h2>Enhanced Financial Tracker - v2.0</h2>
+      <h2>myAniFI - My Financial Tracker - v2.0</h2>
       <br>
       <h3>🔒 Privacy First: All data stored locally on your device!</h3>
       <br>
