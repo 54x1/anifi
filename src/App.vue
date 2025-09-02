@@ -837,6 +837,7 @@
           </div>
         </div>
       </section>
+      
 
       <!-- Transactions -->
       <section
@@ -3290,11 +3291,72 @@ function openAddCalendar() {
 function setAddDateToday() {
   newTxDateISO.value = todayLocalISO();
 }
+/** ========= Recurring Transactions  ========= */
+function generateRecurringTransactions(baseTx: Transaction): Transaction[] {
+  const transactions: Transaction[] = [];
+  const numOccurrences = Math.max(1, Number(baseTx.recursions || 1));
+  
+  for (let i = 0; i < numOccurrences; i++) {
+    let occurrenceDate: string;
+    
+    if (i === 0) {
+      // First occurrence uses the original date
+      occurrenceDate = baseTx.date;
+    } else {
+      // Calculate subsequent dates based on frequency
+      occurrenceDate = calculateNextOccurrenceDate(
+        baseTx.date, 
+        baseTx.frequency || 'monthly', 
+        i
+      );
+    }
+    
+    transactions.push({
+      ...baseTx,
+      id: `${Date.now()}-${Math.floor(Math.random() * 10000)}-${i}`,
+      date: occurrenceDate,
+      // Only the first transaction should be marked as recurring
+      recurring: i === 0 ? baseTx.recurring : false,
+      recursions: i === 0 ? baseTx.recursions : 1,
+      endDate: i === 0 ? baseTx.endDate : '',
+    });
+  }
+  
+  return transactions;
+}
+
+function calculateNextOccurrenceDate(startDate: string, frequency: RecurringFrequency, occurrenceIndex: number): string {
+  const date = new Date(startDate);
+  
+  switch (frequency) {
+    case 'daily':
+      date.setDate(date.getDate() + occurrenceIndex);
+      break;
+    case 'weekly':
+      date.setDate(date.getDate() + (occurrenceIndex * 7));
+      break;
+    case 'fortnightly':
+      date.setDate(date.getDate() + (occurrenceIndex * 14));
+      break;
+    case 'monthly':
+      date.setMonth(date.getMonth() + occurrenceIndex);
+      break;
+    case 'quarterly':
+      date.setMonth(date.getMonth() + (occurrenceIndex * 3));
+      break;
+    case 'yearly':
+      date.setFullYear(date.getFullYear() + occurrenceIndex);
+      break;
+  }
+  
+  return toLocalISO(date);
+}
 
 function addTransaction() {
   if (newTransaction.amount <= 0 || !newTransaction.category) return;
 
   if (currentlyEditingId.value) {
+    // Editing existing transaction (not handling recurring for edits)
     const i = transactions.value.findIndex(
       (t) => t.id === currentlyEditingId.value
     );
@@ -3310,15 +3372,27 @@ function addTransaction() {
     return;
   }
 
-  const base = {
+  // Handle new transaction
+  const baseTx = {
     ...newTransaction,
     id: `${Date.now()}-${Math.floor(Math.random() * 10000)}`,
     source: newTransaction.source || "Manual",
   };
-  transactions.value.push(base);
+
+  if (newTransaction.recurring) {
+    // Generate all recurring transactions
+    const recurringTransactions = generateRecurringTransactions(baseTx);
+    transactions.value.push(...recurringTransactions);
+    pushToast(`Added ${recurringTransactions.length} recurring transactions`, "success");
+  } else {
+    // Single transaction
+    transactions.value.push(baseTx);
+    pushToast("Transaction added", "success");
+  }
+  
   resetForm();
-  pushToast("Transaction added", "success");
 }
+
 function resetForm() {
   Object.assign(newTransaction, {
     id: "",
