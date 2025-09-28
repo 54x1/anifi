@@ -4548,6 +4548,10 @@ watch(
 </script>
 
 <style scoped>
+.badge.badge-outline {
+  width: max-content;
+}
+
 /* ===== Accessibility & focus ===== */
 :focus-visible {
   outline: 3px solid oklch(var(--bc) / 0.9);
