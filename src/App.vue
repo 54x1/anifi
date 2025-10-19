@@ -3983,6 +3983,17 @@ const DEMO_DATA: Transaction[] = [
     source: "Demo Data",
     tags: ["investment", "buy", "etf", "asx", "brokerage"],
   },
+  {
+    id: "demo-64",
+    date: "2024-02-12",
+    type: "spending",
+    amount: 200.0,
+    category: "Insurance",
+    description: "pneumonoultramicroscopicsilicovolcanoconiosis and Pseudopseudohypoparathyroidism and Hippopotomonstrosesquippedaliophobia Insurance",
+    source: "Demo Data",
+    frequency: "monthly",
+    tags: ["insurance", "health", "monthly"],
+  },
 ];
 
 // Tips banner state
