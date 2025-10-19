@@ -2900,7 +2900,9 @@ const tags = ref<string[]>(
 const csvInputRef = ref<HTMLInputElement | null>(null);
 
 async function  openTour(opts: { closeTour?: boolean } = {}) {
+  console.log(opts.closeTour)
   if (opts.closeTour) {
+    console.log(opts.closeTour)
     showTour.value = false; // close overlay so the picker is clickable
     onboardingStep.value = 0;
   }
@@ -4104,18 +4106,16 @@ function handleKeydown(e: KeyboardEvent) {
 }
 
 onMounted(() => {
-   openTour({ closeTour: true });
+  
   document.addEventListener("click", closeOpenDropdowns);
   document.addEventListener("keydown", handleKeydown);
 
   loadTags();
   hydrateTransactionsFromStorage();
 
-  const seen = localStorage.getItem("hasSeenOnboarding") === "true";
-  if (!seen && transactions.value.length === 0) {
-    showTour.value = true;
-    onboardingStep.value = 0;
+  if (transactions.value.length === 0) {
     activeTab.value = "about";
+    openTour({ closeTour: true })
   }
 });
 
@@ -4350,6 +4350,7 @@ const allCategoryLower = computed(
 
 // // Persist custom categories
 onMounted(() => {
+
   try {
     const legacy = localStorage.getItem("financial-tracker-custom-categories");
     if (legacy && !localStorage.getItem(ls.custom)) {
@@ -6808,7 +6809,7 @@ onMounted(async () => {
   ) {
     if (!hasSeenOnboarding && transactions.value.length === 0) {
       activeTab.value = "chart";
-      showTour.value = true;
+      // showTour.value = true;
     } else {
       activeTab.value = "about";
     }
