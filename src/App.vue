@@ -1945,7 +1945,7 @@
               <li>
                 📥 <strong>Supports CSV Import</strong> from the 4 major Australian banks
               </li>
-              <li>💾 <strong>Auto-Recall</strong> - Seamless loads local data from browser</li>
+              <li>💾 <strong>Auto-Recall</strong> - Seamlessly loads local data from browser</li>
               <li>📈 <strong>Interactive Charts and Analytics</strong></li>
               <li>🔄 <strong>Recurring Transaction Support</strong></li>
               <li>🎨 <strong>Multi-Theme Support</strong></li>
