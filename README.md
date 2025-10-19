@@ -1,61 +1,65 @@
-### AniFi - MVP_Ver1.3
+# ℹ️ About
 
+## myAniFi – v3.0
 
-### Does not read any personal finances everything is stored locally on your own machine and only reads in your owe local browser!!!
+**My Financial Forecaster/Tracker.**  
+Take control of your finances by importing your bank statements or adding transactions manually.
 
+---
 
-### As of 2025 currently Supports* - Westpac✅ | Nab✅ | ANZ✅ | CommBank✅ | St Geroge✅ | ING✅ | Macquarie✅ | Up Bank✅ | UBank✅ | and more too come...
-  *Need more testers 
+## 🔒 Privacy First
 
-### Fixes:
-* Fix - Auto select all categories present when loading Chart Page
-* Fix - Type padding CSS 
-* Fix - Bulk Actions - eg BULK CRUD
-* Fix - UI date to local browser settings / hard code dd-mm-yyyy  /or both mm-dd-yyyy
+All your data is stored privately and securely on your device.
 
+---
 
-### Future:
-* Add - Custom user categoies 
-* Add - Custom user colors
+<!-- Show this CTA only if there are no transactions -->
+<div class="text-center mt-8">
+  <a href="#" data-action="start-tour" class="btn btn-primary btn-wide btn-lg">Get Started Now</a>
+</div>
 
+---
 
+## 🏦 Bank Support
 
-### Prerequisites
-- Node.js 22.12+ 
-- npm or yarn
+Effortlessly import from major Australian banks:
 
-### Installation
-```bash
-# Install dependencies
-npm install
+- ✅ Westpac  
+- ✅ NAB  
+- ✅ ANZ  
+- ✅ CommBank  
+- ✅ St.George  
+- ✅ ING  
+- ✅ Macquarie  
+- ✅ Up Bank  
+- ✅ UBank
 
-# Start development server
-npm run dev
+---
 
-# Build for production
-npm run build
-```
+## ✨ Key Features
 
-### Development Server
-The application will be available at `http://localhost:3000`
+- 🏷️ **Custom Categories and Tags** – Search and add your own transaction categories and tags  
+- 🎯 **Smart Bulk Operations** – Select and edit multiple transactions  
+- 📊 **Advanced Analytics** – Enhanced charts and filtering  
+- 🔄 **Auto-Categorization** – Smart category suggestions  
+- 📥 **CSV Import** – Supports the 4 major Australian banks  
+- 💾 **Auto-Recall** – Seamlessly loads local data from your browser  
+- 📈 **Interactive Charts and Analytics**  
+- 🔄 **Recurring Transaction Support**  
+- 🎨 **Multi-Theme Support**  
+- 📱 **Mobile-Responsive Design-ish**
 
+---
 
-## 🔧 Customization
+## 🚀 Future Features
 
-### Adding New Themes
-Add custom themes to `tailwind.config.js`:
-```javascript
-daisyui: {
-  themes: [
-    // ... existing themes
-    {
-      "custom": {
-        "primary": "#your-color",
-        "secondary": "#your-color",
-        // ... more colors
-      }
-    }
-  ]
-}
+- Improvements to adding Categories and Tags  
+- Interactive bubble map chart type
 
+---
 
+## 🛠️ Technical Stack
+
+- Vue 3 with TypeScript  
+- DaisyUI for styling  
+- Chart.js for analytics
