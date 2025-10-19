@@ -39,7 +39,7 @@
       <div class="navbar-start">
         <h1 class="text-xl font-bold text-primary flex items-center gap-2">
           <span aria-hidden="true">💰</span>
-          <span>Financial Tracker</span>
+          <span>My Financial Tracker</span>
         </h1>
       </div>
 
@@ -108,7 +108,7 @@
     </header>
 
     <!-- Mobile Navigation -->
-    <nav class="btm-nav lg:hidden" aria-label="Primary (mobile)">
+    <nav class="btm-nav lg:hidden z-50 shadow-[0_-2px_6px_0px_rgba(0,0,0,0.1)] border-t border-base-300" aria-label="Primary (mobile)">
       <button
         v-for="tab in tabs"
         :key="tab.id"
@@ -125,67 +125,88 @@
     <!-- Main -->
     <main id="main" class="container mx-auto p-4 pb-24 lg:pb-6" role="main">
       <!-- COMBINED: Landing Page / Onboarding Flow -->
-<!-- Get Started / Onboarding -->
-<section
-  v-if="showTour"
-  class="fixed inset-0 z-[60] bg-base-100/90 backdrop-blur p-4 lg:p-10"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="onboardingTitle"
->
-  <div class="max-w-3xl mx-auto">
-    <div class="card bg-base-100 shadow-2xl">
-      <div class="card-body p-6 lg:p-8 space-y-6">
-        <!-- Stepper -->
-        <ol class="steps w-full">
+      <!-- Get Started / Onboarding -->
+      <section
+        v-if="showTour"
+        class="fixed inset-0 z-[60] bg-base-100/90 backdrop-blur p-4 lg:p-10"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="onboardingTitle"
+      >
+        <div class="max-w-3xl mx-auto">
+          <div class="card bg-base-100 shadow-2xl">
+            <div class="card-body p-6 lg:p-8 space-y-6">
+              <!-- Stepper -->
+              <!-- <ol class="steps w-full">
           <li class="step" :class="{ 'step-primary': onboardingStep >= 0 }">Welcome</li>
           <li class="step" :class="{ 'step-primary': onboardingStep >= 1 }">Add data</li>
-        </ol>
+        </ol> -->
 
-        <!-- Step 0 -->
-        <div v-if="onboardingStep === 0" class="text-center space-y-5">
-          <h1 id="onboardingTitle" class="text-3xl lg:text-4xl font-extrabold">
-            Let’s get your data in
-          </h1>
-          <p class="text-base-content/70">
-            Pick one of the options below. You can change your mind later.
-          </p>
+              <!-- Step 0 -->
+              <div v-if="onboardingStep === 0" class="text-center space-y-5">
+                <h1
+                  id="onboardingTitle"
+                  class="text-3xl lg:text-4xl font-extrabold"
+                >
+                  Let’s get your data in
+                </h1>
+                <p class="text-base-content/70">
+                  Pick one of the options below. You can change your mind later.
+                </p>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button class="btn btn-primary" @click="startImportFromOnboarding" data-testid="cta-import">
-              📥 Import CSV
-            </button>
-            <button class="btn btn" @click="confirmDemo">
-              🥳 Try demo data
-            </button>
-          </div>
-        </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <button
+                    class="btn btn-primary"
+                    @click="startImportFromOnboarding"
+                    data-testid="cta-import"
+                  >
+                    📥 Import Data
+                  </button>
+                  <button class="btn" @click="startManualAdd">
+                    ✍️ Add Transactions Manually
+                  </button>
+                  <button class="btn btn-outline" @click="confirmDemo">
+                    🥳 Try demo data
+                  </button>
+                </div>
+              </div>
 
-        <!-- Step 1: demo confirm -->
-        <div v-else-if="onboardingStep === 1" class="text-center space-y-5">
-          <h2 class="text-2xl lg:text-3xl font-bold">Load demo data?</h2>
-          <p class="text-base-content/70">
-            We’ll add a realistic sample so you can explore charts and filters.
-          </p>
-          <div class="flex justify-center gap-3">
-            <button class="btn btn-primary" @click="loadDemoDataAndFinish">
-              Load & explore
-            </button>
-            <!-- <button class="btn btn-ghost" @click="onboardingStep = 0">
+              <!-- Step 1: demo confirm -->
+              <div
+                v-else-if="onboardingStep === 1"
+                class="text-center space-y-5"
+              >
+                <h2 class="text-2xl lg:text-3xl font-bold">Load demo data?</h2>
+                <p class="text-base-content/70">
+                  We’ll add a realistic sample so you can explore charts and
+                  filters.
+                </p>
+                <div class="flex justify-center gap-3">
+                  <button
+                    class="btn btn-primary"
+                    @click="loadDemoDataAndFinish"
+                  >
+                    Load & explore
+                  </button>
+                  <!-- <button class="btn btn-ghost" @click="onboardingStep = 0">
               Cancel
             </button> -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Tour controls -->
+            <div class="card-actions justify-between px-6 pb-6 -mt-2">
+              <button class="btn btn-ghost btn-sm" @click="handleTourBack">
+                ◀ Back
+              </button>
+              <button class="btn btn-ghost btn-sm" @click="skipTour">
+                Skip for now
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-
-      <!-- Tour controls -->
-      <div class="card-actions justify-between px-6 pb-6 -mt-2">
-        <button class="btn btn-ghost btn-sm" @click="handleTourBack">◀ Back</button>
-        <button class="btn btn-ghost btn-sm" @click="skipTour">Skip for now</button>
-      </div>
-    </div>
-  </div>
-</section>
+      </section>
 
       <template v-else>
         <!-- This template now only shows when the tour is not active -->
@@ -193,11 +214,11 @@
         <!-- ... (Your existing Import, Add, Chart, Transactions, and other modals) ... -->
         <!-- For example: The empty state hero -->
         <section
+          class="hero min-h-[60vh] card bg-base-100 shadow-xl "
           v-if="
             transactions.length === 0 &&
-            !['about', 'import'].includes(activeTab)
+            !['about', 'add', 'import'].includes(activeTab)
           "
-          class="hero min-h-[60vh]"
         >
           <div class="hero-content text-center">
             <div class="max-w-md">
@@ -206,12 +227,15 @@
               <p class="py-6 text-base-content/70">
                 Import your bank data or add a transaction to get started.
               </p>
-              <div class="flex gap-4 justify-center">
+              <div class="flex flex-wrap gap-4 justify-center">
                 <button
                   class="btn btn-primary"
                   @click="startImportFromEmptyState"
                 >
-                  📥 Import CSV
+                  📥 Import Data
+                </button>
+                <button class="btn" @click="startManualAdd">
+                  ✍️ Add Transactions Manually
                 </button>
                 <button class="btn btn-outline" @click="loadDemoDataAndFinish">
                   🥳 Load Demo Data
@@ -222,8 +246,9 @@
         </section>
 
         <!-- 3. IMPROVED: Dismissible Tip Banner (now final onboarding step) -->
+
         <section
-          v-if="showTips && transactions.length > 0"
+          v-if="showTips && transactions.length > 0 && activeTab === 'add'"
           class="alert alert-info mb-4"
           role="status"
           aria-live="polite"
@@ -251,1134 +276,7 @@
         </section>
 
         <!-- If data exists, show the main content -->
-        <template v-if="transactions.length > 0 || activeTab === 'import'">
-          <!-- Import / Export -->
-          <section
-            v-show="activeTab === 'import'"
-            class="card bg-base-100 shadow-xl mb-6"
-            aria-labelledby="importExportHeading"
-          >
-            <div class="card-body">
-              <h2 id="importExportHeading" class="card-title">
-                📥 Import / 📤 Export
-              </h2>
-              <!-- ... (rest of import/export content) ... -->
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Importers -->
-                <div class="space-y-6">
-                  <!-- File upload -->
-                  <div class="form-control">
-                    <label class="label" for="csvUpload"
-                      ><span class="label-text">Upload CSV File</span></label
-                    >
-                    <input
-                      id="csvUpload"
-                      type="file"
-                      accept=".csv"
-                      class="file-input file-input-bordered w-full"
-                      @change="handleFileUpload"
-                      ref="csvInputRef"
-                    />
-
-                    <p class="text-xs text-base-content/60 mt-1">
-                      After upload you’ll be prompted to label the import (e.g.,
-                      “ING Everyday - May 2025”).
-                    </p>
-                  </div>
-
-                  <!-- URL / Share code -->
-                  <div class="form-control">
-                    <label class="label" for="importUrl"
-                      ><span class="label-text"
-                        >Import from URL or Share Code</span
-                      ></label
-                    >
-                    <div class="join">
-                      <input
-                        id="importUrl"
-                        v-model="importUrl"
-                        type="text"
-                        inputmode="url"
-                        autocapitalize="off"
-                        autocorrect="off"
-                        placeholder="https://... or share code (tx:...)"
-                        class="input input-bordered join-item flex-1"
-                      />
-                      <button
-                        class="btn btn-primary join-item"
-                        @click="importFromUrlOrCode"
-                      >
-                        Import
-                      </button>
-                    </div>
-                    <p class="text-xs text-base-content/60 mt-1">
-                      Tip: Paste a link with <code>?tx=...</code> or just the
-                      share code (starts with <code>tx:</code>).
-                    </p>
-                  </div>
-
-                  <!-- Clipboard & Current URL -->
-                  <div class="flex flex-wrap gap-2">
-                    <button
-                      class="btn btn-error btn-sm"
-                      @click="clearAllTransactions"
-                    >
-                      🧨 Remove all transactions
-                    </button>
-                  </div>
-
-                  <!-- QR Scanner -->
-                  <div
-                    v-if="scanning"
-                    class="card bg-base-200 shadow-inner p-3"
-                  >
-                    <div class="flex items-center justify-between">
-                      <h3 class="font-semibold">Scanning QR…</h3>
-                      <button
-                        class="btn btn-ghost btn-sm"
-                        @click="stopQrScan"
-                        aria-label="Stop scanning"
-                      >
-                        ✕
-                      </button>
-                    </div>
-                    <video
-                      ref="qrVideo"
-                      class="w-full rounded-lg mt-2"
-                      autoplay
-                      playsinline
-                      muted
-                    ></video>
-                    <p class="text-xs mt-2 text-base-content/70">
-                      Point your camera at a QR generated by this app. We’ll
-                      auto-import on detection.
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Exporters -->
-                <div class="space-y-6">
-                  <!-- Share code -->
-                  <div class="form-control">
-                    <label class="label" for="shareCode"
-                      ><span class="label-text"
-                        >Share Code (compact, paste anywhere)</span
-                      >
-                      <p class="text-xs text-base-content/60 mt-1">
-                        Length:
-                        <strong>{{ shareCodeLength }}</strong> characters.
-                        <span v-if="shareCodeLength > SHARE_URL_SAFE_LIMIT">
-                          (Tip: Use JSON export for very large datasets.)
-                        </span>
-                      </p>
-                    </label>
-                    <div class="join">
-                      <input
-                        id="shareCode"
-                        :value="shareCode"
-                        readonly
-                        class="input input-bordered join-item flex-1 font-mono"
-                      />
-                      <button class="btn join-item" @click="copy(shareCode)">
-                        Copy
-                      </button>
-                    </div>
-                    <p class="text-xs text-base-content/60 mt-1">
-                      Paste into the “Import from URL or Share Code” box.
-                    </p>
-                  </div>
-
-                  <!-- <div class="form-control">
-                    <label class="label"
-                      ><span class="label-text">QR Code</span></label
-                    >
-                    <div class="flex items-center gap-2">
-                      <button class="btn btn-outline btn-sm" @click="renderQr">
-                        Generate
-                      </button>
-                      <button class="btn btn-ghost btn-sm" @click="clearQr">
-                        Clear
-                      </button>
-                    </div>
-                    <canvas
-                      ref="qrCanvas"
-                      class="mt-3 max-w-[280px]"
-                      role="img"
-                      aria-label="QR code for the share link"
-                    ></canvas>
-                    <div class="text-xs text-error mt-1" v-if="qrError">
-                      {{ qrError }}
-                    </div>
-                  </div> -->
-                  <!-- JSON Export / Import -->
-                  <div class="form-control">
-                    <label class="label"
-                      ><span class="label-text"
-                        >JSON Export / Import</span
-                      ></label
-                    >
-                    <div class="flex flex-wrap gap-2 items-center">
-                      <button
-                        class="btn btn-outline btn-sm"
-                        @click="downloadJson()"
-                      >
-                        ⬇️ Download JSON
-                      </button>
-                      <label class="btn btn-outline btn-sm">
-                        ⬆️ Upload JSON
-                        <input
-                          type="file"
-                          accept="application/json"
-                          class="sr-only"
-                          @change="handleJsonImport"
-                        />
-                      </label>
-                    </div>
-                    <p class="text-xs text-base-content/60 mt-1">
-                      Use JSON to transfer large datasets offline without
-                      relying on long links.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- Add Transaction -->
-          <section
-            v-show="activeTab === 'add'"
-            class="card bg-base-100 shadow-xl mb-6"
-            aria-labelledby="addHeading"
-          >
-            <div class="card-body">
-              <h2 id="addHeading" class="card-title">➕ Add Transaction</h2>
-              <!-- ... (rest of add transaction content) ... -->
-              <form
-                @submit.prevent="addTransaction"
-                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
-              >
-                <!-- Date -->
-                <div class="form-control">
-                  <label class="label" for="addDate"
-                    ><span class="label-text">Date</span></label
-                  >
-                  <div class="join w-full">
-                    <input
-                      id="addDate"
-                      ref="addDateTextRef"
-                      type="text"
-                      inputmode="numeric"
-                      placeholder="dd-mm-yyyy"
-                      v-model="newTxDateText"
-                      @input="onAddDateInput"
-                      @blur="onAddDateBlur"
-                      @keydown="onDateKeydownDigitsOnly"
-                      :aria-invalid="!!newTxDateError"
-                      aria-describedby="addDateError"
-                      class="input input-bordered join-item w-full"
-                    />
-                    <button
-                      type="button"
-                      class="btn btn-outline join-item"
-                      @click="openAddCalendar"
-                      title="Open calendar"
-                      aria-label="Open calendar"
-                    >
-                      📅
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-primary join-item"
-                      @click="setAddDateToday"
-                    >
-                      Today
-                    </button>
-                  </div>
-                  <p
-                    v-if="newTxDateError"
-                    id="addDateError"
-                    class="text-error text-sm mt-1"
-                  >
-                    {{ newTxDateError }}
-                  </p>
-                  <input
-                    ref="addDatePickerRef"
-                    v-model="newTxDateISO"
-                    type="date"
-                    class="sr-only"
-                    tabindex="-1"
-                    aria-hidden="true"
-                  />
-                </div>
-
-                <!-- Type -->
-                <div class="form-control">
-                  <label class="label" for="addType"
-                    ><span class="label-text">Type</span></label
-                  >
-                  <select
-                    id="addType"
-                    v-model="newTransaction.type"
-                    class="select select-bordered"
-                    required
-                  >
-                    <option value="income">💰 Income</option>
-                    <option value="spending">💸 Spending</option>
-                  </select>
-                </div>
-
-                <!-- Amount -->
-                <div class="form-control">
-                  <label class="label" for="addAmount"
-                    ><span class="label-text">Amount</span></label
-                  >
-                  <div class="join">
-                    <span class="join-item btn btn-disabled" aria-hidden="true"
-                      >$</span
-                    >
-                    <input
-                      id="addAmount"
-                      v-model.number="newTransaction.amount"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      placeholder="0.00"
-                      class="input input-bordered join-item flex-1"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <!-- Category -->
-                <!-- Category Field (Combobox with create-or-select) -->
-                <div class="form-control">
-                  <label class="label" :for="ids.input">
-                    <span class="label-text">Category</span>
-                    <div class="ml-auto flex items-center gap-2">
-                      <button
-                        type="button"
-                        class="btn btn-ghost btn-xs"
-                        @click="openManager('manage')"
-                        aria-haspopup="dialog"
-                        title="Manage categories and tags"
-                      >
-                        <!-- settings-cog icon -->
-                        <svg
-                          class="w-4 h-4"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="1.75"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                        >
-                          <path
-                            d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
-                          />
-                          <path
-                            d="M19.4 15a1.6 1.6 0 0 0 .32 1.76l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.6 1.6 0 0 0-1.76-.32 1.6 1.6 0 0 0-1 1.47V21a2 2 0 0 1-4 0v-.1a1.6 1.6 0 0 0-1-1.47 1.6 1.6 0 0 0-1.76.32l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.6 1.6 0 0 0 .32-1.76 1.6 1.6 0 0 0-1.47-1H3a2 2 0 0 1 0-4h.1a1.6 1.6 0 0 0 1.47-1 1.6 1.6 0 0 0-.32-1.76l-.06-.06A2 2 0 1 1 7.02 3.5l.06.06a1.6 1.6 0 0 0 1.76.32A1.6 1.6 0 0 0 10.35 2h.1a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.47 1.6 1.6 0 0 0 1.76-.32l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.6 1.6 0 0 0-.32 1.76c.21.5.68.86 1.22.95H21a2 2 0 0 1 0 4h-.1c-.54.09-1 .45-1.22.95Z"
-                          />
-                        </svg>
-                        <span class="hidden sm:inline">Manage</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        class="btn btn-primary btn-xs"
-                        @click="openManager('add')"
-                        title="Add custom category"
-                      >
-                        <!-- plus icon -->
-                        <svg
-                          class="w-4 h-4"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          aria-hidden="true"
-                        >
-                          <path d="M12 5v14M5 12h14" />
-                        </svg>
-                        <span class="hidden sm:inline">Add custom</span>
-                      </button>
-                    </div>
-                  </label>
-
-                  <!-- Combobox -->
-                  <div
-                    class="dropdown w-full"
-                    :class="{ 'dropdown-open': open }"
-                  >
-                    <input
-                      :id="ids.input"
-                      v-model="query"
-                      @focus="open = true"
-                      @input="handleInput"
-                      @keydown.down.prevent="moveActive(1)"
-                      @keydown.up.prevent="moveActive(-1)"
-                      @keydown.enter.prevent="handleEnter"
-                      @keydown.esc.prevent="closeDropdown"
-                      type="text"
-                      class="input input-bordered w-full"
-                      :placeholder="placeholder"
-                      role="combobox"
-                      :aria-expanded="String(open)"
-                      :aria-controls="ids.listbox"
-                      :aria-activedescendant="activeId"
-                      autocomplete="off"
-                      data-testid="category-combobox"
-                    />
-
-                    <ul
-                      v-show="open"
-                      :id="ids.listbox"
-                      role="listbox"
-                      class="menu menu-sm bg-base-100 rounded-box shadow mt-2 max-h-56 overflow-y-auto w-full"
-                      data-testid="category-combobox-list"
-                    >
-                      <li
-                        v-if="showCreateOption"
-                        :id="optionId(-1)"
-                        role="option"
-                        :aria-selected="activeIndex === -1"
-                        class="whitespace-nowrap"
-                        @mousedown.prevent="createCustomFromQuery"
-                        @mousemove="activeIndex = -1"
-                      >
-                        <a>
-                          Create “<span class="font-semibold">{{
-                            trimmedQuery
-                          }}</span
-                          >”
-                        </a>
-                      </li>
-
-                      <li
-                        v-for="(cat, i) in filteredAllCategories"
-                        :key="cat"
-                        :id="optionId(i)"
-                        role="option"
-                        :aria-selected="activeIndex === i"
-                        @mousedown.prevent="selectCategory(cat)"
-                        @mousemove="activeIndex = i"
-                      >
-                        <a :class="{ active: activeIndex === i }">
-                          <span class="truncate">{{ cat }}</span>
-                          <span
-                            v-if="newTransaction.category === cat"
-                            class="badge badge-ghost"
-                            >Selected</span
-                          >
-                        </a>
-                      </li>
-
-                      <li
-                        v-if="
-                          filteredAllCategories.length === 0 &&
-                          !showCreateOption
-                        "
-                        class="px-4 py-2 text-sm opacity-70"
-                      >
-                        No matches.
-                      </li>
-                    </ul>
-                  </div>
-
-                  <!-- (Optional) assistive hint -->
-                  <label class="label">
-                    <span class="label-text-alt">
-                      Type to search. Press Enter to select or create.
-                    </span>
-                  </label>
-                </div>
-
-                <!-- Manager Modal -->
-                <dialog
-                  v-if="showManager"
-                  class="modal modal-open"
-                  aria-modal="true"
-                  role="dialog"
-                  :aria-labelledby="ids.heading"
-                >
-                  <div
-                    class="modal-box w-full max-w-4xl max-h-[80vh] overflow-y-auto"
-                  >
-                    <div class="flex justify-between items-center">
-                      <h3
-                        :id="ids.heading"
-                        class="font-bold text-lg text-primary"
-                      >
-                        Manage Categories & Tags
-                      </h3>
-                      <button
-                        class="btn btn-circle btn-ghost btn-sm"
-                        @click="closeManager"
-                        aria-label="Close"
-                      >
-                        <svg
-                          class="w-4 h-4"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-
-                    <!-- Category Search -->
-                    <div class="form-control mb-4">
-                      <label class="label">
-                        <span class="label-text">Search Categories</span>
-                        <span class="label-text-alt"
-                          >{{ filteredCategories.length }} categories</span
-                        >
-                      </label>
-                      <input
-                        v-model="categorySearch"
-                        type="text"
-                        placeholder="Search categories…"
-                        class="input input-bordered input-sm"
-                        data-testid="category-search"
-                      />
-                    </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <!-- Default (read-only) -->
-                      <div>
-                        <div class="flex justify-between items-center mb-2">
-                          <h4 class="font-semibold text-sm">
-                            Default Categories
-                          </h4>
-                          <span class="text-xs text-base-content/60"
-                            >({{ defaultCategories.length }})</span
-                          >
-                        </div>
-                        <div
-                          class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto"
-                        >
-                          <button
-                            v-for="cat in filteredDefaults"
-                            :key="cat"
-                            type="button"
-                            class="badge badge-ghost badge-outline badge-lg justify-between hover:badge-primary transition-colors"
-                            :class="{
-                              'badge-primary': newTransaction.category === cat,
-                            }"
-                            @click="selectCategory(cat)"
-                          >
-                            <span class="truncate">{{ cat }}</span>
-                          </button>
-                        </div>
-                      </div>
-
-                      <!-- Custom (CRUD) -->
-                      <div>
-                        <div class="flex justify-between items-center mb-2">
-                          <h4 class="font-semibold text-sm">
-                            Custom Categories
-                          </h4>
-                          <span class="text-xs text-base-content/60"
-                            >({{ customCategories.length }})</span
-                          >
-                        </div>
-                        <div class="space-y-2 max-h-64 overflow-y-auto">
-                          <div
-                            v-for="cat in filteredCustoms"
-                            :key="cat"
-                            class="flex items-center gap-2 p-2 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
-                          >
-                            <template v-if="editingCategory === cat">
-                              <input
-                                ref="editInputRef"
-                                v-model="editingCategoryName"
-                                type="text"
-                                class="input input-bordered input-xs flex-1"
-                                @keyup.enter="saveEditCategory"
-                                @blur="saveEditCategory"
-                                @keyup.esc="cancelEditCategory"
-                                data-testid="category-edit-input"
-                              />
-                            </template>
-                            <template v-else>
-                              <span class="flex-1 truncate">{{ cat }}</span>
-                              <div class="flex gap-1">
-                                <button
-                                  class="btn btn-ghost btn-xs text-primary"
-                                  @click="startEditCategory(cat)"
-                                  title="Edit"
-                                >
-                                  <svg
-                                    class="w-4 h-4"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <path
-                                      d="M15.232 5.232l3.536 3.536M4 20l3.536-.707L19.475 7.354a2.5 2.5 0 1 0-3.536-3.536L4 15.757 4 20z"
-                                    />
-                                  </svg>
-                                </button>
-                                <button
-                                  class="btn btn-ghost btn-xs text-error"
-                                  @click="deleteCustomCategory(cat)"
-                                  title="Delete"
-                                >
-                                  <svg
-                                    class="w-4 h-4"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                  >
-                                    <path
-                                      d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-1 0v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6m3 4v8m4-8v8"
-                                    />
-                                  </svg>
-                                </button>
-                              </div>
-                            </template>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Add New Category -->
-                    <div class="divider">Add New Category</div>
-                    <div class="flex gap-2">
-                      <input
-                        v-model="newCustomName"
-                        type="text"
-                        class="input input-bordered input-sm flex-1"
-                        placeholder="Enter new category name…"
-                        @keyup.enter="addCustomCategory"
-                        data-testid="new-category-input"
-                      />
-                      <button
-                        class="btn btn-primary btn-sm"
-                        @click="addCustomCategory"
-                      >
-                        Add Category
-                      </button>
-                    </div>
-
-                    <!-- Tags -->
-                    <div class="divider">Manage Tags</div>
-                    <div class="form-control mb-4">
-                      <label class="label">
-                        <span class="label-text">Tags</span>
-                        <span class="label-text-alt"
-                          >({{ tags.length }} tags)</span
-                        >
-                      </label>
-
-                      <div class="flex flex-wrap gap-2 mb-2">
-                        <div
-                          v-for="tag in filteredTags"
-                          :key="tag"
-                          class="badge badge-primary gap-1"
-                        >
-                          <span>{{ tag }}</span>
-                          <button
-                            type="button"
-                            class="btn btn-ghost btn-xs text-error"
-                            @click="removeTag(tag)"
-                            title="Remove tag"
-                          >
-                            <svg
-                              class="w-3 h-3"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              stroke-width="2"
-                            >
-                              <path d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-
-                      <div class="join w-full">
-                        <input
-                          v-model="tagSearch"
-                          type="text"
-                          placeholder="Search or add new tag…"
-                          class="input input-bordered input-sm join-item w-full"
-                          @keydown.enter.prevent="addNewTag"
-                        />
-                        <button
-                          class="btn btn-primary btn-sm join-item"
-                          @click="addNewTag"
-                        >
-                          Add Tag
-                        </button>
-                      </div>
-                      <div v-if="tagSuggestions.length" class="mt-2 text-sm">
-                        <span class="opacity-70 mr-2">Suggestions:</span>
-                        <button
-                          v-for="s in tagSuggestions"
-                          :key="s"
-                          class="btn btn-ghost btn-xs"
-                          @click="quickAddTag(s)"
-                        >
-                          {{ s }}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div class="modal-action">
-                      <button class="btn" @click="closeManager">Close</button>
-                    </div>
-                  </div>
-                </dialog>
-
-                <!-- Tag selector in Add Transaction form (enhanced) -->
-                <!-- Tags (chips + autocomplete) -->
-                <div class="form-control">
-                  <label class="label">
-                    <span class="label-text">Tags</span>
-                    <span class="label-text-alt"
-                      >Type and press Enter (or comma)</span
-                    >
-                  </label>
-
-                  <!-- Current tags -->
-                  <div class="flex flex-wrap gap-2 mb-2">
-                    <span
-                      v-for="tag in newTransaction.tags"
-                      :key="tag"
-                      class="badge badge-primary gap-1"
-                    >
-                      <span>{{ tag }}</span>
-                      <button
-                        type="button"
-                        class="btn btn-ghost btn-xs text-error"
-                        @click="removeTagFromTransaction(tag)"
-                        aria-label="Remove tag"
-                      >
-                        <svg
-                          class="w-3 h-3"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                        >
-                          <path d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </span>
-                    <span
-                      v-if="!newTransaction.tags.length"
-                      class="text-xs opacity-60"
-                      >No tags yet</span
-                    >
-                  </div>
-
-                  <!-- Chips input + suggestions -->
-                  <div class="relative">
-                    <input
-                      v-model="tagInput"
-                      type="text"
-                      class="input input-bordered input-sm w-full"
-                      placeholder="Add tags… (comma or Enter)"
-                      autocomplete="off"
-                      aria-autocomplete="list"
-                      :aria-expanded="String(openTagSuggest)"
-                      :aria-controls="ids.tagList"
-                      @keydown.enter.prevent="commitTagInput()"
-                      @keydown.prevent.stop="
-                        ',;'.includes($event.key) && commitTagInput()
-                      "
-                      @input="openTagSuggest = !!tagInput"
-                      @blur="openTagSuggest = false"
-                    />
-                    <ul
-                      v-show="openTagSuggest && tagSuggestionsForInput.length"
-                      :id="ids.tagList"
-                      role="listbox"
-                      class="menu menu-sm bg-base-100 rounded-box shadow absolute z-40 w-full mt-1 max-h-48 overflow-auto"
-                    >
-                      <li v-for="t in tagSuggestionsForInput" :key="t">
-                        <a
-                          role="option"
-                          @mousedown.prevent="addTagToTransaction(t)"
-                          >{{ t }}</a
-                        >
-                      </li>
-                    </ul>
-                  </div>
-
-                  <!-- Quick add from existing -->
-                  <label class="label">
-                    <span class="label-text-alt">Tap to add from existing</span>
-                  </label>
-                  <div class="flex flex-wrap gap-1">
-                    <button
-                      v-for="t in tags"
-                      :key="t"
-                      type="button"
-                      class="badge badge-ghost hover:badge-primary"
-                      @click="addTagToTransaction(t)"
-                    >
-                      {{ t }}
-                    </button>
-                  </div>
-                </div>
-
-                <!-- Description -->
-                <div class="form-control">
-                  <label class="label" for="addDesc"
-                    ><span class="label-text"
-                      >Description (Optional)</span
-                    ></label
-                  >
-                  <input
-                    id="addDesc"
-                    v-model="newTransaction.description"
-                    type="text"
-                    placeholder="Transaction description"
-                    class="input input-bordered"
-                  />
-                </div>
-
-                <!-- Recurring -->
-                <div class="form-control">
-                  <label class="label cursor-pointer" for="addRecurring">
-                    <span class="label-text">Recurring Transaction</span>
-                    <input
-                      id="addRecurring"
-                      v-model="newTransaction.recurring"
-                      type="checkbox"
-                      class="checkbox"
-                    />
-                  </label>
-                  <div v-if="newTransaction.recurring" class="space-y-2">
-                    <label class="sr-only" for="addFreq">Frequency</label>
-                    <select
-                      id="addFreq"
-                      v-model="newTransaction.frequency"
-                      class="select select-bordered select-sm"
-                      aria-describedby="recurringHelp"
-                    >
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="fortnightly">Fortnightly</option>
-                      <option value="monthly">Monthly</option>
-                      <option value="quarterly">Quarterly</option>
-                      <option value="yearly">Yearly</option>
-                    </select>
-
-                    <label class="sr-only" for="addRecursions"
-                      >Number of occurrences</label
-                    >
-                    <input
-                      id="addRecursions"
-                      v-model.number="newTransaction.recursions"
-                      type="number"
-                      min="1"
-                      max="365"
-                      placeholder="Number of occurrences"
-                      class="input input-bordered input-sm"
-                      aria-describedby="recurringHelp"
-                    />
-
-                    <!-- Live end date (WCAG: polite updates) -->
-                    <p
-                      id="recurringHelp"
-                      class="text-xs text-base-content/70"
-                      aria-live="polite"
-                    >
-                      Starts
-                      <strong>{{ formatDate(newTransaction.date) }}</strong
-                      >.
-                      <span v-if="derivedEndDateISO">
-                        Ends
-                        <strong>{{ formatDate(derivedEndDateISO) }}</strong>
-                        after
-                        <strong>{{
-                          Math.max(1, Number(newTransaction.recursions || 1))
-                        }}</strong>
-                        occurrence{{
-                          Math.max(
-                            1,
-                            Number(newTransaction.recursions || 1)
-                          ) === 1
-                            ? ""
-                            : "s"
-                        }}
-                        ({{ newTransaction.frequency }}).
-                      </span>
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Submit -->
-                <div class="form-control md:col-span-2 lg:col-span-1">
-                  <label class="label"
-                    ><span class="label-text">&nbsp;</span></label
-                  >
-                  <div class="join">
-                    <button type="submit" class="btn btn-primary join-item">
-                      {{ currentlyEditingId ? "Update" : "Add" }} Transaction
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-ghost join-item"
-                      @click="resetForm"
-                    >
-                      Reset
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </section>
-
-          <!-- 4. HIDDEN: Charts Tab Until Data Exists -->
-          <section
-            v-show="activeTab === 'chart'"
-            class="space-y-6"
-            aria-labelledby="chartHeading"
-          >
-            <!-- ... (rest of chart content) ... -->
-            <div class="card bg-base-100 shadow-xl">
-              <div class="card-body">
-                <h3 id="chartHeading" class="card-title">📅 Date Filter</h3>
-
-                <div class="flex flex-wrap gap-2 mb-4">
-                  <button
-                    v-for="preset in datePresets"
-                    :key="preset.label"
-                    class="btn btn-sm"
-                    :class="{
-                      'btn-primary': selectedDatePreset === preset.label,
-                    }"
-                    @click="applyDatePreset(preset)"
-                  >
-                    {{ preset.label }}
-                  </button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div class="form-control">
-                    <label class="label" for="startDate"
-                      ><span class="label-text">Start Date</span></label
-                    >
-                    <input
-                      id="startDate"
-                      v-model="dateFilter.start"
-                      type="date"
-                      class="input input-bordered"
-                    />
-                  </div>
-                  <div class="form-control">
-                    <label class="label" for="endDate"
-                      ><span class="label-text">End Date</span></label
-                    >
-                    <input
-                      id="endDate"
-                      v-model="dateFilter.end"
-                      type="date"
-                      class="input input-bordered"
-                    />
-                  </div>
-                </div>
-
-                <div class="flex justify-between items-center mt-4">
-                  <div class="text-sm text-base-content/60">
-                    Date Range: {{ formatDateRange() }} ({{
-                      filteredTransactions.length
-                    }}
-                    transactions)
-                  </div>
-                  <button class="btn btn-ghost btn-sm" @click="resetDateFilter">
-                    Reset
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="card bg-base-100 shadow-xl">
-              <div class="card-body">
-                <h3 class="card-title">📊 Financial Analytics</h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <div class="form-control">
-                    <label class="label" for="chartType"
-                      ><span class="label-text">Chart Type</span></label
-                    >
-                    <select
-                      id="chartType"
-                      v-model="chartConfig.type"
-                      class="select select-bordered"
-                    >
-                      <option value="line">📈 Line</option>
-                      <option value="bar">📊 Bar</option>
-                      <option value="pie">🥧 Pie</option>
-                      <option value="doughnut">🍩 Doughnut</option>
-                    </select>
-                  </div>
-
-                  <div class="form-control">
-                    <label class="label" for="groupBy"
-                      ><span class="label-text">Group By</span></label
-                    >
-                    <select
-                      id="groupBy"
-                      v-model="chartConfig.groupBy"
-                      class="select select-bordered"
-                    >
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
-                      <option value="fortnightly">Fortnightly</option>
-                      <option value="monthly">Monthly</option>
-                      <option value="quarterly">Quarterly</option>
-                      <option value="yearly">Yearly</option>
-                    </select>
-                  </div>
-
-                  <div class="form-control">
-                    <label class="label"
-                      ><span class="label-text">Categories</span></label
-                    >
-                    <div
-                      class="flex flex-wrap gap-1 max-h-32 overflow-y-auto"
-                      role="listbox"
-                      aria-label="Selected categories"
-                    >
-                      <button
-                        v-for="category in chartCategories"
-                        :key="category"
-                        type="button"
-                        class="badge badge-outline cursor-pointer text-xs"
-                        :class="{
-                          'badge-primary':
-                            selectedCategories.includes(category),
-                        }"
-                        @click="toggleCategory(category)"
-                        :aria-pressed="selectedCategories.includes(category)"
-                      >
-                        {{ category
-                        }}<span
-                          v-if="selectedCategories.includes(category)"
-                          class="ml-1"
-                          aria-hidden="true"
-                          >✕</span
-                        >
-                      </button>
-                    </div>
-                    <div class="mt-2">
-                      <button
-                        class="btn btn-xs btn-ghost"
-                        @click="selectAllCategories"
-                      >
-                        Select All
-                      </button>
-                      <button
-                        class="btn btn-xs btn-ghost"
-                        @click="unselectAllCategories"
-                      >
-                        Unselect All
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="form-control md:col-span-3">
-                    <label class="label"
-                      ><span class="label-text">Series</span></label
-                    >
-                    <div class="flex flex-wrap items-center gap-4 text-sm">
-                      <label class="inline-flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          class="checkbox checkbox-xs"
-                          v-model="seriesToggles.income"
-                        />
-                        <span>Income</span>
-                      </label>
-                      <label class="inline-flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          class="checkbox checkbox-xs"
-                          v-model="seriesToggles.spending"
-                        />
-                        <span>Spending</span>
-                      </label>
-                      <label class="inline-flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          class="checkbox checkbox-xs"
-                          v-model="seriesToggles.balance"
-                        />
-                        <span>Balance (Income − Expenses)</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  class="bg-base-200 rounded-lg p-4 min-h-[400px] flex items-center justify-center"
-                >
-                  <div
-                    v-if="chartData.labels.length === 0"
-                    class="text-center text-base-content/60"
-                  >
-                    <div class="text-6xl mb-4" aria-hidden="true">📊</div>
-                    <h3 class="text-lg font-semibold mb-2">
-                      No Data to Display
-                    </h3>
-                    <p>Add some transactions to see your financial analytics</p>
-                  </div>
-                  <canvas
-                    v-else
-                    ref="chartCanvas"
-                    class="max-w-full max-h-[400px]"
-                  ></canvas>
-                </div>
-
-                <div
-                  class="stats stats-vertical lg:stats-horizontal shadow mt-6 w-full"
-                >
-                  <div class="stat">
-                    <div class="stat-title">Total Income</div>
-                    <div class="stat-value text-success">
-                      ${{ totalIncome.toFixed(2) }}
-                    </div>
-                    <div class="stat-desc">
-                      {{ incomeTransactions.length }} transactions
-                    </div>
-                  </div>
-                  <div class="stat">
-                    <div class="stat-title">Total Expenses</div>
-                    <div class="stat-value text-error">
-                      ${{ totalExpenses.toFixed(2) }}
-                    </div>
-                    <div class="stat-desc">
-                      {{ expenseTransactions.length }} transactions
-                    </div>
-                  </div>
-                  <div class="stat">
-                    <div class="stat-title">Net Balance</div>
-                    <div
-                      class="stat-value"
-                      :class="netBalance >= 0 ? 'text-success' : 'text-error'"
-                    >
-                      ${{ Math.abs(netBalance).toFixed(2) }}
-                    </div>
-                    <div class="stat-desc">
-                      {{ netBalance >= 0 ? "Surplus" : "Deficit" }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
+        <template v-if="transactions.length > 0">
           <!-- 5. IMPROVED: Transactions with Progressive Disclosure -->
           <section
             v-show="activeTab === 'transactions'"
@@ -1392,7 +290,7 @@
                   📋 Transactions ({{ filteredTransactions.length }})
                 </h2>
                 <!-- 5.4 PROGRESSIVE DISCLOSURE: TOGGLE -->
-                <div class="flex gap-2 items-center">
+                <div class="flex flex-wrap gap-2 items-center">
                   <span class="text-sm text-base-content/60">View:</span>
                   <div class="join">
                     <button
@@ -1412,46 +310,6 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Tag filter -->
-              <!-- <div class="w-full lg:w-auto" v-if="showAdvancedTransactionsView">
-  <label class="sr-only" for="tagFilterInput">Filter by tags</label>
-  <div class="join">
-    <input
-      id="tagFilterInput"
-      v-model="tagFilterInput"
-      type="text"
-      class="input input-bordered input-sm join-item w-48"
-      placeholder="Filter by tag…"
-      @keydown.enter.prevent="addTagFilter(tagFilterInput)"
-    />
-    <button class="btn btn-sm join-item" @click="addTagFilter(tagFilterInput)">
-      Add
-    </button>
-  </div>
-  <div class="mt-1 flex flex-wrap gap-1">
-    <span
-      v-for="t in selectedTagsForFilter"
-      :key="'f-'+t"
-      class="badge badge-primary gap-1"
-    >
-      <span>{{ t }}</span>
-      <button
-        class="btn btn-ghost btn-xs text-error"
-        @click="removeTagFilter(t)"
-        aria-label="Remove"
-      >✕</button>
-    </span>
-    <button
-      v-if="selectedTagsForFilter.length"
-      class="btn btn-ghost btn-xs"
-      @click="selectedTagsForFilter = []"
-    >
-      Clear
-    </button>
-  </div>
-</div> -->
-
               <!-- 5.2 HIDDEN: Irrelevant Controls (in Simple View) -->
               <div
                 v-if="showAdvancedTransactionsView"
@@ -1616,7 +474,7 @@
                   showAdvancedTransactionsView &&
                   filteredTransactions.length > 0
                 "
-                class="flex justify-between items-center mb-3"
+                class="flex flex-wrap justify-between items-center mb-3"
               >
                 <label
                   class="label cursor-pointer gap-2 text-sm"
@@ -1631,7 +489,7 @@
                   <span>Prioritize selected on top</span>
                 </label>
 
-                <div class="flex gap-2 items-center">
+                <div class="flex flex-wrap gap-2 items-center">
                   <button
                     class="btn btn-accent btn-xs"
                     :disabled="selectedCount === 0"
@@ -1686,7 +544,7 @@
                       <span
                         v-for="tag in t.tags"
                         :key="t.id + '-tag-' + tag"
-                        class="badge badge-ghost"
+                        class="badge sm:badge-ghost"
                       >
                         {{ tag }}
                       </span>
@@ -1695,7 +553,7 @@
                       >
                     </div>
 
-                    <div class="mt-2 flex gap-2 justify-end">
+                    <div class="mt-2 flex flex-wrap gap-2 justify-end">
                       <button
                         class="btn btn-ghost btn-xs"
                         @click="editTransaction(t)"
@@ -1864,7 +722,7 @@
                             <span
                               v-for="tag in t.tags"
                               :key="t.id + '-tg-' + tag"
-                              class="badge badge-ghost"
+                              class="badge sm:badge-ghost"
                               >{{ tag }}</span
                             >
                             <span
@@ -1952,6 +810,1064 @@
             </div>
           </section>
         </template>
+        <!-- Add Transaction -->
+        <section
+          v-show="activeTab === 'add'"
+          class="card bg-base-100 shadow-xl mb-6"
+          aria-labelledby="addHeading"
+        >
+          <div class="card-body">
+            <h2 id="addHeading" class="card-title">➕ Add Transaction</h2>
+            <!-- ... (rest of add transaction content) ... -->
+            <form
+              @submit.prevent="addTransaction"
+              class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+            >
+              <!-- Date -->
+              <div class="form-control">
+                <label class="label" for="addDate"
+                  ><span class="label-text">Date</span></label
+                >
+                <div class="join w-full">
+                  <input
+                    id="addDate"
+                    ref="addDateTextRef"
+                    type="text"
+                    inputmode="numeric"
+                    placeholder="dd-mm-yyyy"
+                    v-model="newTxDateText"
+                    @input="onAddDateInput"
+                    @blur="onAddDateBlur"
+                    @keydown="onDateKeydownDigitsOnly"
+                    :aria-invalid="!!newTxDateError"
+                    aria-describedby="addDateError"
+                    class="input input-bordered join-item w-full"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-outline join-item"
+                    @click="openAddCalendar"
+                    title="Open calendar"
+                    aria-label="Open calendar"
+                  >
+                    📅
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary join-item"
+                    @click="setAddDateToday"
+                  >
+                    Today
+                  </button>
+                </div>
+                <p
+                  v-if="newTxDateError"
+                  id="addDateError"
+                  class="text-error text-sm mt-1"
+                >
+                  {{ newTxDateError }}
+                </p>
+                <input
+                  ref="addDatePickerRef"
+                  v-model="newTxDateISO"
+                  type="date"
+                  class="sr-only"
+                  tabindex="-1"
+                  aria-hidden="true"
+                />
+              </div>
+
+              <!-- Type -->
+              <div class="form-control">
+                <label class="label" for="addType"
+                  ><span class="label-text">Type</span></label
+                >
+                <select
+                  id="addType"
+                  v-model="newTransaction.type"
+                  class="select select-bordered"
+                  required
+                >
+                  <option value="income">💰 Income</option>
+                  <option value="spending">💸 Spending</option>
+                </select>
+              </div>
+
+              <!-- Amount -->
+              <div class="form-control">
+                <label class="label" for="addAmount"
+                  ><span class="label-text">Amount</span></label
+                >
+                <div class="join">
+                  <span class="join-item btn btn-disabled" aria-hidden="true"
+                    >$</span
+                  >
+                  <input
+                    id="addAmount"
+                    v-model.number="newTransaction.amount"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    class="input input-bordered join-item flex-1"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Category -->
+              <label class="label" :for="ids.input">
+  <span class="label-text">Category</span>
+  <div class="ml-auto flex items-center gap-2">
+    <!-- keep a single Manage button -->
+    <button
+      type="button"
+      class="btn btn-ghost btn-xs"
+      @click="openManager('manage')"
+      aria-haspopup="dialog"
+      title="Manage categories and tags"
+    >
+      <!-- settings-cog -->
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+        <path d="M19.4 15a1.6 1.6 0 0 0 .32 1.76l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.6 1.6 0 0 0-1.76-.32 1.6 1.6 0 0 0-1 1.47V21a2 2 0 0 1-4 0v-.1a1.6 1.6 0 0 0-1-1.47 1.6 1.6 0 0 0-1.76.32l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.6 1.6 0 0 0 .32-1.76 1.6 1.6 0 0 0-1.47-1H3a2 2 0 0 1 0-4h.1a1.6 1.6 0 0 0 1.47-1 1.6 1.6 0 0 0-.32-1.76l-.06-.06A2 2 0 1 1 7.02 3.5l.06.06a1.6 1.6 0 0 0 1.76.32A1.6 1.6 0 0 0 10.35 2h.1a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.47 1.6 1.6 0 0 0 1.76-.32l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.6 1.6 0 0 0-.32 1.76c.21.5.68.86 1.22.95H21a2 2 0 0 1 0 4h-.1c-.54.09-1 .45-1.22.95Z"/>
+      </svg>
+      <span class="hidden sm:inline">Manage</span>
+    </button>
+
+    <!-- was “Add custom”; now “Manage custom” and opens manage mode -->
+    <button
+      type="button"
+      class="btn btn-outline btn-xs"
+      @click="openManager('manage')"
+      title="Manage custom categories"
+    >
+      <!-- plus icon (kept for visual cue) -->
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+      <span class="hidden sm:inline">Manage custom</span>
+    </button>
+  </div>
+</label>
+
+<!-- Manager Modal -->
+<dialog
+  v-if="showManager"
+  class="modal modal-open"
+  aria-modal="true"
+  role="dialog"
+  :aria-labelledby="ids.heading"
+>
+  <div class="modal-box w-full max-w-4xl max-h-[80vh] overflow-y-auto p-0">
+    <!-- Sticky header -->
+    <div class="px-4 py-3 bg-base-200 sticky top-0 z-10 flex items-center justify-between">
+      <h3 :id="ids.heading" class="font-bold text-lg text-primary">
+        Manage Categories &amp; Tags
+      </h3>
+      <button
+        class="btn btn-circle btn-ghost btn-sm"
+        @click="closeManager"
+        aria-label="Close"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+      <div class="p-4">
+        <!-- Category Search (also sticky-ish) -->
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">Search Categories</span>
+            <span class="label-text-alt">{{ filteredCategories.length }} categories</span>
+          </label>
+          <input
+            v-model="categorySearch"
+            type="text"
+            placeholder="Search categories…"
+            class="input input-bordered input-sm"
+            data-testid="category-search"
+          />
+        </div>
+
+                      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Default (read-only) -->
+                        <div>
+                          <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-semibold text-sm">
+                              Default Categories
+                            </h4>
+                            <span class="text-xs text-base-content/60"
+                              >({{ defaultCategories.length }})</span
+                            >
+                          </div>
+                          <div
+                            class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto"
+                          >
+                            <button
+                              v-for="cat in filteredDefaults"
+                              :key="cat"
+                              type="button"
+                              class="badge sm:badge-ghost badge-outline badge-lg justify-between hover:badge-primary transition-colors"
+                              :class="{
+                                'badge-primary': newTransaction.category === cat,
+                              }"
+                              @click="selectCategory(cat)"
+                            >
+                              <span class="truncate">{{ cat }}</span>
+                            </button>
+                          </div>
+                        </div>
+
+                        <!-- Custom (CRUD) -->
+                        <div>
+                          <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-semibold text-sm">Custom Categories</h4>
+                            <span class="text-xs text-base-content/60"
+                              >({{ customCategories.length }})</span
+                            >
+                          </div>
+                          <div class="space-y-2 max-h-64 overflow-y-auto">
+                            <div
+                              v-for="cat in filteredCustoms"
+                              :key="cat"
+                              class="flex items-center gap-2 p-2 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
+                            >
+                              <template v-if="editingCategory === cat">
+                                <input
+                                  ref="editInputRef"
+                                  v-model="editingCategoryName"
+                                  type="text"
+                                  class="input input-bordered input-xs flex-1"
+                                  @keyup.enter="saveEditCategory"
+                                  @blur="saveEditCategory"
+                                  @keyup.esc="cancelEditCategory"
+                                  data-testid="category-edit-input"
+                                />
+                              </template>
+                              <template v-else>
+                                <span class="flex-1 truncate">{{ cat }}</span>
+                                <div class="flex flex-wrap gap-1">
+                                  <button
+                                    class="btn btn-ghost btn-xs text-primary"
+                                    @click="startEditCategory(cat)"
+                                    title="Edit"
+                                  >
+                                    <svg
+                                      class="w-4 h-4"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      stroke-width="2"
+                                    >
+                                      <path
+                                        d="M15.232 5.232l3.536 3.536M4 20l3.536-.707L19.475 7.354a2.5 2.5 0 1 0-3.536-3.536L4 15.757 4 20z"
+                                      />
+                                    </svg>
+                                  </button>
+                                  <button
+                                    class="btn btn-ghost btn-xs text-error"
+                                    @click="deleteCustomCategory(cat)"
+                                    title="Delete"
+                                  >
+                                    <svg
+                                      class="w-4 h-4"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      stroke-width="2"
+                                    >
+                                      <path
+                                        d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-1 0v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6m3 4v8m4-8v8"
+                                      />
+                                    </svg>
+                                  </button>
+                                </div>
+                              </template>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Add New Category -->
+                      <div class="divider">Add New Category</div>
+                      <div class="flex flex-wrap gap-2">
+                        <input
+                          v-model="newCustomName"
+                          type="text"
+                          class="input input-bordered input-sm flex-1"
+                          placeholder="Enter new category name…"
+                          @keyup.enter="addCustomCategory"
+                          data-testid="new-category-input"
+                        />
+                        <button
+                          class="btn btn-primary btn-sm"
+                          @click="addCustomCategory"
+                        >
+                          Add Category
+                        </button>
+                      </div>
+
+                      <!-- Tags -->
+                      <div class="divider">Manage Tags</div>
+                      <div class="form-control mb-4">
+                        <label class="label">
+                          <span class="label-text">Tags</span>
+                          <span class="label-text-alt"
+                            >({{ tags.length }} tags)</span
+                          >
+                        </label>
+
+                        <div class="flex flex-wrap gap-2 mb-2">
+                          <div
+                            v-for="tag in filteredTags"
+                            :key="tag"
+                            class="badge badge-primary gap-1"
+                          >
+                            <span>{{ tag }}</span>
+                            <button
+                              type="button"
+                              class="btn btn-ghost btn-xs text-error"
+                              @click="removeTag(tag)"
+                              title="Remove tag"
+                            >
+                              <svg
+                                class="w-3 h-3"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                              >
+                                <path d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+
+                        <div class="join w-full">
+                          <input
+                            v-model="tagSearch"
+                            type="text"
+                            placeholder="Search or add new tag…"
+                            class="input input-bordered input-sm join-item w-full"
+                            @keydown.enter.prevent="addNewTag"
+                          />
+                          <button
+                            class="btn btn-primary btn-sm join-item"
+                            @click="addNewTag"
+                          >
+                            Add Tag
+                          </button>
+                        </div>
+                        <div v-if="tagSuggestions.length" class="mt-2 text-sm">
+                          <span class="opacity-70 mr-2">Suggestions:</span>
+                          <button
+                            v-for="s in tagSuggestions"
+                            :key="s"
+                            class="btn btn-ghost btn-xs"
+                            @click="quickAddTag(s)"
+                          >
+                            {{ s }}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="modal-action">
+                        <button class="btn" @click="closeManager">Close</button>
+                      </div>
+                    </div>
+                    <!-- <div class="modal-action">
+      <button class="btn" @click="closeManager">Close</button>
+    </div> -->
+  </div>
+
+                  </dialog>
+
+                  <!-- Tag selector in Add Transaction form (enhanced) -->
+                  <!-- Tags (chips + autocomplete) -->
+                  <div class="form-control">
+                    <label class="label">
+                      <span class="label-text">Tags</span>
+                      <span class="label-text-alt"
+                        >Type and press Enter (or comma)</span
+                      >
+                    </label>
+
+                    <!-- Current tags -->
+                    <div class="flex flex-wrap gap-2 mb-2">
+                      <span
+                        v-for="tag in newTransaction.tags"
+                        :key="tag"
+                        class="badge badge-primary gap-1"
+                      >
+                        <span>{{ tag }}</span>
+                        <button
+                          type="button"
+                          class="btn btn-ghost btn-xs text-error"
+                          @click="removeTagFromTransaction(tag)"
+                          aria-label="Remove tag"
+                        >
+                          <svg
+                            class="w-3 h-3"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </span>
+                      <span
+                        v-if="!newTransaction.tags.length"
+                        class="text-xs opacity-60"
+                        >No tags yet</span
+                      >
+                    </div>
+
+
+
+        <!-- Category Combobox -->
+        <div class="relative">
+          <input
+            :id="ids.input"
+            v-model="query"
+            type="text"
+            class="input input-bordered w-full pr-20"
+            :placeholder="placeholder"
+            role="combobox"
+            :aria-expanded="String(open)"
+            :aria-controls="ids.listbox"
+            :aria-activedescendant="open ? activeId : undefined"
+            aria-autocomplete="list"
+            autocomplete="off"
+            @focus="open = true"
+            @input="handleInput"
+            @keydown.down.prevent="moveActive(1)"
+            @keydown.up.prevent="moveActive(-1)"
+            @keydown.enter.prevent="handleEnter"
+            @keydown.esc.prevent="closeDropdown"
+          />
+
+          <!-- Clear button -->
+          <button
+            v-if="query"
+            type="button"
+            class="btn btn-ghost btn-xs absolute right-14 top-1/2 -translate-y-1/2"
+            @click="query=''; open=true; activeIndex = showCreateOption ? -1 : 0"
+            aria-label="Clear search"
+            title="Clear"
+          >✕</button>
+
+          <!-- Current selection check (readonly visual) -->
+          <span
+            v-if="newTransaction.category"
+            class="badge sm:badge-ghost absolute right-2 top-1/2 -translate-y-1/2 max-w-[8rem] truncate"
+            title="Selected category"
+          >
+            {{ newTransaction.category }}
+          </span>
+
+          <!-- Options -->
+          <ul
+            v-show="open"
+            class="menu menu-sm bg-base-100 rounded-box shadow absolute z-40 w-full mt-1 max-h-56 overflow-auto"
+            role="listbox"
+            :id="ids.listbox"
+          >
+            <!-- Create option -->
+            <li v-if="showCreateOption">
+              <button type="button" role="option" @mousedown.prevent="createCustomFromQuery()">
+                ➕ Create “{{ trimmedQuery }}”
+              </button>
+            </li>
+
+            <!-- Existing categories (highlighted matches) -->
+            <li v-for="(c, i) in filteredAllCategories" :key="c">
+              <button
+                type="button"
+                role="option"
+                :id="optionId(i)"
+                :aria-selected="activeIndex === i"
+                class="justify-between"
+                @mousedown.prevent="selectCategory(c)"
+              >
+                <span v-html="highlight(c, trimmedQuery)"></span>
+                <span v-if="newTransaction.category === c" aria-hidden="true">✓</span>
+              </button>
+            </li>
+
+            <!-- Empty state -->
+            <li v-if="!showCreateOption && !filteredAllCategories.length" class="px-3 py-2 opacity-60">
+              No matches. Press Enter to create “{{ trimmedQuery }}”.
+            </li>
+          </ul>
+
+          <!-- Helper text -->
+          <p class="mt-1 text-xs opacity-70">
+            Tip: type to search, <kbd>↑/↓</kbd> to navigate, <kbd>Enter</kbd> to select.
+          </p>
+
+          <!-- Recently used (quick chips) -->
+          <div v-if="recentCategories.length && !trimmedQuery" class="mt-2 flex flex-wrap gap-1">
+            <button
+              v-for="rc in recentCategories"
+              :key="rc"
+              type="button"
+              class="badge sm:badge-ghost hover:badge-primary"
+              @click="selectCategory(rc)"
+            >
+              {{ rc }}
+            </button>
+          </div>
+        </div>
+
+                <!-- Quick add from existing -->
+                <label class="label">
+                  <span class="label-text-alt">Tap to add from existing</span>
+                </label>
+                <div class="flex flex-wrap gap-1">
+                  <button
+                    v-for="t in tags"
+                    :key="t"
+                    type="button"
+                    class="badge sm:badge-ghost hover:badge-primary"
+                    @click="addTagToTransaction(t)"
+                  >
+                    {{ t }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="form-control">
+                <label class="label" for="addDesc"
+                  ><span class="label-text">Description (Optional)</span></label
+                >
+                <input
+                  id="addDesc"
+                  v-model="newTransaction.description"
+                  type="text"
+                  placeholder="Transaction description"
+                  class="input input-bordered"
+                />
+              </div>
+
+              <!-- Recurring -->
+              <div class="form-control">
+                <label class="label cursor-pointer" for="addRecurring">
+                  <span class="label-text">Recurring Transaction</span>
+                  <input
+                    id="addRecurring"
+                    v-model="newTransaction.recurring"
+                    type="checkbox"
+                    class="checkbox"
+                  />
+                </label>
+                <div v-if="newTransaction.recurring" class="space-y-2">
+                  <label class="sr-only" for="addFreq">Frequency</label>
+                  <select
+                    id="addFreq"
+                    v-model="newTransaction.frequency"
+                    class="select select-bordered select-sm"
+                    aria-describedby="recurringHelp"
+                  >
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="fortnightly">Fortnightly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="yearly">Yearly</option>
+                  </select>
+
+                  <label class="sr-only" for="addRecursions"
+                    >Number of occurrences</label
+                  >
+                  <input
+                    id="addRecursions"
+                    v-model.number="newTransaction.recursions"
+                    type="number"
+                    min="1"
+                    max="365"
+                    placeholder="Number of occurrences"
+                    class="input input-bordered input-sm"
+                    aria-describedby="recurringHelp"
+                  />
+
+                  <!-- Live end date (WCAG: polite updates) -->
+                  <p
+                    id="recurringHelp"
+                    class="text-xs text-base-content/70"
+                    aria-live="polite"
+                  >
+                    Starts
+                    <strong>{{ formatDate(newTransaction.date) }}</strong
+                    >.
+                    <span v-if="derivedEndDateISO">
+                      Ends
+                      <strong>{{ formatDate(derivedEndDateISO) }}</strong>
+                      after
+                      <strong>{{
+                        Math.max(1, Number(newTransaction.recursions || 1))
+                      }}</strong>
+                      occurrence{{
+                        Math.max(1, Number(newTransaction.recursions || 1)) ===
+                        1
+                          ? ""
+                          : "s"
+                      }}
+                      ({{ newTransaction.frequency }}).
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <div class="form-control md:col-span-2 lg:col-span-1">
+                <label class="label"
+                  ><span class="label-text">&nbsp;</span></label
+                >
+                <div class="join">
+                  <button type="submit" class="btn btn-primary join-item">
+                    {{ currentlyEditingId ? "Update" : "Add" }} Transaction
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-ghost join-item"
+                    @click="resetForm"
+                  >
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+        <!-- Import / Export -->
+        <section
+          v-show="activeTab === 'import'"
+          class="card bg-base-100 shadow-xl mb-6"
+          aria-labelledby="importExportHeading"
+        >
+          <div class="card-body">
+            <h2 id="importExportHeading" class="card-title">
+              📥 Import / 📤 Export
+            </h2>
+            <!-- ... (rest of import/export content) ... -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Importers -->
+              <div class="space-y-6">
+                <!-- File upload -->
+                <div class="form-control">
+                  <label class="label" for="csvUpload"
+                    ><span class="label-text">Upload CSV File</span></label
+                  >
+                  <input
+                    id="csvUpload"
+                    type="file"
+                    accept=".csv"
+                    class="file-input file-input-bordered w-full"
+                    @change="handleFileUpload"
+                    ref="csvInputRef"
+                  />
+
+                  <p class="text-xs text-base-content/60 mt-1">
+                    After upload you’ll be prompted to label the import (e.g.,
+                    “ING Everyday - May 2025”).
+                  </p>
+                </div>
+
+                <!-- URL / Share code -->
+                <div class="form-control">
+                  <label class="label" for="importUrl"
+                    ><span class="label-text"
+                      >Import from URL or Share Code</span
+                    ></label
+                  >
+                  <div class="join">
+                    <input
+                      id="importUrl"
+                      v-model="importUrl"
+                      type="text"
+                      inputmode="url"
+                      autocapitalize="off"
+                      autocorrect="off"
+                      placeholder="https://... or share code (tx:...)"
+                      class="input input-bordered join-item flex-1"
+                    />
+                    <button
+                      class="btn btn-primary join-item"
+                      @click="importFromUrlOrCode"
+                    >
+                      Import
+                    </button>
+                  </div>
+                  <p class="text-xs text-base-content/60 mt-1">
+                    Tip: Paste a link with <code>?tx=...</code> or just the
+                    share code (starts with <code>tx:</code>).
+                  </p>
+                </div>
+
+                <!-- Clipboard & Current URL -->
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    class="btn btn-error btn-sm"
+                    @click="clearAllTransactions"
+                  >
+                    🧨 Remove all transactions
+                  </button>
+                </div>
+
+                <!-- QR Scanner -->
+                <div v-if="scanning" class="card bg-base-200 shadow-inner p-3">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-semibold">Scanning QR…</h3>
+                    <button
+                      class="btn btn-ghost btn-sm"
+                      @click="stopQrScan"
+                      aria-label="Stop scanning"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <video
+                    ref="qrVideo"
+                    class="w-full rounded-lg mt-2"
+                    autoplay
+                    playsinline
+                    muted
+                  ></video>
+                  <p class="text-xs mt-2 text-base-content/70">
+                    Point your camera at a QR generated by this app. We’ll
+                    auto-import on detection.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Exporters -->
+              <div class="space-y-6">
+                <!-- Share code -->
+                <div class="form-control">
+                  <label class="label" for="shareCode"
+                    ><span class="label-text"
+                      >Share Code (compact, paste anywhere)</span
+                    >
+                    <p class="text-xs text-base-content/60 mt-1">
+                      Length:
+                      <strong>{{ shareCodeLength }}</strong> characters.
+                      <span v-if="shareCodeLength > SHARE_URL_SAFE_LIMIT">
+                        (Tip: Use JSON export for very large datasets.)
+                      </span>
+                    </p>
+                  </label>
+                  <div class="join">
+                    <input
+                      id="shareCode"
+                      :value="shareCode"
+                      readonly
+                      class="input input-bordered join-item flex-1 font-mono"
+                    />
+                    <button class="btn join-item" @click="copy(shareCode)">
+                      Copy
+                    </button>
+                  </div>
+                  <p class="text-xs text-base-content/60 mt-1">
+                    Paste into the “Import from URL or Share Code” box.
+                  </p>
+                </div>
+
+                <!-- <div class="form-control">
+                    <label class="label"
+                      ><span class="label-text">QR Code</span></label
+                    >
+                    <div class="flex items-center gap-2">
+                      <button class="btn btn-outline btn-sm" @click="renderQr">
+                        Generate
+                      </button>
+                      <button class="btn btn-ghost btn-sm" @click="clearQr">
+                        Clear
+                      </button>
+                    </div>
+                    <canvas
+                      ref="qrCanvas"
+                      class="mt-3 max-w-[280px]"
+                      role="img"
+                      aria-label="QR code for the share link"
+                    ></canvas>
+                    <div class="text-xs text-error mt-1" v-if="qrError">
+                      {{ qrError }}
+                    </div>
+                  </div> -->
+                <!-- JSON Export / Import -->
+                <div class="form-control">
+                  <label class="label"
+                    ><span class="label-text">JSON Export / Import</span></label
+                  >
+                  <div class="flex flex-wrap gap-2 items-center">
+                    <button
+                      class="btn btn-outline btn-sm"
+                      @click="downloadJson()"
+                    >
+                      ⬇️ Download JSON
+                    </button>
+                    <label class="btn btn-outline btn-sm">
+                      ⬆️ Upload JSON
+                      <input
+                        type="file"
+                        accept="application/json"
+                        class="sr-only"
+                        @change="handleJsonImport"
+                      />
+                    </label>
+                  </div>
+                  <p class="text-xs text-base-content/60 mt-1">
+                    Use JSON to transfer large datasets offline without relying
+                    on long links.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. HIDDEN: Charts Tab Until Data Exists -->
+        <section
+          v-show="activeTab === 'chart'"
+          class="space-y-6"
+          aria-labelledby="chartHeading"
+        >
+          <!-- ... (rest of chart content) ... -->
+          <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+              <h3 id="chartHeading" class="card-title">📅 Date Filter</h3>
+
+              <div class="flex flex-wrap gap-2 mb-4">
+                <button
+                  v-for="preset in datePresets"
+                  :key="preset.label"
+                  class="btn btn-sm"
+                  :class="{
+                    'btn-primary': selectedDatePreset === preset.label,
+                  }"
+                  @click="applyDatePreset(preset)"
+                >
+                  {{ preset.label }}
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="form-control">
+                  <label class="label" for="startDate"
+                    ><span class="label-text">Start Date</span></label
+                  >
+                  <input
+                    id="startDate"
+                    v-model="dateFilter.start"
+                    type="date"
+                    class="input input-bordered"
+                  />
+                </div>
+                <div class="form-control">
+                  <label class="label" for="endDate"
+                    ><span class="label-text">End Date</span></label
+                  >
+                  <input
+                    id="endDate"
+                    v-model="dateFilter.end"
+                    type="date"
+                    class="input input-bordered"
+                  />
+                </div>
+              </div>
+
+              <div class="flex justify-between items-center mt-4">
+                <div class="text-sm text-base-content/60">
+                  Date Range: {{ formatDateRange() }} ({{
+                    filteredTransactions.length
+                  }}
+                  transactions)
+                </div>
+                <button class="btn btn-ghost btn-sm" @click="resetDateFilter">
+                  Reset
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+              <h3 class="card-title">📊 Financial Analytics</h3>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="form-control">
+                  <label class="label" for="chartType"
+                    ><span class="label-text">Chart Type</span></label
+                  >
+                  <select
+                    id="chartType"
+                    v-model="chartConfig.type"
+                    class="select select-bordered"
+                  >
+                    <option value="line">📈 Line</option>
+                    <option value="bar">📊 Bar</option>
+                    <option value="pie">🥧 Pie</option>
+                    <option value="doughnut">🍩 Doughnut</option>
+                  </select>
+                </div>
+
+                <div class="form-control">
+                  <label class="label" for="groupBy"
+                    ><span class="label-text">Group By</span></label
+                  >
+                  <select
+                    id="groupBy"
+                    v-model="chartConfig.groupBy"
+                    class="select select-bordered"
+                  >
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="fortnightly">Fortnightly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="yearly">Yearly</option>
+                  </select>
+                </div>
+
+                <div class="form-control">
+                  <label class="label"
+                    ><span class="label-text">Categories</span></label
+                  >
+                  <div
+                    class="flex flex-wrap gap-1 max-h-32 overflow-y-auto"
+                    role="listbox"
+                    aria-label="Selected categories"
+                  >
+                    <button
+                      v-for="category in chartCategories"
+                      :key="category"
+                      type="button"
+                      class="badge badge-outline cursor-pointer text-xs"
+                      :class="{
+                        'badge-primary': selectedCategories.includes(category),
+                      }"
+                      @click="toggleCategory(category)"
+                      :aria-pressed="selectedCategories.includes(category)"
+                    >
+                      {{ category
+                      }}<span
+                        v-if="selectedCategories.includes(category)"
+                        class="ml-1"
+                        aria-hidden="true"
+                        >✕</span
+                      >
+                    </button>
+                  </div>
+                  <div class="mt-2">
+                    <button
+                      class="btn btn-xs btn-ghost"
+                      @click="selectAllCategories"
+                    >
+                      Select All
+                    </button>
+                    <button
+                      class="btn btn-xs btn-ghost"
+                      @click="unselectAllCategories"
+                    >
+                      Unselect All
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-control md:col-span-3">
+                  <label class="label"
+                    ><span class="label-text">Series</span></label
+                  >
+                  <div class="flex flex-wrap items-center gap-4 text-sm">
+                    <label class="inline-flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        class="checkbox checkbox-xs"
+                        v-model="seriesToggles.income"
+                      />
+                      <span>Income</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        class="checkbox checkbox-xs"
+                        v-model="seriesToggles.spending"
+                      />
+                      <span>Spending</span>
+                    </label>
+                    <label class="inline-flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        class="checkbox checkbox-xs"
+                        v-model="seriesToggles.balance"
+                      />
+                      <span>Balance (Income − Expenses)</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="bg-base-200 rounded-lg p-4 min-h-[400px] flex items-center justify-center"
+              >
+                <div
+                  v-if="chartData.labels.length === 0"
+                  class="text-center text-base-content/60"
+                >
+                  <div class="text-6xl mb-4" aria-hidden="true">📊</div>
+                  <h3 class="text-lg font-semibold mb-2">No Data to Display</h3>
+                  <p>Add some transactions to see your financial analytics</p>
+                </div>
+                <canvas
+                  v-else
+                  ref="chartCanvas"
+                  class="max-w-full max-h-[400px]"
+                ></canvas>
+              </div>
+
+              <div
+                class="stats stats-vertical lg:stats-horizontal shadow mt-6 w-full"
+              >
+                <div class="stat">
+                  <div class="stat-title">Total Income</div>
+                  <div class="stat-value text-success">
+                    ${{ totalIncome.toFixed(2) }}
+                  </div>
+                  <div class="stat-desc">
+                    {{ incomeTransactions.length }} transactions
+                  </div>
+                </div>
+                <div class="stat">
+                  <div class="stat-title">Total Expenses</div>
+                  <div class="stat-value text-error">
+                    ${{ totalExpenses.toFixed(2) }}
+                  </div>
+                  <div class="stat-desc">
+                    {{ expenseTransactions.length }} transactions
+                  </div>
+                </div>
+                <div class="stat">
+                  <div class="stat-title">Net Balance</div>
+                  <div
+                    class="stat-value"
+                    :class="netBalance >= 0 ? 'text-success' : 'text-error'"
+                  >
+                    ${{ Math.abs(netBalance).toFixed(2) }}
+                  </div>
+                  <div class="stat-desc">
+                    {{ netBalance >= 0 ? "Surplus" : "Deficit" }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </template>
 
       <!-- About -->
@@ -1960,32 +1876,22 @@
         class="card bg-base-100 shadow-xl max-w-4xl mx-auto mt-8"
         aria-labelledby="aboutHeading"
       >
-        <div class="card-body">
-          <h2 id="aboutHeading" class="card-title">ℹ️ About This App</h2>
-          <div
-            v-if="loadingAbout"
-            class="text-center my-6"
-            role="status"
-            aria-live="polite"
-          >
-            <span
-              class="loading loading-spinner loading-lg"
-              aria-label="Loading"
-            ></span>
-          </div>
-          <div v-else class="prose max-w-none space-y-4">
+      <div class="card-body">
+          <h2 id="aboutHeading" class="card-title text-2xl font-bold">ℹ️ About</h2>
+          <div class="prose max-w-none space-y-4">
             <h1 class="text-3xl lg:text-4xl font-bold">
-              myAniFI - My Financial Tracker - {{ version }}
+                myAniFi - {{version}}
             </h1>
-
+          
             <p class="lead">
+              My Financial Forcaster/Tracker
               Take control of your finances by importing your bank statements or
               adding transactions manually.
             </p>
 
-            <div class="divider"></div>
+          
 
-            <h2 class="text-2xl font-bold">🔒 Privacy First</h2>
+            <h2 class="pt-4 text-2xl font-bold">🔒 Privacy First</h2>
             <p>
               All your data are stored privately and securely on your device!
             </p>
@@ -2003,7 +1909,7 @@
             <div class="divider" v-if="!transactions.length"></div>
 
             <h2 class="text-2xl font-bold">🏦 Bank Support</h2>
-            <p>Effortlessly import from all major Australian banks.</p>
+            <p>Effortlessly import from the 4 major Australian banks.</p>
             <div class="grid grid-cols-1 gap-2">
               <span>✅Westpac</span>
               <span>✅NAB</span>
@@ -2021,8 +1927,8 @@
             <h2 class="text-2xl font-bold">✨ Key Features</h2>
             <ul class="space-y-2">
               <li>
-                🏷️ <strong>Custom Categories</strong> - Add your own transaction
-                categories
+                🏷️ <strong>Custom Categories and Tags</strong> - Search and add your own transaction
+                categories and tags
               </li>
               <li>
                 🎯 <strong>Smart Bulk Operations</strong> - Select and edit
@@ -2037,21 +1943,22 @@
                 suggestions
               </li>
               <li>
-                📥 <strong>Supports CSV Import</strong> from major Australian
-                banks
+                📥 <strong>Supports CSV Import</strong> from the 4 major Australian banks
               </li>
-              <li>📈 <strong>Interactive Charts</strong> and analytics</li>
-              <li>🔄 <strong>Recurring transaction</strong> support</li>
-              <li>📱 <strong>Mobile-responsive design</strong></li>
-              <li>🎨 <strong>Multiple theme</strong> options</li>
-              <li>💾 <strong>Automatic data</strong> persistence</li>
+              <li>💾 <strong>Auto-Recall</strong> - Seamless loads local data from browser</li>
+              <li>📈 <strong>Interactive Charts and Analytics</strong></li>
+              <li>🔄 <strong>Recurring Transaction Support</strong></li>
+              <li>🎨 <strong>Multi-Theme Support</strong></li>
+              <li>📱 <strong>Mobile-Responsive Design-ish</strong></li>
+              <li></li>
+
             </ul>
 
             <div class="divider"></div>
 
             <h2 class="text-2xl font-bold">🚀 Future Features</h2>
             <ul>
-              <li>Further improvements on UI/UX</li>
+              <li>Improvements on Adding Category and Tags</li>
               <li>Add an interactive bubble map chart type</li>
             </ul>
 
@@ -2062,7 +1969,6 @@
               <li>Vue 3 with TypeScript</li>
               <li>DaisyUI for styling</li>
               <li>Chart.js for analytics</li>
-              <li>Local storage for data persistence</li>
             </ul>
           </div>
         </div>
@@ -2232,6 +2138,104 @@
 
         <div class="modal-action">
           <button class="btn" @click="catMgr.open = false">Close</button>
+        </div>
+      </div>
+    </dialog>
+
+    <!-- Tag Picker -->
+    <dialog
+      v-if="tagPicker.open"
+      class="modal modal-open"
+      aria-modal="true"
+      role="dialog"
+      aria-labelledby="tagPickerHeading"
+    >
+      <div class="modal-box w-full max-w-2xl p-0 md:max-h-[80vh]">
+        <!-- Sticky search/header -->
+        <div class="p-3 bg-base-200 sticky top-0 z-10">
+          <div class="flex items-center justify-between gap-2">
+            <h3 id="tagPickerHeading" class="font-bold text-lg">Select Tags</h3>
+            <button
+              class="btn btn-ghost btn-sm"
+              @click="closeTagPicker"
+              aria-label="Close"
+            >
+              ✕
+            </button>
+          </div>
+          <div class="mt-2 grid grid-cols-[1fr_auto] gap-2">
+            <input
+              ref="tagPickerInputRef"
+              v-model="tagPicker.q"
+              type="text"
+              class="input input-bordered input-sm w-full"
+              placeholder="Search or create…"
+              autocomplete="off"
+              @keydown.enter.prevent="createTagFromQuery()"
+            />
+            <button
+              class="btn btn-primary btn-sm"
+              @click="createTagFromQuery()"
+            >
+              Add
+            </button>
+          </div>
+          <p class="text-xs opacity-60 mt-1">
+            {{ filteredTagList.length }} match{{
+              filteredTagList.length === 1 ? "" : "es"
+            }}
+          </p>
+        </div>
+
+        <!-- Scrollable list -->
+        <div
+          class="px-3 pb-3 max-h-[70vh] md:max-h-[60vh] overflow-y-auto overscroll-contain"
+          style="-webkit-overflow-scrolling: touch"
+          @scroll.passive="onTagScroll"
+          ref="tagPickerScrollRef"
+        >
+          <ul
+            class="menu bg-base-100 rounded-box shadow divide-y divide-base-300"
+          >
+            <li v-for="t in tagSlice" :key="t" class="py-1">
+              <label class="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  class="checkbox checkbox-sm"
+                  :checked="tagPicker.selected.has(t)"
+                  @change="toggleTagPick(t, $event.target.checked)"
+                />
+                <span class="truncate">{{ t }}</span>
+              </label>
+            </li>
+          </ul>
+
+          <div v-if="!tagSlice.length" class="p-4 text-center opacity-70">
+            No tags yet. Type above to add.
+          </div>
+
+          <div
+            v-if="tagSlice.length < filteredTagList.length"
+            class="text-center text-xs opacity-60 mt-3"
+          >
+            Loading more…
+          </div>
+        </div>
+
+        <div
+          class="p-3 flex justify-between items-center border-t border-base-300"
+        >
+          <div class="text-xs opacity-70">
+            Selected: {{ tagPicker.selected.size }}
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="btn btn-ghost btn-sm" @click="closeTagPicker">
+              Cancel
+            </button>
+            <button class="btn btn-primary btn-sm" @click="applyPickedTags">
+              Apply
+            </button>
+          </div>
         </div>
       </div>
     </dialog>
@@ -2453,7 +2457,7 @@
           <!-- Type change -->
           <div class="form-control">
             <span class="label-text mb-1">Set Type</span>
-            <div class="flex gap-3 items-center">
+            <div class="flex flex-wrap gap-3 items-center">
               <label class="inline-flex gap-2 items-center">
                 <input
                   type="radio"
@@ -2636,6 +2640,7 @@
       </div>
     </dialog>
   </div>
+
 </template>
 <script setup lang="ts">
 import {
@@ -2648,14 +2653,6 @@ import {
   nextTick,
 } from "vue";
 
-/**
- * PROPS
- * - modelValue: v-model for selected category
- * - defaults: your built-in categories (read-only)
- * - initialCustom: starting custom categories (optional)
- * - initialTags: starting tag list (optional)
- * - storageKey: base key for localStorage persistence (optional)
- */
 const props = withDefaults(
   defineProps<{
     modelValue: string;
@@ -2678,6 +2675,177 @@ const emit = defineEmits<{
   (e: "update:custom", val: string[]): void;
   (e: "update:tags", val: string[]): void;
 }>();
+
+// --- Match highlight for list items ---
+function highlight(text: string, q: string) {
+  const esc = (s: string) =>
+    s.replace(/[&<>"']/g, (ch) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[ch]!));
+  const needle = (q || "").trim();
+  if (!needle) return esc(text);
+  const re = new RegExp(`(${needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "ig");
+  return esc(text).replace(re, "<mark>$1</mark>");
+}
+
+// --- Recently used categories (persisted) ---
+const recentCatLsKey = `${props.storageKey}:recentCats`;
+const recentCategories = ref<string[]>([]);
+try { recentCategories.value = JSON.parse(localStorage.getItem(recentCatLsKey) || "[]"); } catch {}
+
+function rememberCategory(cat: string) {
+  const list = dedupeCI([cat, ...recentCategories.value]).slice(0, 6);
+  recentCategories.value = list;
+  localStorage.setItem(recentCatLsKey, JSON.stringify(list));
+}
+
+
+/**
+ * PROPS
+ * - modelValue: v-model for selected category
+ * - defaults: your built-in categories (read-only)
+ * - initialCustom: starting custom categories (optional)
+ * - initialTags: starting tag list (optional)
+ * - storageKey: base key for localStorage persistence (optional)
+ */
+
+/** ========== BODY SCROLL LOCK (avoid background scroll under modals) ========== */
+function setBodyScrollLocked(locked: boolean) {
+  const el = document.documentElement;
+  if (locked) el.classList.add("no-scroll");
+  else el.classList.remove("no-scroll");
+}
+
+/** ========== CATEGORY PICKER ========== */
+const catPicker = reactive({
+  open: false,
+  q: "",
+  visible: 80, // lazy-load list (smooth on mobile)
+});
+const catPickerInputRef = ref<HTMLInputElement | null>(null);
+const catPickerScrollRef = ref<HTMLElement | null>(null);
+
+// Reuse your merged categories (default + custom)
+const filteredCats = computed(() => {
+  const q = catPicker.q.trim().toLowerCase();
+  const base = allCategories.value;
+  if (!q) return base;
+  return base.filter((c) => c.toLowerCase().includes(q));
+});
+const showCatCreate = computed(() => {
+  const q = catPicker.q.trim();
+  return q.length > 0 && !containsCaseIns(allCategories.value, q);
+});
+const catSlice = computed(() => filteredCats.value.slice(0, catPicker.visible));
+
+function openCatPicker() {
+  catPicker.q = (query?.value || newTransaction.category || "").trim();
+  catPicker.visible = 80;
+  catPicker.open = true;
+  setTimeout(() => catPickerInputRef.value?.focus(), 0);
+  setBodyScrollLocked(true);
+}
+function closeCatPicker() {
+  catPicker.open = false;
+  setBodyScrollLocked(false);
+}
+function onCatScroll(e: Event) {
+  const t = e.target as HTMLElement;
+  if (t.scrollTop + t.clientHeight >= t.scrollHeight - 48) {
+    catPicker.visible = Math.min(
+      catPicker.visible + 80,
+      filteredCats.value.length
+    );
+  }
+}
+function createCategoryFromQuery() {
+  const name = norm(catPicker.q);
+  if (!name) return;
+  if (
+    !containsCaseIns(customCategories.value, name) &&
+    !containsCaseIns(allCategories.value, name)
+  ) {
+    customCategories.value = sortAlpha(
+      dedupeCI([...customCategories.value, name])
+    );
+  }
+  newTransaction.category =
+    allCategories.value.find((c) => eqi(c, name)) || name;
+  query.value = newTransaction.category;
+  // Do not close yet—let user review. Keep “Apply” explicit.
+}
+function pickCategory(c: string) {
+  newTransaction.category = c;
+  query.value = c;
+}
+function applyPickedCategory() {
+  // ensure combobox reflects selection
+  query.value = newTransaction.category || "";
+  closeCatPicker();
+  pushToast(`Category set to "${newTransaction.category || "—"}"`, "success");
+}
+
+/** ========== TAG PICKER (multi-select) ========== */
+const tagPicker = reactive({
+  open: false,
+  q: "",
+  visible: 120,
+  selected: new Set<string>(),
+});
+const tagPickerInputRef = ref<HTMLInputElement | null>(null);
+const tagPickerScrollRef = ref<HTMLElement | null>(null);
+
+const filteredTagList = computed(() => {
+  const q = tagPicker.q.trim().toLowerCase();
+  const pool = sortAlpha(tags.value);
+  if (!q) return pool;
+  return pool.filter((t) => t.toLowerCase().includes(q));
+});
+const tagSlice = computed(() =>
+  filteredTagList.value.slice(0, tagPicker.visible)
+);
+
+function openTagPicker() {
+  tagPicker.q = "";
+  tagPicker.visible = 120;
+  tagPicker.selected = new Set(newTransaction.tags);
+  tagPicker.open = true;
+  setTimeout(() => tagPickerInputRef.value?.focus(), 0);
+  setBodyScrollLocked(true);
+}
+function closeTagPicker() {
+  tagPicker.open = false;
+  setBodyScrollLocked(false);
+}
+function onTagScroll(e: Event) {
+  const t = e.target as HTMLElement;
+  if (t.scrollTop + t.clientHeight >= t.scrollHeight - 48) {
+    tagPicker.visible = Math.min(
+      tagPicker.visible + 120,
+      filteredTagList.value.length
+    );
+  }
+}
+function toggleTagPick(t: string, on: boolean) {
+  if (on) tagPicker.selected.add(t);
+  else tagPicker.selected.delete(t);
+}
+function createTagFromQuery() {
+  const name = norm(tagPicker.q);
+  if (!name) return;
+  // Add to master tags if new
+  if (!containsCaseIns(tags.value, name)) {
+    tags.value = sortAlpha(dedupeCI([...tags.value, name]));
+    saveTags();
+  }
+  // Add to selected
+  const canonical = tags.value.find((x) => eqi(x, name)) || name;
+  tagPicker.selected.add(canonical);
+  tagPicker.q = "";
+}
+function applyPickedTags() {
+  newTransaction.tags = Array.from(tagPicker.selected);
+  closeTagPicker();
+  pushToast(`Tags updated (${newTransaction.tags.length})`, "success");
+}
 
 /* ---------- Utilities ---------- */
 const norm = (s: string) => s.trim().replace(/\s+/g, " ");
@@ -2731,9 +2899,9 @@ const tags = ref<string[]>(
 
 const csvInputRef = ref<HTMLInputElement | null>(null);
 
-async function openCsvPicker(opts: { closeTour?: boolean } = {}) {
+async function  openTour(opts: { closeTour?: boolean } = {}) {
   if (opts.closeTour) {
-    showTour.value = false;         // close overlay so the picker is clickable
+    showTour.value = false; // close overlay so the picker is clickable
     onboardingStep.value = 0;
   }
   // navigate to Import and trigger file input
@@ -2761,26 +2929,67 @@ async function openCsvPicker(opts: { closeTour?: boolean } = {}) {
 }
 
 function startImportFromOnboarding() {
-  openCsvPicker({ closeTour: true });
+  console.log("startImportFromOnboarding")
+   openTour({ closeTour: true });
 }
 
 function startImportFromEmptyState() {
-  openCsvPicker(); // just open picker
+  console.log("startImportFromEmptyState")
+   openTour({ closeTour: true });
+  //  openTour(); // just open picker
 }
 
 /* ---------- Category Combobox ---------- */
 const open = ref(false);
 const query = ref("");
 const activeIndex = ref<number>(0);
-const ids = {
+  const ids: { input: string; listbox: string; heading: string; tagList: string } = {
   input: `cat-cbx-${Math.random().toString(36).slice(2)}`,
   listbox: `cat-lb-${Math.random().toString(36).slice(2)}`,
   heading: `catmgr-h-${Math.random().toString(36).slice(2)}`,
+  tagList: `tag-lb-${Math.random().toString(36).slice(2)}`,
 };
 
-/* ========= Add page: tag chips input state ========= */
-ids.tagList = `tag-lb-${Math.random().toString(36).slice(2)}`;
 
+function normalizeTx(t: any): Transaction {
+  return {
+    id: String(t?.id ?? `${Date.now()}-${Math.floor(Math.random() * 10000)}`),
+    date: String(t?.date ?? todayLocalISO()),
+    type: t?.type === "income" ? "income" : "spending",
+    amount: Number(t?.amount ?? 0),
+    category: String(t?.category ?? "Uncategorized"),
+    tags: Array.isArray(t?.tags) ? t.tags : [],
+    description: String(t?.description ?? ""),
+    recurring: !!t?.recurring,
+    frequency: (t?.frequency as RecurringFrequency) ?? "monthly",
+    recursions: Number(t?.recursions ?? 1),
+    endDate: String(t?.endDate ?? ""),
+    source: String(t?.source ?? DEFAULT_SOURCE),
+  };
+}
+
+function hydrateTransactionsFromStorage() {
+  try {
+    const raw = localStorage.getItem("financial-tracker-transactions");
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+
+    // Accept either an array or legacy { transactions: [...] }
+    const arr = Array.isArray(parsed)
+      ? parsed
+      : Array.isArray((parsed as any)?.transactions)
+      ? (parsed as any).transactions
+      : [];
+
+    transactions.value = arr.map(normalizeTx);
+  } catch (e) {
+    console.warn("Bad transactions in storage, clearing.", e);
+    localStorage.removeItem("financial-tracker-transactions");
+    transactions.value = [];
+  }
+}
+
+/* ========= Add page: tag chips input state ========= */
 const tagInput = ref("");
 const openTagSuggest = ref(false);
 
@@ -2802,8 +3011,6 @@ function commitTagInput() {
 }
 
 /* ========= Transactions: tag filter helpers ========= */
-const tagFilterInput = ref("");
-
 function addTagFilter(t: string) {
   const name = norm(String(t || "")).toLowerCase();
   if (!name) return;
@@ -2872,10 +3079,12 @@ function closeDropdown() {
 }
 function selectCategory(cat: string) {
   emit("update:modelValue", cat);
-  newTransaction.category = cat; // <- bind to form
+  newTransaction.category = cat;
   query.value = cat;
   open.value = false;
+  rememberCategory(cat); 
 }
+
 
 function createCustomFromQuery() {
   const name = trimmedQuery.value;
@@ -2927,15 +3136,20 @@ watch(
 /* ---------- Manager Modal ---------- */
 const showManager = ref(false);
 const managerMode = ref<"manage" | "add">("manage");
-function openManager(mode: "manage" | "add") {
+function openManager(mode: "manage" | "add" = "manage") {
   managerMode.value = mode;
   showManager.value = true;
-  if (mode === "add") {
-    nextTick(() => {
+  nextTick(() => {
+    // focus search when opening manage; prefill new name when "add"
+    if (mode === "manage") {
+      const el = document.querySelector<HTMLInputElement>('[data-testid="category-search"]');
+      el?.focus();
+    } else {
       newCustomName.value = trimmedQuery.value || "";
-    });
-  }
+    }
+  });
 }
+
 function closeManager() {
   showManager.value = false;
 }
@@ -3058,7 +3272,7 @@ const tagSuggestions = computed(() => {
 /* Public computed for template compatibility if needed */
 const placeholder = computed(() => props.placeholder);
 
-const version = ref("v2.1");
+const version = ref("v3.0");
 
 /** ========= NEW STATE FOR IMPROVEMENTS ========= */
 // Onboarding Tour State
@@ -3804,15 +4018,15 @@ function handleTourBack() {
 
 // Tag Management Functions
 function saveTags() {
-  localStorage.setItem("financial-tracker-tags", JSON.stringify(tags.value));
+  localStorage.setItem(ls.tags, JSON.stringify(tags.value));
 }
 
 function loadTags() {
-  const saved = localStorage.getItem("financial-tracker-tags");
+  // Prefer new key; fall back to legacy if present
+  const saved = localStorage.getItem(ls.tags)
+    ?? localStorage.getItem("financial-tracker-tags"); // legacy
   if (saved) {
-    try {
-      tags.value = JSON.parse(saved);
-    } catch {}
+    try { tags.value = dedupeCI(JSON.parse(saved)); } catch {}
   }
 }
 
@@ -3860,7 +4074,6 @@ function loadDemoDataAndFinish() {
   pushToast("Demo data loaded! Explore the features.", "success", 3000);
 }
 
-
 // function startImportFromEmptyState() {
 //   activeTab.value = "import";
 // }
@@ -3880,23 +4093,18 @@ function handleKeydown(e: KeyboardEvent) {
 }
 
 onMounted(() => {
+   openTour({ closeTour: true });
   document.addEventListener("click", closeOpenDropdowns);
   document.addEventListener("keydown", handleKeydown);
-  loadTags();
 
-  // existing localStorage load...
-  const raw = localStorage.getItem("financial-tracker-transactions");
-  if (raw) {
-    try {
-      transactions.value = JSON.parse(raw);
-    } catch {}
-  }
+  loadTags();
+  hydrateTransactionsFromStorage();
 
   const seen = localStorage.getItem("hasSeenOnboarding") === "true";
   if (!seen && transactions.value.length === 0) {
     showTour.value = true;
     onboardingStep.value = 0;
-    activeTab.value = "about"; // optional: land on About while the overlay shows
+    activeTab.value = "about";
   }
 });
 
@@ -3934,10 +4142,27 @@ const DEFAULT_SOURCE = "Unlabeled";
 const sourceFilter = ref<string>("");
 const uniqueSources = computed(() => {
   const s = new Set<string>();
-  transactions.value.forEach((t) => {
+  const arr = Array.isArray(transactions.value) ? transactions.value : [];
+  arr.forEach((t) => {
     if (t.source) s.add(t.source);
   });
   return Array.from(s).sort();
+});
+
+const chartCategories = computed(() => {
+  const s = new Set<string>();
+  const arr = Array.isArray(transactions.value) ? transactions.value : [];
+  for (const t of arr) s.add(t.category);
+  return Array.from(s).sort((a, b) => a.localeCompare(b));
+});
+
+const categories = computed(() => {
+  const s = new Set<string>();
+  const arr = Array.isArray(transactions.value) ? transactions.value : [];
+  arr.forEach((t) => s.add(t.category));
+  categoryNames.forEach((c) => s.add(c));
+  customCategories.value.forEach((c) => s.add(c));
+  return Array.from(s).sort((a, b) => a.localeCompare(b));
 });
 
 /** ========= Tabs / Theme ========= */
@@ -3961,7 +4186,7 @@ function onTab(id: typeof activeTab.value) {
   if (id === "chart") ensureAllCatsSelected();
 }
 
-const currentTheme = ref("light");
+const currentTheme = ref("cupcake");
 const availableThemes = [
   "light",
   "dark",
@@ -3997,7 +4222,7 @@ function setTheme(theme: string) {
   if (availableThemes.includes(theme)) {
     currentTheme.value = theme;
     document.documentElement.setAttribute("data-theme", theme);
-    document.documentElement.className = theme;
+    //document.documentElement.className = theme;
     localStorage.setItem("financial-tracker-theme", theme);
     window.dispatchEvent(new CustomEvent("theme-changed", { detail: theme }));
   }
@@ -4052,21 +4277,21 @@ const userRules = ref<Rule[]>(
   JSON.parse(localStorage.getItem("financial-tracker-rules") || "[]")
 );
 
-/** Chart-category list reflects what's present in data only */
-const chartCategories = computed(() => {
-  const s = new Set<string>();
-  transactions.value.forEach((t) => s.add(t.category));
-  return Array.from(s).sort((a, b) => a.localeCompare(b));
-});
+// /** Chart-category list reflects what's present in data only */
+// const chartCategories = computed(() => {
+//   const s = new Set<string>();
+//   transactions.value.forEach((t) => s.add(t.category));
+//   return Array.from(s).sort((a, b) => a.localeCompare(b));
+// });
 
-/** All categories for inputs/filters - ALWAYS ALPHABETICAL */
-const categories = computed(() => {
-  const s = new Set<string>();
-  transactions.value.forEach((t) => s.add(t.category));
-  categoryNames.forEach((c) => s.add(c));
-  customCategories.value.forEach((c) => s.add(c));
-  return Array.from(s).sort((a, b) => a.localeCompare(b));
-});
+// /** All categories for inputs/filters - ALWAYS ALPHABETICAL */
+// const categories = computed(() => {
+//   const s = new Set<string>();
+//   transactions.value.forEach((t) => s.add(t.category));
+//   categoryNames.forEach((c) => s.add(c));
+//   customCategories.value.forEach((c) => s.add(c));
+//   return Array.from(s).sort((a, b) => a.localeCompare(b));
+// });
 
 // Enhanced Category Manager state
 const catMgr = reactive<{
@@ -4112,7 +4337,7 @@ const allCategoryLower = computed(
     )
 );
 
-// Persist custom categories
+// // Persist custom categories
 onMounted(() => {
   try {
     const legacy = localStorage.getItem("financial-tracker-custom-categories");
@@ -4120,32 +4345,41 @@ onMounted(() => {
       localStorage.setItem(ls.custom, legacy);
       localStorage.removeItem("financial-tracker-custom-categories");
     }
-    const savedCustom = localStorage.getItem(
-      "financial-tracker-custom-categories"
-    );
-    if (savedCustom) {
-      const parsed = JSON.parse(savedCustom);
-      if (Array.isArray(parsed)) {
-        customCategories.value = parsed
-          .map((x) => String(x || ""))
-          .filter(Boolean)
-          .sort((a, b) => a.localeCompare(b));
-      }
-    }
   } catch {}
-
-  const raw = localStorage.getItem("financial-tracker-transactions");
-  if (raw) {
-    try {
-      transactions.value = JSON.parse(raw);
-    } catch {}
-  }
-  // tips dismissed flag
-  showTips.value =
-    localStorage.getItem("financial-tracker-tips-dismissed") !== "true" &&
-    transactions.value.length > 0;
-  if (transactions.value.length) renderChart();
 });
+// onMounted(() => {
+//   try {
+//     const legacy = localStorage.getItem("financial-tracker-custom-categories");
+//     if (legacy && !localStorage.getItem(ls.custom)) {
+//       localStorage.setItem(ls.custom, legacy);
+//       localStorage.removeItem("financial-tracker-custom-categories");
+//     }
+//     const savedCustom = localStorage.getItem(
+//       "financial-tracker-custom-categories"
+//     );
+//     if (savedCustom) {
+//       const parsed = JSON.parse(savedCustom);
+//       if (Array.isArray(parsed)) {
+//         customCategories.value = parsed
+//           .map((x) => String(x || ""))
+//           .filter(Boolean)
+//           .sort((a, b) => a.localeCompare(b));
+//       }
+//     }
+//   } catch {}
+
+//   const raw = localStorage.getItem("financial-tracker-transactions");
+//   if (raw) {
+//     try {
+//       transactions.value = JSON.parse(raw);
+//     } catch {}
+//   }
+//   // tips dismissed flag
+//   showTips.value =
+//     localStorage.getItem("financial-tracker-tips-dismissed") !== "true" &&
+//     transactions.value.length > 0;
+//   if (transactions.value.length) renderChart();
+// });
 
 /** ========= Import / Export (seamless) ========= */
 const isImporting = ref(false);
@@ -4222,7 +4456,7 @@ async function decodeTxString(payload: string) {
 
 /** File upload */
 const pendingFilename = ref<string | undefined>(undefined);
-  function handleFileUpload(e: Event) {
+function handleFileUpload(e: Event) {
   const input = e.target as HTMLInputElement;
   const file = input.files?.[0];
   if (!file) {
@@ -4237,7 +4471,10 @@ const pendingFilename = ref<string | undefined>(undefined);
     try {
       parseCSV(String(ev.target?.result || ""), pendingFilename.value);
     } catch (err: any) {
-      setImportStatus("Error parsing CSV: " + (err?.message || String(err)), true);
+      setImportStatus(
+        "Error parsing CSV: " + (err?.message || String(err)),
+        true
+      );
     } finally {
       input.value = "";
       awaitingFile.value = false; // NEW
@@ -4776,7 +5013,7 @@ async function webShare(url: string) {
   if (!canWebShare) return;
   try {
     await (navigator as any).share({
-      title: "Financial Tracker",
+      title: "myAniFi",
       text: "My transactions (auto-import link)",
       url,
     });
@@ -5005,24 +5242,26 @@ function setAddDateToday() {
 }
 
 // Tag management in add form
-function addTagToTransaction(tag: string) {
-  const cleanTag = tag.trim().toLowerCase();
-  if (!cleanTag) return;
-  if (!newTransaction.tags.includes(cleanTag)) {
-    newTransaction.tags.push(cleanTag);
+function addTagToTransaction(name: string) {
+  const t = norm(String(name));
+  if (!t) return;
+
+  // Ensure master list contains it
+  if (!containsCaseIns(tags.value, t)) {
+    tags.value = sortAlpha(dedupeCI([...tags.value, t]));
+    saveTags(); // unified below
   }
-  if (!tags.value.includes(cleanTag)) {
-    tags.value.push(cleanTag);
-    saveTags();
+
+  // Add to the current transaction (no dupes)
+  const canonical = tags.value.find(x => eqi(x, t)) || t;
+  if (!newTransaction.tags.some(x => eqi(x, canonical))) {
+    newTransaction.tags = [...newTransaction.tags, canonical];
   }
-  newTag.value = "";
 }
 
-function removeTagFromTransaction(tag: string) {
-  const index = newTransaction.tags.indexOf(tag);
-  if (index > -1) {
-    newTransaction.tags.splice(index, 1);
-  }
+function removeTagFromTransaction(name: string) {
+  newTransaction.tags = newTransaction.tags.filter(t => !eqi(t, name));
+
 }
 
 /** ========= Recurring Transactions  ========= */
@@ -5157,7 +5396,7 @@ const deleteTransaction = (id: string) => {
   }
 };
 function clearAllTransactions() {
-  if (!transactions.value.length) {
+  if (!transactions.value) {
     alert("Nothing to remove.");
     return;
   }
@@ -6171,56 +6410,6 @@ const totalExpenses = computed(() =>
 );
 const netBalance = computed(() => totalIncome.value - totalExpenses.value);
 
-/** ========= About ========= */
-const aboutHtml = ref("");
-const loadingAbout = ref(false);
-async function fetchAboutMarkdown() {
-  loadingAbout.value = true;
-  try {
-    aboutHtml.value = `
-      <h2>myAniFI - My Financial Tracker - {{version}}</h2>
-      <br>
-      <h3>🔒 Privacy First: All data stored locally on your device!</h3>
-      <br>
-      <h3>🏦 Bank Support: Westpac✅ | NAB✅ | ANZ✅ | CommBank✅ | St.George✅ | ING✅ | Macquarie✅ | Up Bank✅ | UBank✅</h3>
-      <br>
-      <h3>✨ Key Features:</h3>
-      <ul>
-        <li>🏷️ Custom Categories - Add your own transaction categories</li>
-        <li>🎯 Smart Bulk Operations - Select and edit multiple transactions</li>
-        <li>📊 Advanced Analytics - Enhanced charts and filtering</li>
-        <li>🔄 Auto-Categorization - Smart category suggestions</li>
-        <li>📥 Supports CSV Import from major Australian banks</li>
-        <li>📊 Interactive charts and analytics</li>
-        <li>🔄 Recurring transaction support</li>
-        <li>📱 Mobile-responsive design</li>
-        <li>🎨 Multiple theme options</li>
-        <li>💾 Automatic data persistence</li>
-      </ul>
-      <br>
-      <ul>
-      </ul>
-      <h3>🚀 Future Features:</h3>
-      <ul>
-        <li>Further improvements on UI/UX</li>
-        <li>Add an interactive bubble map chart type</li>
-      </ul>
-      <br>
-      <h3>🛠️ Technical Stack:</h3>
-      <ul>
-        <li>Vue 3 with TypeScript</li>
-        <li>DaisyUI for styling</li>
-        <li>Chart.js for analytics</li>
-        <li>Local storage for data persistence</li>
-      </ul>
-    `;
-  } catch (error) {
-    aboutHtml.value = "<p>Error loading about information.</p>";
-  } finally {
-    loadingAbout.value = false;
-  }
-}
-
 /** ========= Utilities ========= */
 function closeClosestDetails(ev?: Event) {
   const el = (ev?.target as HTMLElement | null)?.closest(
@@ -6295,25 +6484,32 @@ const derivedEndDateISO = computed(() => {
 watch(derivedEndDateISO, (v) => {
   if (newTransaction.recurring) newTransaction.endDate = v || "";
 });
+watch(showManager, (on) => setBodyScrollLocked(!!on));
+
 
 function normalizeTransaction(raw: any): Transaction {
   // Keep your date guard logic consistent
   const iso = parseDateGuess(String(raw?.date ?? "")) || todayLocalISO();
   const freqOptions: RecurringFrequency[] = [
-    "daily","weekly","fortnightly","monthly","quarterly","yearly"
+    "daily",
+    "weekly",
+    "fortnightly",
+    "monthly",
+    "quarterly",
+    "yearly",
   ];
   const freq = freqOptions.includes(raw?.frequency) ? raw.frequency : "monthly";
 
   return {
-    id: String(raw?.id ?? `${Date.now()}-${Math.floor(Math.random()*10000)}`),
+    id: String(raw?.id ?? `${Date.now()}-${Math.floor(Math.random() * 10000)}`),
     date: iso,
-    type: raw?.type === "income" ? "income" : "spending",
-    amount: Number(raw?.amount ?? 0),
+    type,
+    amount,
     category: String(raw?.category ?? "Uncategorized"),
-    tags: Array.isArray(raw?.tags) ? raw.tags.map((t: any) => String(t)) : [],
+    tags,
     description: String(raw?.description ?? ""),
     recurring: !!raw?.recurring,
-    frequency: freq,
+    frequency,
     recursions: Math.max(1, Number(raw?.recursions ?? 1)),
     endDate: String(raw?.endDate ?? ""),
     source: String(raw?.source ?? DEFAULT_SOURCE),
@@ -6322,7 +6518,8 @@ function normalizeTransaction(raw: any): Transaction {
 
 function parseTransactionsFromJSON(json: string): Transaction[] {
   const arr = JSON.parse(json);
-  if (!Array.isArray(arr)) throw new Error("JSON must be an array of transactions");
+  if (!Array.isArray(arr))
+    throw new Error("JSON must be an array of transactions");
   return arr.map(normalizeTransaction);
 }
 
@@ -6387,7 +6584,6 @@ function handleJsonImport(e: Event) {
   };
   reader.readAsText(file);
 }
-
 
 // function ddmmyyyyToISO(s: string) {
 //   const clean = finalizeDDMM(s);
@@ -6564,7 +6760,6 @@ watch(
 
 watch([searchQuery, typeFilter], () => (currentPage.value = 1));
 watch(activeTab, (tab) => {
-  if (tab === "about" && !aboutHtml.value) fetchAboutMarkdown();
   if (tab === "chart")
     nextTick(() => {
       ensureAllCatsSelected();
@@ -6583,6 +6778,15 @@ watch(
   }
 );
 watch(filteredTransactions, () => nextTick(renderChart));
+watch(
+  transactions,
+  (val) => {
+    if (!Array.isArray(val)) return;
+    localStorage.setItem("financial-tracker-transactions", JSON.stringify(val));
+    scheduleRecomputeShareArtifacts?.();
+  },
+  { deep: true }
+);
 
 onMounted(async () => {
   const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
@@ -6721,6 +6925,21 @@ watch(
 </script>
 
 <style scoped>
+/* Try break me heheh */
+.opacity-80 {
+  word-break: break-word;
+}
+/* WCAG-friendly skip link */
+.skip-link{
+  position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;
+}
+.skip-link:focus{
+  position:fixed;left:1rem;top:1rem;width:auto;height:auto;padding:.5rem .75rem;
+  background:CanvasText;color:Canvas;border-radius:.375rem;z-index:9999;
+}
+/* Modal background scroll lock */
+.no-scroll{ overflow:hidden; }
+
 .menu li > a:focus {
   outline: 2px solid currentColor;
   outline-offset: 2px;
