@@ -2904,8 +2904,6 @@ async function  openTour(opts: { closeTour?: boolean } = {}) {
   if (opts.closeTour) {
     console.log(opts.closeTour)
     showTour.value = false; // close overlay so the picker is clickable
-    // onboardingStep.value = 0;
-    activeTab.value = "about";
   }
   // navigate to Import and trigger file input
   activeTab.value = "import";
@@ -4116,7 +4114,6 @@ onMounted(() => {
 
   if (transactions.value.length === 0) {
     activeTab.value = "about";
-    openTour({ closeTour: true })
   }
 });
 
