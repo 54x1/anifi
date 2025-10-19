@@ -6806,7 +6806,7 @@ onMounted(async () => {
     window.location.pathname.endsWith("/index.html")
   ) {
     if (!hasSeenOnboarding && transactions.value.length === 0) {
-      activeTab.value = "chart";
+      //activeTab.value = "chart";
       // showTour.value = true;
     } else {
       activeTab.value = "about";
