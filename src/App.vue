@@ -1468,6 +1468,7 @@
                     id="csvUpload"
                     type="file"
                     accept=".csv"
+                    multiple
                     class="file-input file-input-bordered w-full"
                     @change="handleFileUpload"
                     ref="csvInputRef"
