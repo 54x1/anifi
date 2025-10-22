@@ -1959,6 +1959,7 @@
 
             <h2 class="text-2xl font-bold">🚀 Future Features</h2>
             <ul>
+							<li>Fix Persistence Local Storage Bug</li>
               <li>Improvements on Adding Category and Tags</li>
               <li>Add an interactive bubble map chart type</li>
             </ul>
