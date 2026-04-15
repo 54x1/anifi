@@ -6499,40 +6499,11 @@ watch(derivedEndDateISO, (v) => {
 watch(showManager, (on) => setBodyScrollLocked(!!on));
 
 
-function normalizeTransaction(raw: any): Transaction {
-  // Keep your date guard logic consistent
-  const iso = parseDateGuess(String(raw?.date ?? "")) || todayLocalISO();
-  const freqOptions: RecurringFrequency[] = [
-    "daily",
-    "weekly",
-    "fortnightly",
-    "monthly",
-    "quarterly",
-    "yearly",
-  ];
-  const freq = freqOptions.includes(raw?.frequency) ? raw.frequency : "monthly";
-
-  return {
-    id: String(raw?.id ?? `${Date.now()}-${Math.floor(Math.random() * 10000)}`),
-    date: iso,
-    type,
-    amount,
-    category: String(raw?.category ?? "Uncategorized"),
-    tags,
-    description: String(raw?.description ?? ""),
-    recurring: !!raw?.recurring,
-    frequency,
-    recursions: Math.max(1, Number(raw?.recursions ?? 1)),
-    endDate: String(raw?.endDate ?? ""),
-    source: String(raw?.source ?? DEFAULT_SOURCE),
-  };
-}
-
 function parseTransactionsFromJSON(json: string): Transaction[] {
   const arr = JSON.parse(json);
   if (!Array.isArray(arr))
     throw new Error("JSON must be an array of transactions");
-  return arr.map(normalizeTransaction);
+  return arr.map(normalizeTx);
 }
 
 async function downloadJson() {
@@ -6721,24 +6692,8 @@ function percentile(sorted: number[], p: number) {
 }
 
 /** ========= Watches & Lifecycle ========= */
-// // Render / re-render charts on config or data changes
-watch(transactions, (val) => {
-  localStorage.setItem("financial-tracker-transactions", JSON.stringify(val)),
-    // Keep share artifacts fresh
+// // Render / re-render charts on config or data changes\
 
-    scheduleRecomputeShareArtifacts(),
-    [chartData, chartConfig, seriesToggles, selectedCategories],
-    () => {
-      renderChart();
-    },
-    customCategories,
-    () =>
-      localStorage.setItem(
-        "financial-tracker-custom-categories",
-        JSON.stringify(customCategories.value)
-      ),
-    { deep: true };
-});
 watch(
   () => newTransaction.category,
   (val) => {
@@ -6790,15 +6745,7 @@ watch(
   }
 );
 watch(filteredTransactions, () => nextTick(renderChart));
-watch(
-  transactions,
-  (val) => {
-    if (!Array.isArray(val)) return;
-    localStorage.setItem("financial-tracker-transactions", JSON.stringify(val));
-    scheduleRecomputeShareArtifacts?.();
-  },
-  { deep: true }
-);
+
 
 onMounted(async () => {
   const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
@@ -6829,17 +6776,9 @@ onMounted(async () => {
         ? "dark"
         : "light"
     );
-
-  const savedTx = localStorage.getItem("financial-tracker-transactions");
-  if (savedTx) {
-    try {
-      const raw = JSON.parse(savedTx);
-      transactions.value = normalizeTransaction(raw);
-    } catch {
-      transactions.value = [];
-    }
-  } else {
-    if (onboardingStep.value === null) {
+if (!transactions.value.length) {
+    const savedTx = localStorage.getItem("financial-tracker-transactions");
+    if (!savedTx) {
       pushToast(
         "Tip: Import a CSV or use a Share Code to get started.",
         "info",
@@ -6888,13 +6827,18 @@ watch(showAdvancedTransactionsView, (isAdvanced) => {
 watch(
   transactions,
   (val) => {
+    if (!Array.isArray(val)) return;
     try {
       localStorage.setItem(
         "financial-tracker-transactions",
         JSON.stringify(val)
       );
-    } catch {}
-    scheduleRecomputeShareArtifacts?.();
+    } catch (e) {
+      console.warn("Failed to persist transactions:", e);
+    }
+    if (!isImporting.value) {
+      scheduleRecomputeShareArtifacts();
+    }
   },
   { deep: true }
 );
@@ -6926,14 +6870,7 @@ watch(
     ),
   { deep: true }
 );
-watch(
-  transactions,
-  (val) => {
-    localStorage.setItem("financial-tracker-transactions", JSON.stringify(val));
-    scheduleRecomputeShareArtifacts();
-  },
-  { deep: true }
-);
+
 </script>
 
 <style scoped>
