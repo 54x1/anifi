@@ -108,7 +108,10 @@
     </header>
 
     <!-- Mobile Navigation -->
-    <nav class="btm-nav lg:hidden z-50 shadow-[0_-2px_6px_0px_rgba(0,0,0,0.1)] border-t border-base-300" aria-label="Primary (mobile)">
+    <nav
+      class="btm-nav lg:hidden z-50 shadow-[0_-2px_6px_0px_rgba(0,0,0,0.1)] border-t border-base-300"
+      aria-label="Primary (mobile)"
+    >
       <button
         v-for="tab in tabs"
         :key="tab.id"
@@ -214,7 +217,7 @@
         <!-- ... (Your existing Import, Add, Chart, Transactions, and other modals) ... -->
         <!-- For example: The empty state hero -->
         <section
-          class="hero min-h-[60vh] card bg-base-100 shadow-xl "
+          class="hero min-h-[60vh] card bg-base-100 shadow-xl"
           v-if="
             transactions.length === 0 &&
             !['about', 'add', 'import'].includes(activeTab)
@@ -688,7 +691,7 @@
                               :checked="isSelected(t.id)"
                               @change="toggleSelectRow(t.id)"
                               :aria-label="`Select transaction on ${formatDate(
-                                t.date
+                                t.date,
                               )} for $${t.amount.toFixed(2)}`"
                             />
                             <span class="sr-only" v-if="isSelected(t.id)"
@@ -916,413 +919,488 @@
               </div>
 
               <!-- Category -->
-              <label class="label" :for="ids.input">
-  <span class="label-text">Category</span>
-  <div class="ml-auto flex items-center gap-2">
-    <!-- keep a single Manage button -->
-    <button
-      type="button"
-      class="btn btn-ghost btn-xs"
-      @click="openManager('manage')"
-      aria-haspopup="dialog"
-      title="Manage categories and tags"
-    >
-      <!-- settings-cog -->
-      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
-        <path d="M19.4 15a1.6 1.6 0 0 0 .32 1.76l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.6 1.6 0 0 0-1.76-.32 1.6 1.6 0 0 0-1 1.47V21a2 2 0 0 1-4 0v-.1a1.6 1.6 0 0 0-1-1.47 1.6 1.6 0 0 0-1.76.32l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.6 1.6 0 0 0 .32-1.76 1.6 1.6 0 0 0-1.47-1H3a2 2 0 0 1 0-4h.1a1.6 1.6 0 0 0 1.47-1 1.6 1.6 0 0 0-.32-1.76l-.06-.06A2 2 0 1 1 7.02 3.5l.06.06a1.6 1.6 0 0 0 1.76.32A1.6 1.6 0 0 0 10.35 2h.1a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.47 1.6 1.6 0 0 0 1.76-.32l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.6 1.6 0 0 0-.32 1.76c.21.5.68.86 1.22.95H21a2 2 0 0 1 0 4h-.1c-.54.09-1 .45-1.22.95Z"/>
-      </svg>
-      <span class="hidden sm:inline">Manage</span>
-    </button>
 
-    <!-- was “Add custom”; now “Manage custom” and opens manage mode -->
-    <button
-      type="button"
-      class="btn btn-outline btn-xs"
-      @click="openManager('manage')"
-      title="Manage custom categories"
-    >
-      <!-- plus icon (kept for visual cue) -->
-      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 5v14M5 12h14" />
-      </svg>
-      <span class="hidden sm:inline">Manage custom</span>
-    </button>
-  </div>
-</label>
+              <!-- Category Combobox -->
+              <div class="relative">
+                <label class="label" :for="ids.input">
+                  <span class="label-text">Category</span>
+                  <div class="ml-auto flex items-center gap-2">
+                    <!-- keep a single Manage button -->
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-xs"
+                      @click="openManager('manage')"
+                      aria-haspopup="dialog"
+                      title="Manage categories and tags"
+                    >
+                      <!-- settings-cog -->
+                      <svg
+                        class="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
+                        />
+                        <path
+                          d="M19.4 15a1.6 1.6 0 0 0 .32 1.76l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.6 1.6 0 0 0-1.76-.32 1.6 1.6 0 0 0-1 1.47V21a2 2 0 0 1-4 0v-.1a1.6 1.6 0 0 0-1-1.47 1.6 1.6 0 0 0-1.76.32l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.6 1.6 0 0 0 .32-1.76 1.6 1.6 0 0 0-1.47-1H3a2 2 0 0 1 0-4h.1a1.6 1.6 0 0 0 1.47-1 1.6 1.6 0 0 0-.32-1.76l-.06-.06A2 2 0 1 1 7.02 3.5l.06.06a1.6 1.6 0 0 0 1.76.32A1.6 1.6 0 0 0 10.35 2h.1a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.47 1.6 1.6 0 0 0 1.76-.32l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.6 1.6 0 0 0-.32 1.76c.21.5.68.86 1.22.95H21a2 2 0 0 1 0 4h-.1c-.54.09-1 .45-1.22.95Z"
+                        />
+                      </svg>
+                      <span class="hidden sm:inline">Manage</span>
+                    </button>
 
-<!-- Manager Modal -->
-<dialog
-  v-if="showManager"
-  class="modal modal-open"
-  aria-modal="true"
-  role="dialog"
-  :aria-labelledby="ids.heading"
->
-  <div class="modal-box w-full max-w-4xl max-h-[80vh] overflow-y-auto p-0">
-    <!-- Sticky header -->
-    <div class="px-4 py-3 bg-base-200 sticky top-0 z-10 flex items-center justify-between">
-      <h3 :id="ids.heading" class="font-bold text-lg text-primary">
-        Manage Categories &amp; Tags
-      </h3>
-      <button
-        class="btn btn-circle btn-ghost btn-sm"
-        @click="closeManager"
-        aria-label="Close"
-      >
-        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
+                    <!-- was “Add custom”; now “Manage custom” and opens manage mode -->
+                    <button
+                      type="button"
+                      class="btn btn-outline btn-xs"
+                      @click="openManager('manage')"
+                      title="Manage custom categories"
+                    >
+                      <!-- plus icon (kept for visual cue) -->
+                      <svg
+                        class="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
+                      <span class="hidden sm:inline">Manage custom</span>
+                    </button>
+                  </div>
+                </label>
 
-      <div class="p-4">
-        <!-- Category Search (also sticky-ish) -->
-        <div class="form-control mb-4">
-          <label class="label">
-            <span class="label-text">Search Categories</span>
-            <span class="label-text-alt">{{ filteredCategories.length }} categories</span>
-          </label>
-          <input
-            v-model="categorySearch"
-            type="text"
-            placeholder="Search categories…"
-            class="input input-bordered input-sm"
-            data-testid="category-search"
-          />
-        </div>
+                <input
+                  :id="ids.input"
+                  v-model="query"
+                  type="text"
+                  class="input input-bordered w-full pr-20"
+                  :placeholder="placeholder"
+                  role="combobox"
+                  :aria-expanded="String(open)"
+                  :aria-controls="ids.listbox"
+                  :aria-activedescendant="open ? activeId : undefined"
+                  aria-autocomplete="list"
+                  autocomplete="off"
+                  @focus="open = true"
+                  @input="handleInput"
+                  @keydown.down.prevent="moveActive(1)"
+                  @keydown.up.prevent="moveActive(-1)"
+                  @keydown.enter.prevent="handleEnter"
+                  @keydown.esc.prevent="closeDropdown"
+                />
 
-                      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Default (read-only) -->
-                        <div>
-                          <div class="flex justify-between items-center mb-2">
-                            <h4 class="font-semibold text-sm">
-                              Default Categories
-                            </h4>
-                            <span class="text-xs text-base-content/60"
-                              >({{ defaultCategories.length }})</span
-                            >
-                          </div>
-                          <div
-                            class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto"
+                <!-- Clear button -->
+                <button
+                  v-if="query"
+                  type="button"
+                  class="btn btn-ghost btn-xs absolute right-14 top-1/2 -translate-y-1/2"
+                  @click="
+                    query = '';
+                    open = true;
+                    activeIndex = showCreateOption ? -1 : 0;
+                  "
+                  aria-label="Clear search"
+                  title="Clear"
+                >
+                  ✕
+                </button>
+
+                <!-- Current selection check (readonly visual) -->
+                <span
+                  v-if="newTransaction.category"
+                  class="badge sm:badge-ghost absolute right-2 top-1/2 -translate-y-1/2 max-w-[8rem] truncate"
+                  title="Selected category"
+                >
+                  {{ newTransaction.category }}
+                </span>
+
+                <!-- Options -->
+                <ul
+                  v-show="open"
+                  class="menu menu-sm bg-base-100 rounded-box shadow absolute z-40 w-full mt-1 max-h-56 overflow-auto"
+                  role="listbox"
+                  :id="ids.listbox"
+                >
+                  <!-- Create option -->
+                  <li v-if="showCreateOption">
+                    <button
+                      type="button"
+                      role="option"
+                      @mousedown.prevent="createCustomFromQuery()"
+                    >
+                      ➕ Create “{{ trimmedQuery }}”
+                    </button>
+                  </li>
+
+                  <!-- Existing categories (highlighted matches) -->
+                  <li v-for="(c, i) in filteredAllCategories" :key="c">
+                    <button
+                      type="button"
+                      role="option"
+                      :id="optionId(i)"
+                      :aria-selected="activeIndex === i"
+                      class="justify-between"
+                      @mousedown.prevent="selectCategory(c)"
+                    >
+                      <span v-html="highlight(c, trimmedQuery)"></span>
+                      <span
+                        v-if="newTransaction.category === c"
+                        aria-hidden="true"
+                        >✓</span
+                      >
+                    </button>
+                  </li>
+
+                  <!-- Empty state -->
+                  <li
+                    v-if="!showCreateOption && !filteredAllCategories.length"
+                    class="px-3 py-2 opacity-60"
+                  >
+                    No matches. Press Enter to create “{{ trimmedQuery }}”.
+                  </li>
+                </ul>
+
+                <!-- Helper text -->
+                <p class="mt-1 text-xs opacity-70">
+                  Tip: type to search, <kbd>↑/↓</kbd> to navigate,
+                  <kbd>Enter</kbd> to select.
+                </p>
+
+                <!-- Recently used (quick chips) -->
+                <div
+                  v-if="recentCategories.length && !trimmedQuery"
+                  class="mt-2 flex flex-wrap gap-1"
+                >
+                  <button
+                    v-for="rc in recentCategories"
+                    :key="rc"
+                    type="button"
+                    class="badge sm:badge-ghost hover:badge-primary"
+                    @click="selectCategory(rc)"
+                  >
+                    {{ rc }}
+                  </button>
+                </div>
+              </div>
+
+              <!-- Manager Modal -->
+              <dialog
+                v-if="showManager"
+                class="modal modal-open"
+                aria-modal="true"
+                role="dialog"
+                :aria-labelledby="ids.heading"
+              >
+                <div
+                  class="modal-box w-full max-w-4xl max-h-[80vh] overflow-y-auto p-0"
+                >
+                  <!-- Sticky header -->
+                  <div
+                    class="px-4 py-3 bg-base-200 sticky top-0 z-10 flex items-center justify-between"
+                  >
+                    <h3
+                      :id="ids.heading"
+                      class="font-bold text-lg text-primary"
+                    >
+                      Manage Categories &amp; Tags
+                    </h3>
+                    <button
+                      class="btn btn-circle btn-ghost btn-sm"
+                      @click="closeManager"
+                      aria-label="Close"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  <div class="p-4">
+                    <!-- Category Search (also sticky-ish) -->
+                    <div class="form-control mb-4">
+                      <label class="label">
+                        <span class="label-text">Search Categories</span>
+                        <span class="label-text-alt"
+                          >{{ filteredCategories.length }} categories</span
+                        >
+                      </label>
+                      <input
+                        v-model="categorySearch"
+                        type="text"
+                        placeholder="Search categories…"
+                        class="input input-bordered input-sm"
+                        data-testid="category-search"
+                      />
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <!-- Default (read-only) -->
+                      <div>
+                        <div class="flex justify-between items-center mb-2">
+                          <h4 class="font-semibold text-sm">
+                            Default Categories
+                          </h4>
+                          <span class="text-xs text-base-content/60"
+                            >({{ defaultCategories.length }})</span
                           >
-                            <button
-                              v-for="cat in filteredDefaults"
-                              :key="cat"
-                              type="button"
-                              class="badge sm:badge-ghost badge-outline badge-lg justify-between hover:badge-primary transition-colors"
-                              :class="{
-                                'badge-primary': newTransaction.category === cat,
-                              }"
-                              @click="selectCategory(cat)"
-                            >
-                              <span class="truncate">{{ cat }}</span>
-                            </button>
-                          </div>
                         </div>
-
-                        <!-- Custom (CRUD) -->
-                        <div>
-                          <div class="flex justify-between items-center mb-2">
-                            <h4 class="font-semibold text-sm">Custom Categories</h4>
-                            <span class="text-xs text-base-content/60"
-                              >({{ customCategories.length }})</span
-                            >
-                          </div>
-                          <div class="space-y-2 max-h-64 overflow-y-auto">
-                            <div
-                              v-for="cat in filteredCustoms"
-                              :key="cat"
-                              class="flex items-center gap-2 p-2 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
-                            >
-                              <template v-if="editingCategory === cat">
-                                <input
-                                  ref="editInputRef"
-                                  v-model="editingCategoryName"
-                                  type="text"
-                                  class="input input-bordered input-xs flex-1"
-                                  @keyup.enter="saveEditCategory"
-                                  @blur="saveEditCategory"
-                                  @keyup.esc="cancelEditCategory"
-                                  data-testid="category-edit-input"
-                                />
-                              </template>
-                              <template v-else>
-                                <span class="flex-1 truncate">{{ cat }}</span>
-                                <div class="flex flex-wrap gap-1">
-                                  <button
-                                    class="btn btn-ghost btn-xs text-primary"
-                                    @click="startEditCategory(cat)"
-                                    title="Edit"
-                                  >
-                                    <svg
-                                      class="w-4 h-4"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      stroke-width="2"
-                                    >
-                                      <path
-                                        d="M15.232 5.232l3.536 3.536M4 20l3.536-.707L19.475 7.354a2.5 2.5 0 1 0-3.536-3.536L4 15.757 4 20z"
-                                      />
-                                    </svg>
-                                  </button>
-                                  <button
-                                    class="btn btn-ghost btn-xs text-error"
-                                    @click="deleteCustomCategory(cat)"
-                                    title="Delete"
-                                  >
-                                    <svg
-                                      class="w-4 h-4"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      stroke-width="2"
-                                    >
-                                      <path
-                                        d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-1 0v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6m3 4v8m4-8v8"
-                                      />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </template>
-                            </div>
-                          </div>
+                        <div
+                          class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-64 overflow-y-auto"
+                        >
+                          <button
+                            v-for="cat in filteredDefaults"
+                            :key="cat"
+                            type="button"
+                            class="badge sm:badge-ghost badge-outline badge-lg justify-between hover:badge-primary transition-colors"
+                            :class="{
+                              'badge-primary': newTransaction.category === cat,
+                            }"
+                            @click="selectCategory(cat)"
+                          >
+                            <span class="truncate">{{ cat }}</span>
+                          </button>
                         </div>
                       </div>
 
-                      <!-- Add New Category -->
-                      <div class="divider">Add New Category</div>
-                      <div class="flex flex-wrap gap-2">
+                      <!-- Custom (CRUD) -->
+                      <div>
+                        <div class="flex justify-between items-center mb-2">
+                          <h4 class="font-semibold text-sm">
+                            Custom Categories
+                          </h4>
+                          <span class="text-xs text-base-content/60"
+                            >({{ customCategories.length }})</span
+                          >
+                        </div>
+                        <div class="space-y-2 max-h-64 overflow-y-auto">
+                          <div
+                            v-for="cat in filteredCustoms"
+                            :key="cat"
+                            class="flex items-center gap-2 p-2 bg-base-200 rounded-lg hover:bg-base-300 transition-colors"
+                          >
+                            <template v-if="editingCategory === cat">
+                              <input
+                                ref="editInputRef"
+                                v-model="editingCategoryName"
+                                type="text"
+                                class="input input-bordered input-xs flex-1"
+                                @keyup.enter="saveEditCategory"
+                                @blur="saveEditCategory"
+                                @keyup.esc="cancelEditCategory"
+                                data-testid="category-edit-input"
+                              />
+                            </template>
+                            <template v-else>
+                              <span class="flex-1 truncate">{{ cat }}</span>
+                              <div class="flex flex-wrap gap-1">
+                                <button
+                                  class="btn btn-ghost btn-xs text-primary"
+                                  @click="startEditCategory(cat)"
+                                  title="Edit"
+                                >
+                                  <svg
+                                    class="w-4 h-4"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                  >
+                                    <path
+                                      d="M15.232 5.232l3.536 3.536M4 20l3.536-.707L19.475 7.354a2.5 2.5 0 1 0-3.536-3.536L4 15.757 4 20z"
+                                    />
+                                  </svg>
+                                </button>
+                                <button
+                                  class="btn btn-ghost btn-xs text-error"
+                                  @click="deleteCustomCategory(cat)"
+                                  title="Delete"
+                                >
+                                  <svg
+                                    class="w-4 h-4"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                  >
+                                    <path
+                                      d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m-1 0v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6m3 4v8m4-8v8"
+                                    />
+                                  </svg>
+                                </button>
+                              </div>
+                            </template>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Add New Category -->
+                    <div class="divider">Add New Category</div>
+                    <div class="flex flex-wrap gap-2">
+                      <input
+                        v-model="newCustomName"
+                        type="text"
+                        class="input input-bordered input-sm flex-1"
+                        placeholder="Enter new category name…"
+                        @keyup.enter="addCustomCategory"
+                        data-testid="new-category-input"
+                      />
+                      <button
+                        class="btn btn-primary btn-sm"
+                        @click="addCustomCategory"
+                      >
+                        Add Category
+                      </button>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="divider">Manage Tags</div>
+                    <div class="form-control mb-4">
+                      <label class="label">
+                        <span class="label-text">Tags</span>
+                        <span class="label-text-alt"
+                          >({{ tags.length }} tags)</span
+                        >
+                      </label>
+
+                      <div class="flex flex-wrap gap-2 mb-2">
+                        <div
+                          v-for="tag in filteredTags"
+                          :key="tag"
+                          class="badge badge-primary gap-1"
+                        >
+                          <span>{{ tag }}</span>
+                          <button
+                            type="button"
+                            class="btn btn-ghost btn-xs text-error"
+                            @click="removeTag(tag)"
+                            title="Remove tag"
+                          >
+                            <svg
+                              class="w-3 h-3"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <path d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="join w-full">
                         <input
-                          v-model="newCustomName"
+                          v-model="tagSearch"
                           type="text"
-                          class="input input-bordered input-sm flex-1"
-                          placeholder="Enter new category name…"
-                          @keyup.enter="addCustomCategory"
-                          data-testid="new-category-input"
+                          placeholder="Search or add new tag…"
+                          class="input input-bordered input-sm join-item w-full"
+                          @keydown.enter.prevent="addNewTag"
                         />
                         <button
-                          class="btn btn-primary btn-sm"
-                          @click="addCustomCategory"
+                          class="btn btn-primary btn-sm join-item"
+                          @click="addNewTag"
                         >
-                          Add Category
+                          Add Tag
                         </button>
                       </div>
 
-                      <!-- Tags -->
-                      <div class="divider">Manage Tags</div>
-                      <div class="form-control mb-4">
-                        <label class="label">
-                          <span class="label-text">Tags</span>
-                          <span class="label-text-alt"
-                            >({{ tags.length }} tags)</span
-                          >
-                        </label>
-
-                        <div class="flex flex-wrap gap-2 mb-2">
-                          <div
-                            v-for="tag in filteredTags"
-                            :key="tag"
-                            class="badge badge-primary gap-1"
-                          >
-                            <span>{{ tag }}</span>
-                            <button
-                              type="button"
-                              class="btn btn-ghost btn-xs text-error"
-                              @click="removeTag(tag)"
-                              title="Remove tag"
-                            >
-                              <svg
-                                class="w-3 h-3"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                              >
-                                <path d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-
-                        <div class="join w-full">
-                          <input
-                            v-model="tagSearch"
-                            type="text"
-                            placeholder="Search or add new tag…"
-                            class="input input-bordered input-sm join-item w-full"
-                            @keydown.enter.prevent="addNewTag"
-                          />
-                          <button
-                            class="btn btn-primary btn-sm join-item"
-                            @click="addNewTag"
-                          >
-                            Add Tag
-                          </button>
-                        </div>
-                        <div v-if="tagSuggestions.length" class="mt-2 text-sm">
-                          <span class="opacity-70 mr-2">Suggestions:</span>
-                          <button
-                            v-for="s in tagSuggestions"
-                            :key="s"
-                            class="btn btn-ghost btn-xs"
-                            @click="quickAddTag(s)"
-                          >
-                            {{ s }}
-                          </button>
-                        </div>
-                      </div>
-
-                      <div class="modal-action">
-                        <button class="btn" @click="closeManager">Close</button>
+                      <div v-if="tagSuggestions.length" class="mt-2 text-sm">
+                        <span class="opacity-70 mr-2">Suggestions:</span>
+                        <button
+                          v-for="s in tagSuggestions"
+                          :key="s"
+                          class="btn btn-ghost btn-xs"
+                          @click="quickAddTag(s)"
+                        >
+                          {{ s }}
+                        </button>
                       </div>
                     </div>
-                    <!-- <div class="modal-action">
+
+                    <div class="modal-action">
+                      <button class="btn" @click="closeManager">Close</button>
+                    </div>
+                  </div>
+                  <!-- <div class="modal-action">
       <button class="btn" @click="closeManager">Close</button>
     </div> -->
-  </div>
+                </div>
+              </dialog>
 
-                  </dialog>
+              <!-- Tag selector in Add Transaction form (enhanced) -->
+              <!-- Tags (chips + autocomplete) -->
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Tags</span>
+                  <span class="label-text-alt"
+                    >Type and press Enter (or comma)</span
+                  >
+                </label>
 
-                  <!-- Tag selector in Add Transaction form (enhanced) -->
-                  <!-- Tags (chips + autocomplete) -->
-                  <div class="form-control">
-                    <label class="label">
-                      <span class="label-text">Tags</span>
-                      <span class="label-text-alt"
-                        >Type and press Enter (or comma)</span
-                      >
-                    </label>
-
-                    <!-- Current tags -->
-                    <div class="flex flex-wrap gap-2 mb-2">
-                      <span
-                        v-for="tag in newTransaction.tags"
-                        :key="tag"
-                        class="badge badge-primary gap-1"
-                      >
-                        <span>{{ tag }}</span>
+                       <div class="join w-full">
+                        <input
+                          v-model="tagSearch"
+                          type="text"
+                          placeholder="Search or add new tag…"
+                          class="input input-bordered input-sm join-item w-full"
+                          @keydown.enter.prevent="addNewTag"
+                        />
                         <button
-                          type="button"
-                          class="btn btn-ghost btn-xs text-error"
-                          @click="removeTagFromTransaction(tag)"
-                          aria-label="Remove tag"
+                          class="btn btn-primary btn-sm join-item"
+                          @click="addNewTag"
                         >
-                          <svg
-                            class="w-3 h-3"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                          >
-                            <path d="M6 18L18 6M6 6l12 12" />
-                          </svg>
+                          Add Tag
                         </button>
-                      </span>
-                      <span
-                        v-if="!newTransaction.tags.length"
-                        class="text-xs opacity-60"
-                        >No tags yet</span
+                      </div>
+
+                <!-- Current tags -->
+                <div class="flex flex-wrap gap-2 mb-2">
+                  <span
+                    v-for="tag in newTransaction.tags"
+                    :key="tag"
+                    class="badge badge-primary gap-1"
+                  >
+                    <span>{{ tag }}</span>
+                    <button
+                      type="button"
+                      class="btn btn-ghost btn-xs text-error"
+                      @click="removeTagFromTransaction(tag)"
+                      aria-label="Remove tag"
+                    >
+                      <svg
+                        class="w-3 h-3"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
                       >
-                    </div>
-
-
-
-        <!-- Category Combobox -->
-        <div class="relative">
-          <input
-            :id="ids.input"
-            v-model="query"
-            type="text"
-            class="input input-bordered w-full pr-20"
-            :placeholder="placeholder"
-            role="combobox"
-            :aria-expanded="String(open)"
-            :aria-controls="ids.listbox"
-            :aria-activedescendant="open ? activeId : undefined"
-            aria-autocomplete="list"
-            autocomplete="off"
-            @focus="open = true"
-            @input="handleInput"
-            @keydown.down.prevent="moveActive(1)"
-            @keydown.up.prevent="moveActive(-1)"
-            @keydown.enter.prevent="handleEnter"
-            @keydown.esc.prevent="closeDropdown"
-          />
-
-          <!-- Clear button -->
-          <button
-            v-if="query"
-            type="button"
-            class="btn btn-ghost btn-xs absolute right-14 top-1/2 -translate-y-1/2"
-            @click="query=''; open=true; activeIndex = showCreateOption ? -1 : 0"
-            aria-label="Clear search"
-            title="Clear"
-          >✕</button>
-
-          <!-- Current selection check (readonly visual) -->
-          <span
-            v-if="newTransaction.category"
-            class="badge sm:badge-ghost absolute right-2 top-1/2 -translate-y-1/2 max-w-[8rem] truncate"
-            title="Selected category"
-          >
-            {{ newTransaction.category }}
-          </span>
-
-          <!-- Options -->
-          <ul
-            v-show="open"
-            class="menu menu-sm bg-base-100 rounded-box shadow absolute z-40 w-full mt-1 max-h-56 overflow-auto"
-            role="listbox"
-            :id="ids.listbox"
-          >
-            <!-- Create option -->
-            <li v-if="showCreateOption">
-              <button type="button" role="option" @mousedown.prevent="createCustomFromQuery()">
-                ➕ Create “{{ trimmedQuery }}”
-              </button>
-            </li>
-
-            <!-- Existing categories (highlighted matches) -->
-            <li v-for="(c, i) in filteredAllCategories" :key="c">
-              <button
-                type="button"
-                role="option"
-                :id="optionId(i)"
-                :aria-selected="activeIndex === i"
-                class="justify-between"
-                @mousedown.prevent="selectCategory(c)"
-              >
-                <span v-html="highlight(c, trimmedQuery)"></span>
-                <span v-if="newTransaction.category === c" aria-hidden="true">✓</span>
-              </button>
-            </li>
-
-            <!-- Empty state -->
-            <li v-if="!showCreateOption && !filteredAllCategories.length" class="px-3 py-2 opacity-60">
-              No matches. Press Enter to create “{{ trimmedQuery }}”.
-            </li>
-          </ul>
-
-          <!-- Helper text -->
-          <p class="mt-1 text-xs opacity-70">
-            Tip: type to search, <kbd>↑/↓</kbd> to navigate, <kbd>Enter</kbd> to select.
-          </p>
-
-          <!-- Recently used (quick chips) -->
-          <div v-if="recentCategories.length && !trimmedQuery" class="mt-2 flex flex-wrap gap-1">
-            <button
-              v-for="rc in recentCategories"
-              :key="rc"
-              type="button"
-              class="badge sm:badge-ghost hover:badge-primary"
-              @click="selectCategory(rc)"
-            >
-              {{ rc }}
-            </button>
-          </div>
-        </div>
+                        <path d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </span>
+                  <span
+                    v-if="!newTransaction.tags.length"
+                    class="text-xs opacity-60"
+                    >No tags yet</span
+                  >
+                </div>
 
                 <!-- Quick add from existing -->
                 <label class="label">
@@ -1877,20 +1955,19 @@
         class="card bg-base-100 shadow-xl max-w-4xl mx-auto mt-8"
         aria-labelledby="aboutHeading"
       >
-      <div class="card-body">
-          <h2 id="aboutHeading" class="card-title text-2xl font-bold">ℹ️ About</h2>
+        <div class="card-body">
+          <h2 id="aboutHeading" class="card-title text-2xl font-bold">
+            ℹ️ About
+          </h2>
           <div class="prose max-w-none space-y-4">
             <h1 class="text-3xl lg:text-4xl font-bold">
-                myAniFi - {{version}}
+              myAniFi - {{ version }}
             </h1>
-          
-            <p class="lead">
-              My Financial Forcaster/Tracker
-              Take control of your finances by importing your bank statements or
-              adding transactions manually.
-            </p>
 
-          
+            <p class="lead">
+              My Financial Forcaster/Tracker Take control of your finances by
+              importing your bank statements or adding transactions manually.
+            </p>
 
             <h2 class="pt-4 text-2xl font-bold">🔒 Privacy First</h2>
             <p>
@@ -1928,8 +2005,8 @@
             <h2 class="text-2xl font-bold">✨ Key Features</h2>
             <ul class="space-y-2">
               <li>
-                🏷️ <strong>Custom Categories and Tags</strong> - Search and add your own transaction
-                categories and tags
+                🏷️ <strong>Custom Categories and Tags</strong> - Search and add
+                your own transaction categories and tags
               </li>
               <li>
                 🎯 <strong>Smart Bulk Operations</strong> - Select and edit
@@ -1944,22 +2021,25 @@
                 suggestions
               </li>
               <li>
-                📥 <strong>Supports CSV Import</strong> from the 4 major Australian banks
+                📥 <strong>Supports CSV Import</strong> from the 4 major
+                Australian banks
               </li>
-              <li>💾 <strong>Auto-Recall</strong> - Seamlessly loads local data from browser</li>
+              <li>
+                💾 <strong>Auto-Recall</strong> - Seamlessly loads local data
+                from browser
+              </li>
               <li>📈 <strong>Interactive Charts and Analytics</strong></li>
               <li>🔄 <strong>Recurring Transaction Support</strong></li>
               <li>🎨 <strong>Multi-Theme Support</strong></li>
               <li>📱 <strong>Mobile-Responsive Design-ish</strong></li>
               <li></li>
-
             </ul>
 
             <div class="divider"></div>
 
             <h2 class="text-2xl font-bold">🚀 Future Features</h2>
             <ul>
-							<li>Fix Persistence Local Storage Bug</li>
+              <li>Fix Persistence Local Storage Bug</li>
               <li>Improvements on Adding Category and Tags</li>
               <li>Add an interactive bubble map chart type</li>
             </ul>
@@ -2642,7 +2722,6 @@
       </div>
     </dialog>
   </div>
-
 </template>
 <script setup lang="ts">
 import {
@@ -2669,7 +2748,7 @@ const props = withDefaults(
     initialTags: [],
     storageKey: "ani:catmgr",
     placeholder: "Type to search or create a category…",
-  }
+  },
 );
 
 const emit = defineEmits<{
@@ -2681,24 +2760,40 @@ const emit = defineEmits<{
 // --- Match highlight for list items ---
 function highlight(text: string, q: string) {
   const esc = (s: string) =>
-    s.replace(/[&<>"']/g, (ch) => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[ch]!));
+    s.replace(
+      /[&<>"']/g,
+      (ch) =>
+        ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[ch]!,
+    );
   const needle = (q || "").trim();
   if (!needle) return esc(text);
-  const re = new RegExp(`(${needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "ig");
+  const re = new RegExp(
+    `(${needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+    "ig",
+  );
   return esc(text).replace(re, "<mark>$1</mark>");
 }
 
 // --- Recently used categories (persisted) ---
 const recentCatLsKey = `${props.storageKey}:recentCats`;
 const recentCategories = ref<string[]>([]);
-try { recentCategories.value = JSON.parse(localStorage.getItem(recentCatLsKey) || "[]"); } catch {}
+try {
+  recentCategories.value = JSON.parse(
+    localStorage.getItem(recentCatLsKey) || "[]",
+  );
+} catch {}
 
 function rememberCategory(cat: string) {
   const list = dedupeCI([cat, ...recentCategories.value]).slice(0, 6);
   recentCategories.value = list;
   localStorage.setItem(recentCatLsKey, JSON.stringify(list));
 }
-
 
 /**
  * PROPS
@@ -2754,7 +2849,7 @@ function onCatScroll(e: Event) {
   if (t.scrollTop + t.clientHeight >= t.scrollHeight - 48) {
     catPicker.visible = Math.min(
       catPicker.visible + 80,
-      filteredCats.value.length
+      filteredCats.value.length,
     );
   }
 }
@@ -2766,7 +2861,7 @@ function createCategoryFromQuery() {
     !containsCaseIns(allCategories.value, name)
   ) {
     customCategories.value = sortAlpha(
-      dedupeCI([...customCategories.value, name])
+      dedupeCI([...customCategories.value, name]),
     );
   }
   newTransaction.category =
@@ -2802,7 +2897,7 @@ const filteredTagList = computed(() => {
   return pool.filter((t) => t.toLowerCase().includes(q));
 });
 const tagSlice = computed(() =>
-  filteredTagList.value.slice(0, tagPicker.visible)
+  filteredTagList.value.slice(0, tagPicker.visible),
 );
 
 function openTagPicker() {
@@ -2822,7 +2917,7 @@ function onTagScroll(e: Event) {
   if (t.scrollTop + t.clientHeight >= t.scrollHeight - 48) {
     tagPicker.visible = Math.min(
       tagPicker.visible + 120,
-      filteredTagList.value.length
+      filteredTagList.value.length,
     );
   }
 }
@@ -2882,7 +2977,7 @@ const customCategories = ref<string[]>(
     } catch {
       return dedupeCI(props.initialCustom || []);
     }
-  })()
+  })(),
 );
 
 const tags = ref<string[]>(
@@ -2896,15 +2991,15 @@ const tags = ref<string[]>(
     } catch {
       return dedupeCI(props.initialTags || []);
     }
-  })()
+  })(),
 );
 
 const csvInputRef = ref<HTMLInputElement | null>(null);
 
-async function  openTour(opts: { closeTour?: boolean } = {}) {
-  console.log(opts.closeTour)
+async function openTour(opts: { closeTour?: boolean } = {}) {
+  console.log(opts.closeTour);
   if (opts.closeTour) {
-    console.log(opts.closeTour)
+    console.log(opts.closeTour);
     showTour.value = false; // close overlay so the picker is clickable
   }
   // navigate to Import and trigger file input
@@ -2932,13 +3027,13 @@ async function  openTour(opts: { closeTour?: boolean } = {}) {
 }
 
 function startImportFromOnboarding() {
-  console.log("startImportFromOnboarding")
-   openTour({ closeTour: true });
+  console.log("startImportFromOnboarding");
+  openTour({ closeTour: true });
 }
 
 function startImportFromEmptyState() {
-  console.log("startImportFromEmptyState")
-   openTour({ closeTour: true });
+  console.log("startImportFromEmptyState");
+  openTour({ closeTour: true });
   //  openTour(); // just open picker
 }
 
@@ -2946,13 +3041,17 @@ function startImportFromEmptyState() {
 const open = ref(false);
 const query = ref("");
 const activeIndex = ref<number>(0);
-  const ids: { input: string; listbox: string; heading: string; tagList: string } = {
+const ids: {
+  input: string;
+  listbox: string;
+  heading: string;
+  tagList: string;
+} = {
   input: `cat-cbx-${Math.random().toString(36).slice(2)}`,
   listbox: `cat-lb-${Math.random().toString(36).slice(2)}`,
   heading: `catmgr-h-${Math.random().toString(36).slice(2)}`,
   tagList: `tag-lb-${Math.random().toString(36).slice(2)}`,
 };
-
 
 function normalizeTx(t: any): Transaction {
   return {
@@ -2981,8 +3080,8 @@ function hydrateTransactionsFromStorage() {
     const arr = Array.isArray(parsed)
       ? parsed
       : Array.isArray((parsed as any)?.transactions)
-      ? (parsed as any).transactions
-      : [];
+        ? (parsed as any).transactions
+        : [];
 
     transactions.value = arr.map(normalizeTx);
   } catch (e) {
@@ -3025,7 +3124,7 @@ function addTagFilter(t: string) {
 
 function removeTagFilter(t: string) {
   selectedTagsForFilter.value = selectedTagsForFilter.value.filter(
-    (x) => x !== t
+    (x) => x !== t,
   );
 }
 
@@ -3035,7 +3134,7 @@ const activeId = computed(() => optionId(activeIndex.value));
 // Categories source
 const defaultCategories = computed(() => sortAlpha(dedupeCI(categoryNames)));
 const allCategories = computed(() =>
-  sortAlpha(dedupeCI([...defaultCategories.value, ...customCategories.value]))
+  sortAlpha(dedupeCI([...defaultCategories.value, ...customCategories.value])),
 );
 
 const trimmedQuery = computed(() => norm(query.value));
@@ -3085,16 +3184,15 @@ function selectCategory(cat: string) {
   newTransaction.category = cat;
   query.value = cat;
   open.value = false;
-  rememberCategory(cat); 
+  rememberCategory(cat);
 }
-
 
 function createCustomFromQuery() {
   const name = trimmedQuery.value;
   if (!name) return;
   if (!containsCaseIns(customCategories.value, name)) {
     customCategories.value = sortAlpha(
-      dedupeCI([...customCategories.value, name])
+      dedupeCI([...customCategories.value, name]),
     );
   }
   selectCategory(name);
@@ -3115,7 +3213,7 @@ watch(
   (val) => {
     if (val && !eqi(val, query.value)) query.value = val;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 /* Persist + emit changes */
@@ -3125,7 +3223,7 @@ watch(
     localStorage.setItem(ls.custom, JSON.stringify(val));
     emit("update:custom", val);
   },
-  { deep: true }
+  { deep: true },
 );
 watch(
   tags,
@@ -3133,7 +3231,7 @@ watch(
     localStorage.setItem(ls.tags, JSON.stringify(val));
     emit("update:tags", val);
   },
-  { deep: true }
+  { deep: true },
 );
 
 /* ---------- Manager Modal ---------- */
@@ -3145,7 +3243,9 @@ function openManager(mode: "manage" | "add" = "manage") {
   nextTick(() => {
     // focus search when opening manage; prefill new name when "add"
     if (mode === "manage") {
-      const el = document.querySelector<HTMLInputElement>('[data-testid="category-search"]');
+      const el = document.querySelector<HTMLInputElement>(
+        '[data-testid="category-search"]',
+      );
       el?.focus();
     } else {
       newCustomName.value = trimmedQuery.value || "";
@@ -3166,10 +3266,10 @@ const filteredCategories = computed(() => {
   return merged.filter((c) => c.toLowerCase().includes(q));
 });
 const filteredDefaults = computed(() =>
-  filteredCategories.value.filter((c) => defaultCategories.value.includes(c))
+  filteredCategories.value.filter((c) => defaultCategories.value.includes(c)),
 );
 const filteredCustoms = computed(() =>
-  filteredCategories.value.filter((c) => customCategories.value.includes(c))
+  filteredCategories.value.filter((c) => customCategories.value.includes(c)),
 );
 
 /* Add new custom category */
@@ -3182,7 +3282,7 @@ function addCustomCategory() {
     selectCategory(allCategories.value.find((c) => eqi(c, name))!);
   } else {
     customCategories.value = sortAlpha(
-      dedupeCI([...customCategories.value, name])
+      dedupeCI([...customCategories.value, name]),
     );
     selectCategory(name);
   }
@@ -3212,21 +3312,21 @@ function saveEditCategory() {
   if (
     containsCaseIns(
       allCategories.value.filter((c) => !eqi(c, original)),
-      next
+      next,
     )
   ) {
     // If it conflicts, just select that existing one and remove original if it was custom
     const existing = allCategories.value.find((c) => eqi(c, next))!;
     if (customCategories.value.includes(original)) {
       customCategories.value = customCategories.value.filter(
-        (c) => !eqi(c, original)
+        (c) => !eqi(c, original),
       );
     }
     if (eqi(props.modelValue, original)) emit("update:modelValue", existing);
   } else {
     // Update the custom list entry
     customCategories.value = sortAlpha(
-      customCategories.value.map((c) => (eqi(c, original) ? next : c))
+      customCategories.value.map((c) => (eqi(c, original) ? next : c)),
     );
     if (eqi(props.modelValue, original)) emit("update:modelValue", next);
   }
@@ -3267,7 +3367,7 @@ const tagSuggestions = computed(() => {
   // Add some simple category-derived suggestions:
   const cats = allCategories.value.slice(0, 6).map((c) => c.toLowerCase());
   const union = dedupeCI([...base, ...cats]).filter(
-    (t) => !containsCaseIns(tags.value, t)
+    (t) => !containsCaseIns(tags.value, t),
   );
   return union.slice(0, 8);
 });
@@ -3992,7 +4092,8 @@ const DEMO_DATA: Transaction[] = [
     type: "spending",
     amount: 200.0,
     category: "Insurance",
-    description: "pneumonoultramicroscopicsilicovolcanoconiosis and Pseudopseudohypoparathyroidism and Hippopotomonstrosesquippedaliophobia Insurance",
+    description:
+      "pneumonoultramicroscopicsilicovolcanoconiosis and Pseudopseudohypoparathyroidism and Hippopotomonstrosesquippedaliophobia Insurance",
     source: "Demo Data",
     frequency: "monthly",
     tags: ["insurance", "health", "monthly"],
@@ -4037,10 +4138,13 @@ function saveTags() {
 
 function loadTags() {
   // Prefer new key; fall back to legacy if present
-  const saved = localStorage.getItem(ls.tags)
-    ?? localStorage.getItem("financial-tracker-tags"); // legacy
+  const saved =
+    localStorage.getItem(ls.tags) ??
+    localStorage.getItem("financial-tracker-tags"); // legacy
   if (saved) {
-    try { tags.value = dedupeCI(JSON.parse(saved)); } catch {}
+    try {
+      tags.value = dedupeCI(JSON.parse(saved));
+    } catch {}
   }
 }
 
@@ -4107,7 +4211,6 @@ function handleKeydown(e: KeyboardEvent) {
 }
 
 onMounted(() => {
-  
   document.addEventListener("click", closeOpenDropdowns);
   document.addEventListener("keydown", handleKeydown);
 
@@ -4186,11 +4289,11 @@ const allTabs = [
   { id: "about", label: "About", icon: "ℹ️" },
 ];
 const tabs = computed(() =>
-  allTabs.filter((tab) => tab.id !== "chart" || transactions.value.length > 0)
+  allTabs.filter((tab) => tab.id !== "chart" || transactions.value.length > 0),
 );
 
 const activeTab = ref<"import" | "add" | "chart" | "transactions" | "about">(
-  "about"
+  "about",
 );
 function onTab(id: typeof activeTab.value) {
   activeTab.value = id;
@@ -4285,7 +4388,7 @@ const categoryNames = [
 /** Simple user rules (keyword -> category) for smart CRUD; persisted */
 type Rule = { keyword: string; category: string };
 const userRules = ref<Rule[]>(
-  JSON.parse(localStorage.getItem("financial-tracker-rules") || "[]")
+  JSON.parse(localStorage.getItem("financial-tracker-rules") || "[]"),
 );
 
 // /** Chart-category list reflects what's present in data only */
@@ -4327,7 +4430,7 @@ function openCategoryManager(mode: "add" | "manage" = "manage") {
   if (mode === "add") {
     nextTick(() => {
       const el = document.querySelector<HTMLInputElement>(
-        '[data-testid="new-category-input"]'
+        '[data-testid="new-category-input"]',
       );
       el?.focus();
     });
@@ -4344,13 +4447,12 @@ function normalizeCatName(n: string) {
 const allCategoryLower = computed(
   () =>
     new Set<string>(
-      [...categoryNames, ...customCategories.value].map((c) => c.toLowerCase())
-    )
+      [...categoryNames, ...customCategories.value].map((c) => c.toLowerCase()),
+    ),
 );
 
 // // Persist custom categories
 onMounted(() => {
-
   try {
     const legacy = localStorage.getItem("financial-tracker-custom-categories");
     if (legacy && !localStorage.getItem(ls.custom)) {
@@ -4485,7 +4587,7 @@ function handleFileUpload(e: Event) {
     } catch (err: any) {
       setImportStatus(
         "Error parsing CSV: " + (err?.message || String(err)),
-        true
+        true,
       );
     } finally {
       input.value = "";
@@ -4504,7 +4606,7 @@ async function importFromUrlOrCode() {
       beginImport();
       try {
         const json = await decodeTxString(
-          raw.startsWith("tx:") ? raw : "tx:" + raw
+          raw.startsWith("tx:") ? raw : "tx:" + raw,
         );
         loadTransactionsFromJSON(json);
         stripTxFromAddressBar();
@@ -4524,7 +4626,7 @@ async function importFromUrlOrCode() {
       beginImport();
       try {
         const json = await decodeTxString(
-          maybeTx.startsWith("tx:") ? maybeTx : "tx:" + maybeTx
+          maybeTx.startsWith("tx:") ? maybeTx : "tx:" + maybeTx,
         );
         loadTransactionsFromJSON(json);
         stripTxFromAddressBar();
@@ -4556,7 +4658,7 @@ async function importFromClipboard() {
   } catch {
     setImportStatus(
       "Clipboard read failed. Paste the code/link manually.",
-      true
+      true,
     );
   }
 }
@@ -4578,7 +4680,7 @@ function tryImportFromLocation() {
     } catch (err: any) {
       setImportStatus(
         "Failed to decode payload from URL: " + (err?.message || String(err)),
-        true
+        true,
       );
     }
   })();
@@ -4587,7 +4689,7 @@ function tryImportFromLocation() {
 function setImportStatus(
   msg: string,
   isError = false,
-  opts?: { toast?: boolean; ms?: number }
+  opts?: { toast?: boolean; ms?: number },
 ) {
   importStatus.value = msg;
   importError.value = isError;
@@ -4608,10 +4710,10 @@ function parseCSV(csvText: string, filename?: string) {
     h
       .replace(/^\uFEFF/, "")
       .replace(/^"|"$/g, "")
-      .trim()
+      .trim(),
   );
   const headersLower = headerCellsRaw.map((h) =>
-    h.toLowerCase().replace(/\s+/g, " ").replace(/[()]/g, "")
+    h.toLowerCase().replace(/\s+/g, " ").replace(/[()]/g, ""),
   );
 
   const findIndex = (headers: string[], needles: string[]) => {
@@ -4673,7 +4775,7 @@ function parseCSV(csvText: string, filename?: string) {
   if (iDate < 0 || iDesc < 0 || (!haveSingleAmount && !haveDebitCredit)) {
     setImportStatus(
       "Missing required columns (need date/description and amount or debit+credit).",
-      true
+      true,
     );
     return;
   }
@@ -4700,7 +4802,7 @@ function parseCSV(csvText: string, filename?: string) {
       neg = 0;
     const scanRows = lines.slice(
       startRow,
-      Math.min(lines.length, startRow + 200)
+      Math.min(lines.length, startRow + 200),
     );
     for (const ln of scanRows) {
       const cols = smartSplit(ln).map((c) => c.replace(/^"|"$/g, "").trim());
@@ -4763,7 +4865,7 @@ function parseCSV(csvText: string, filename?: string) {
     }
 
     const ruleHit = userRules.value.find((r) =>
-      description.toLowerCase().includes(r.keyword.toLowerCase())
+      description.toLowerCase().includes(r.keyword.toLowerCase()),
     );
     const category = ruleHit ? ruleHit.category : autoCategory(description);
 
@@ -4900,7 +5002,7 @@ function parseDateGuess(raw: string) {
     const yyyy = y.length === 2 ? (Number(y) >= 70 ? "19" + y : "20" + y) : y;
     return `${yyyy}-${String(mo).padStart(2, "0")}-${String(d).padStart(
       2,
-      "0"
+      "0",
     )}`;
   }
 
@@ -4912,7 +5014,7 @@ function parseDateGuess(raw: string) {
     const yyyy = y.length === 2 ? (Number(y) >= 70 ? "19" + y : "20" + y) : y;
     return `${yyyy}-${String(mo).padStart(2, "0")}-${String(d).padStart(
       2,
-      "0"
+      "0",
     )}`;
   }
 
@@ -4967,7 +5069,7 @@ function addRuleFromSelection(keyword: string, category: string) {
   userRules.value.push({ keyword, category });
   localStorage.setItem(
     "financial-tracker-rules",
-    JSON.stringify(userRules.value)
+    JSON.stringify(userRules.value),
   );
   pushToast(`Rule added: "${keyword}" → ${category}`, "success");
 }
@@ -5079,7 +5181,7 @@ async function startQrScan() {
       pushToast(
         "BarcodeDetector not supported. Use the share link or code instead.",
         "warning",
-        6000
+        6000,
       );
       return;
     }
@@ -5104,7 +5206,7 @@ async function startQrScan() {
     pushToast(
       "Camera unavailable. Grant permission or use share code.",
       "error",
-      6000
+      6000,
     );
   }
 }
@@ -5130,7 +5232,7 @@ async function handleQRPayload(raw: string) {
         (u.hash.startsWith("#tx=") ? u.hash.slice(4) : "");
       if (tx) {
         const json = await decodeTxString(
-          tx.startsWith("tx:") ? tx : "tx:" + tx
+          tx.startsWith("tx:") ? tx : "tx:" + tx,
         );
         loadTransactionsFromJSON(json);
         setImportStatus("Imported from QR share link.");
@@ -5138,7 +5240,7 @@ async function handleQRPayload(raw: string) {
       }
     }
     const json = await decodeTxString(
-      raw.startsWith("tx:") ? raw : "tx:" + raw
+      raw.startsWith("tx:") ? raw : "tx:" + raw,
     );
     loadTransactionsFromJSON(json);
     setImportStatus("Imported from QR share code.");
@@ -5216,7 +5318,7 @@ watch(newTxDateISO, (iso) => (newTxDateText.value = isoToDDMMYYYY(iso) || ""));
 function onAddDateInput(e: Event) {
   newTxDateError.value = "";
   newTxDateText.value = formatDDMMProgressive(
-    (e.target as HTMLInputElement).value
+    (e.target as HTMLInputElement).value,
   );
   addDateTextRef.value?.setCustomValidity?.("");
 }
@@ -5265,15 +5367,14 @@ function addTagToTransaction(name: string) {
   }
 
   // Add to the current transaction (no dupes)
-  const canonical = tags.value.find(x => eqi(x, t)) || t;
-  if (!newTransaction.tags.some(x => eqi(x, canonical))) {
+  const canonical = tags.value.find((x) => eqi(x, t)) || t;
+  if (!newTransaction.tags.some((x) => eqi(x, canonical))) {
     newTransaction.tags = [...newTransaction.tags, canonical];
   }
 }
 
 function removeTagFromTransaction(name: string) {
-  newTransaction.tags = newTransaction.tags.filter(t => !eqi(t, name));
-
+  newTransaction.tags = newTransaction.tags.filter((t) => !eqi(t, name));
 }
 
 /** ========= Recurring Transactions  ========= */
@@ -5290,7 +5391,7 @@ function generateRecurringTransactions(baseTx: Transaction): Transaction[] {
       occurrenceDate = calculateNextOccurrenceDate(
         baseTx.date,
         baseTx.frequency || "monthly",
-        i
+        i,
       );
     }
 
@@ -5310,7 +5411,7 @@ function generateRecurringTransactions(baseTx: Transaction): Transaction[] {
 function calculateNextOccurrenceDate(
   startDate: string,
   frequency: RecurringFrequency,
-  occurrenceIndex: number
+  occurrenceIndex: number,
 ): string {
   const date = new Date(startDate);
 
@@ -5343,7 +5444,7 @@ function addTransaction() {
 
   if (currentlyEditingId.value) {
     const i = transactions.value.findIndex(
-      (t) => t.id === currentlyEditingId.value
+      (t) => t.id === currentlyEditingId.value,
     );
     if (i > -1) {
       transactions.value[i] = {
@@ -5368,7 +5469,7 @@ function addTransaction() {
     transactions.value.push(...recurringTransactions);
     pushToast(
       `Added ${recurringTransactions.length} recurring transactions`,
-      "success"
+      "success",
     );
   } else {
     transactions.value.push(baseTx);
@@ -5414,7 +5515,7 @@ function clearAllTransactions() {
   }
   if (
     confirm(
-      `Remove ALL ${transactions.value.length} transactions? This cannot be undone.`
+      `Remove ALL ${transactions.value.length} transactions? This cannot be undone.`,
     )
   ) {
     transactions.value = [];
@@ -5451,18 +5552,18 @@ function applyDatePreset(preset: any) {
   switch (preset.type) {
     case "month":
       dateFilter.value.start = toLocalISO(
-        new Date(today.getFullYear(), today.getMonth(), 1)
+        new Date(today.getFullYear(), today.getMonth(), 1),
       );
       dateFilter.value.end = toLocalISO(
-        new Date(today.getFullYear(), today.getMonth() + 1, 0)
+        new Date(today.getFullYear(), today.getMonth() + 1, 0),
       );
       break;
     case "lastMonth":
       dateFilter.value.start = toLocalISO(
-        new Date(today.getFullYear(), today.getMonth() - 1, 1)
+        new Date(today.getFullYear(), today.getMonth() - 1, 1),
       );
       dateFilter.value.end = toLocalISO(
-        new Date(today.getFullYear(), today.getMonth(), 0)
+        new Date(today.getFullYear(), today.getMonth(), 0),
       );
       break;
     case "year":
@@ -5471,10 +5572,10 @@ function applyDatePreset(preset: any) {
       break;
     case "lastYear":
       dateFilter.value.start = toLocalISO(
-        new Date(today.getFullYear() - 1, 0, 1)
+        new Date(today.getFullYear() - 1, 0, 1),
       );
       dateFilter.value.end = toLocalISO(
-        new Date(today.getFullYear() - 1, 11, 31)
+        new Date(today.getFullYear() - 1, 11, 31),
       );
       break;
     case "all":
@@ -5496,7 +5597,7 @@ function formatDateRange() {
     e = new Date(dateFilter.value.end);
   const diff = Math.ceil(Math.abs(+e - +s) / 86400000);
   return `${formatDate(dateFilter.value.start)} - ${formatDate(
-    dateFilter.value.end
+    dateFilter.value.end,
   )} (${diff} days)`;
 }
 
@@ -5779,7 +5880,7 @@ const filteredTransactions = computed(() => {
 function compareBy(
   field: typeof sortField.value,
   a: Transaction,
-  b: Transaction
+  b: Transaction,
 ) {
   let av: any = a[field],
     bv: any = b[field];
@@ -5812,14 +5913,14 @@ const sortedTransactions = computed(() => {
 const currentPage = ref(1);
 const itemsPerPage = 20;
 const totalPages = computed(() =>
-  Math.max(1, Math.ceil(sortedTransactions.value.length / itemsPerPage))
+  Math.max(1, Math.ceil(sortedTransactions.value.length / itemsPerPage)),
 );
 const pageOffset = computed(() => (currentPage.value - 1) * itemsPerPage);
 const paginatedTransactions = computed(() =>
   sortedTransactions.value.slice(
     pageOffset.value,
-    pageOffset.value + itemsPerPage
-  )
+    pageOffset.value + itemsPerPage,
+  ),
 );
 
 /** ========= Selection (ID-based & accessible) ========= */
@@ -5833,13 +5934,13 @@ function setSelected(newSet: Set<string>) {
   selectedIds.value = new Set(newSet);
 }
 const someSelectedOnPage = computed(() =>
-  paginatedTransactions.value.some((t) => selectedIds.value.has(t.id))
+  paginatedTransactions.value.some((t) => selectedIds.value.has(t.id)),
 );
 
 const allSelected = computed(
   () =>
     paginatedTransactions.value.length > 0 &&
-    paginatedTransactions.value.every((t) => selectedIds.value.has(t.id))
+    paginatedTransactions.value.every((t) => selectedIds.value.has(t.id)),
 );
 
 function toggleSelectRow(id: string) {
@@ -5875,7 +5976,7 @@ function bulkDelete() {
   if (!confirm(`Delete ${selectedIds.value.size} selected transaction(s)?`))
     return;
   transactions.value = transactions.value.filter(
-    (t) => !selectedIds.value.has(t.id)
+    (t) => !selectedIds.value.has(t.id),
   );
   clearSelection();
   pushToast("Selected transactions deleted", "success");
@@ -5915,7 +6016,7 @@ const bulkEdit = reactive({
 });
 
 const selectedTransactions = computed(() =>
-  transactions.value.filter((t) => selectedIds.value.has(t.id))
+  transactions.value.filter((t) => selectedIds.value.has(t.id)),
 );
 
 const suggestedKeyword = computed(() => {
@@ -5966,7 +6067,7 @@ function escapeRegExp(s: string) {
 function toTitleCase(s: string) {
   return s.replace(
     /\b([\p{L}][\p{L}'-]*)/gu,
-    (m) => m[0].toUpperCase() + m.slice(1).toLowerCase()
+    (m) => m[0].toUpperCase() + m.slice(1).toLowerCase(),
   );
 }
 function cleanDesc(raw: string) {
@@ -5994,7 +6095,7 @@ function applyBulkEdit() {
   const findRe = haveFind
     ? new RegExp(
         escapeRegExp(bulkEdit.findText.trim()),
-        bulkEdit.replaceAll ? "gi" : "i"
+        bulkEdit.replaceAll ? "gi" : "i",
       )
     : null;
 
@@ -6127,8 +6228,8 @@ function runSmartFilter() {
   const type = /income/i.test(txt)
     ? ("income" as const)
     : /spending/i.test(txt)
-    ? ("spending" as const)
-    : "";
+      ? ("spending" as const)
+      : "";
   const contains = txt
     .replace(/last\s+\d+\s*d|>\d+(\.\d+)?|<\d+(\.\d+)?|income|spending/gi, "")
     .trim();
@@ -6236,13 +6337,13 @@ function normDesc(s: string) {
 }
 function maybeOfferSelectSimilar(seed: Transaction) {
   const countSimilar = filteredTransactions.value.filter(
-    (t) => normDesc(t.description) === normDesc(seed.description)
+    (t) => normDesc(t.description) === normDesc(seed.description),
   ).length;
   if (countSimilar > 1) {
     pushToast(
       `Tip: many transactions look like "${seed.description}". Use Smart Select or click "Select Spending/Income" dropdowns.`,
       "info",
-      6000
+      6000,
     );
   }
 }
@@ -6287,7 +6388,7 @@ const chartData = computed(() => {
   const base =
     selectedCategories.value.length > 0
       ? filteredTransactions.value.filter((t) =>
-          selectedCategories.value.includes(t.category)
+          selectedCategories.value.includes(t.category),
         )
       : filteredTransactions.value;
 
@@ -6388,7 +6489,7 @@ async function renderChart() {
           callbacks: {
             label: (ctx: any) =>
               `${ctx.dataset.label}: $${Number(
-                ctx.parsed?.y ?? ctx.parsed
+                ctx.parsed?.y ?? ctx.parsed,
               ).toFixed(2)}`,
           },
         },
@@ -6409,23 +6510,23 @@ async function renderChart() {
 
 /** ========= Stats ========= */
 const incomeTransactions = computed(() =>
-  filteredTransactions.value.filter((t) => t.type === "income")
+  filteredTransactions.value.filter((t) => t.type === "income"),
 );
 const expenseTransactions = computed(() =>
-  filteredTransactions.value.filter((t) => t.type === "spending")
+  filteredTransactions.value.filter((t) => t.type === "spending"),
 );
 const totalIncome = computed(() =>
-  incomeTransactions.value.reduce((s, t) => s + t.amount, 0)
+  incomeTransactions.value.reduce((s, t) => s + t.amount, 0),
 );
 const totalExpenses = computed(() =>
-  expenseTransactions.value.reduce((s, t) => s + t.amount, 0)
+  expenseTransactions.value.reduce((s, t) => s + t.amount, 0),
 );
 const netBalance = computed(() => totalIncome.value - totalExpenses.value);
 
 /** ========= Utilities ========= */
 function closeClosestDetails(ev?: Event) {
   const el = (ev?.target as HTMLElement | null)?.closest(
-    "details.dropdown"
+    "details.dropdown",
   ) as HTMLDetailsElement | null;
   if (el) el.open = false;
 }
@@ -6433,7 +6534,7 @@ function closeClosestDetails(ev?: Event) {
 function selectByTypeAndClose(
   type: TransactionType,
   scope: "page" | "all",
-  ev?: Event
+  ev?: Event,
 ) {
   selectByType(type, scope);
   closeClosestDetails(ev);
@@ -6447,7 +6548,7 @@ function addMonthsClamped(iso: string, months: number) {
   const last = new Date(
     target.getFullYear(),
     target.getMonth() + 1,
-    0
+    0,
   ).getDate();
   const day = Math.min(d, last);
   target.setDate(day);
@@ -6461,7 +6562,7 @@ function addDays(iso: string, days: number) {
 function computeRecurringEndDate(
   startISO: string,
   freq: RecurringFrequency,
-  recursions: number
+  recursions: number,
 ) {
   const n = Math.max(1, Number(recursions || 1));
   if (!startISO || n <= 1) return startISO;
@@ -6497,7 +6598,6 @@ watch(derivedEndDateISO, (v) => {
   if (newTransaction.recurring) newTransaction.endDate = v || "";
 });
 watch(showManager, (on) => setBodyScrollLocked(!!on));
-
 
 function parseTransactionsFromJSON(json: string): Transaction[] {
   const arr = JSON.parse(json);
@@ -6537,7 +6637,7 @@ function handleJsonImport(e: Event) {
       const incoming = parseTransactionsFromJSON(text);
 
       const replace = confirm(
-        'Replace ALL existing transactions with this file?\n\nClick "OK" to Replace, or "Cancel" to Append/Merge.'
+        'Replace ALL existing transactions with this file?\n\nClick "OK" to Replace, or "Cancel" to Append/Merge.',
       );
 
       if (replace) {
@@ -6699,12 +6799,12 @@ watch(
   (val) => {
     if (val && !eqi(val, query.value)) query.value = val;
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 watch(
   [searchQuery, typeFilter, sourceFilter, selectedTagsForFilter],
-  () => (currentPage.value = 1)
+  () => (currentPage.value = 1),
 );
 watch(totalPages, (n) => {
   if (currentPage.value > n) currentPage.value = n;
@@ -6716,13 +6816,13 @@ watch(
     try {
       localStorage.setItem(
         "financial-tracker-transactions",
-        JSON.stringify(transactions.value)
+        JSON.stringify(transactions.value),
       );
     } catch {}
     if (isImporting.value) return;
     scheduleRecomputeShareArtifacts();
   },
-  { deep: true }
+  { deep: true },
 );
 
 watch([searchQuery, typeFilter], () => (currentPage.value = 1));
@@ -6742,10 +6842,9 @@ watch(
   () => nextTick(renderChart),
   {
     deep: true,
-  }
+  },
 );
 watch(filteredTransactions, () => nextTick(renderChart));
-
 
 onMounted(async () => {
   const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding");
@@ -6774,15 +6873,15 @@ onMounted(async () => {
     setTheme(
       window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
-        : "light"
+        : "light",
     );
-if (!transactions.value.length) {
+  if (!transactions.value.length) {
     const savedTx = localStorage.getItem("financial-tracker-transactions");
     if (!savedTx) {
       pushToast(
         "Tip: Import a CSV or use a Share Code to get started.",
         "info",
-        6000
+        6000,
       );
     }
   }
@@ -6796,7 +6895,7 @@ if (!transactions.value.length) {
     } catch {}
   }
   const savedCats = localStorage.getItem(
-    "financial-tracker-selected-categories"
+    "financial-tracker-selected-categories",
   );
   if (savedCats) {
     try {
@@ -6831,7 +6930,7 @@ watch(
     try {
       localStorage.setItem(
         "financial-tracker-transactions",
-        JSON.stringify(val)
+        JSON.stringify(val),
       );
     } catch (e) {
       console.warn("Failed to persist transactions:", e);
@@ -6840,7 +6939,7 @@ watch(
       scheduleRecomputeShareArtifacts();
     }
   },
-  { deep: true }
+  { deep: true },
 );
 
 watch(
@@ -6848,29 +6947,28 @@ watch(
   () =>
     localStorage.setItem(
       "financial-tracker-selected-categories",
-      JSON.stringify(selectedCategories.value)
+      JSON.stringify(selectedCategories.value),
     ),
-  { deep: true }
+  { deep: true },
 );
 watch(
   chartConfig,
   () =>
     localStorage.setItem(
       "financial-tracker-chart-config",
-      JSON.stringify(chartConfig.value)
+      JSON.stringify(chartConfig.value),
     ),
-  { deep: true }
+  { deep: true },
 );
 watch(
   seriesToggles,
   () =>
     localStorage.setItem(
       "financial-tracker-series-toggles",
-      JSON.stringify(seriesToggles.value)
+      JSON.stringify(seriesToggles.value),
     ),
-  { deep: true }
+  { deep: true },
 );
-
 </script>
 
 <style scoped>
@@ -6879,15 +6977,30 @@ watch(
   word-break: break-word;
 }
 /* WCAG-friendly skip link */
-.skip-link{
-  position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
-.skip-link:focus{
-  position:fixed;left:1rem;top:1rem;width:auto;height:auto;padding:.5rem .75rem;
-  background:CanvasText;color:Canvas;border-radius:.375rem;z-index:9999;
+.skip-link:focus {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 0.75rem;
+  background: CanvasText;
+  color: Canvas;
+  border-radius: 0.375rem;
+  z-index: 9999;
 }
 /* Modal background scroll lock */
-.no-scroll{ overflow:hidden; }
+.no-scroll {
+  overflow: hidden;
+}
 
 .menu li > a:focus {
   outline: 2px solid currentColor;
