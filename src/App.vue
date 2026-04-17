@@ -1402,9 +1402,14 @@
 
                         <h2 class="text-2xl font-bold">🚀 Future Features</h2>
                         <ul>
-                            <li>Fix Persistence Local Storage Bug</li>
-                            <li>Improvements on Adding Category and Tags</li>
-                            <li>Add an interactive bubble map chart type</li>
+                            <li>Add wise bank support</li>
+<li>Improvements to adding Categories and Tags</>
+<li>Interactive bubble map chart type</li>
+<li>Select all or select on page</li>
+<li>Categories and tags need to update with on edit</li>
+<li>Filter by exact amount</li> 
+<li>Imporve edit transaction to recurring</li>
+<li>Remember last selected option</li>
                         </ul>
 
                         <div class="divider"></div>
@@ -1414,6 +1419,14 @@
                             <li>Vue 3 with TypeScript</li>
                             <li>DaisyUI for styling</li>
                             <li>Chart.js for analytics</li>
+                        </ul>
+
+                        <div class="divider"></div>
+
+                        <h2 class="text-2xl font-bold">🧾 Licence</h2>
+                        <ul>
+                            <li>Redistributors must ensure all source code are publicly available and accessible</li>
+                            <li>GPLv3 LICENSE</li>
                         </ul>
                     </div>
                 </div>
