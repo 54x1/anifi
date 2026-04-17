@@ -1403,7 +1403,7 @@
                         <h2 class="text-2xl font-bold">🚀 Future Features</h2>
                         <ul>
                             <li>Add wise bank support</li>
-<li>Improvements to adding Categories and Tags</>
+<li>Improvements to adding Categories and Tags</li>
 <li>Interactive bubble map chart type</li>
 <li>Select all or select on page</li>
 <li>Categories and tags need to update with on edit</li>
