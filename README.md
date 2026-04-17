@@ -1,6 +1,6 @@
 # ℹ️ About
 
-## myAniFi – v3.0
+## myAniFi – v3.1
 
 **My Financial Forecaster/Tracker.**  
 Take control of your finances by importing your bank statements or adding transactions manually.
@@ -52,9 +52,14 @@ Effortlessly import from major Australian banks:
 ---
 
 ## 🚀 Future Features
-
+- Add wise bank support
 - Improvements to adding Categories and Tags  
 - Interactive bubble map chart type
+- Select all or select on page
+- Categories and tags need to update with on edit
+- Filter by exact amount 
+- Imporve edit transaction to recurring 
+- Remember last selected option  
 
 ---
 
@@ -63,3 +68,7 @@ Effortlessly import from major Australian banks:
 - Vue 3 with TypeScript  
 - DaisyUI for styling  
 - Chart.js for analytics
+
+## 🧾 Licence
+- Redistributors must ensure all source code are publicly available and accessible
+- GPLv3 LICENSE
