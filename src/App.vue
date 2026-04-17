@@ -1015,15 +1015,6 @@
                   ✕
                 </button>
 
-                <!-- Current selection check (readonly visual) -->
-                <span
-                  v-if="newTransaction.category"
-                  class="badge sm:badge-ghost absolute right-2 top-1/2 -translate-y-1/2 max-w-[8rem] truncate"
-                  title="Selected category"
-                >
-                  {{ newTransaction.category }}
-                </span>
-
                 <!-- Options -->
                 <ul
                   v-show="open"
