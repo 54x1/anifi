@@ -47,7 +47,7 @@
                                 ${{ Math.abs(netBalance).toFixed(2) }}
                             </div>
                         </div>
-                    </div>>
+                    </div>
 
                     <!-- Accessible Theme picker -->
                     <details class="dropdown dropdown-end">
