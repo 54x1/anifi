@@ -1003,7 +1003,7 @@
                 <button
                   v-if="query"
                   type="button"
-                  class="btn btn-ghost btn-xs absolute right-14 top-1/2 -translate-y-1/2"
+                  class="btn btn-ghost btn-xs absolute right-14 top-18 -translate-y-1/2"
                   @click="
                     query = '';
                     open = true;
