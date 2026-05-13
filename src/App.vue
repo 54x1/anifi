@@ -1678,6 +1678,7 @@
               <h2 class="text-2xl font-bold">🚀 Future Features</h2>
 
               <ul class="space-y-2">
+                <li>- Support Remove Tag</li>
                 <li>- Improve Wise Bank support</li>
                 <li>- Interactive bubble map chart type</li>
                 <li>- Select all or select on page</li>
