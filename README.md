@@ -1,6 +1,6 @@
 # ℹ️ About
 
-## myAniFi – v3.1
+## myAniFi – v3.5
 
 **My Financial Forecaster/Tracker.**  
 Take control of your finances by importing your bank statements or adding transactions manually.
@@ -33,12 +33,13 @@ Effortlessly import from major Australian banks:
 - ✅ Macquarie  
 - ✅ Up Bank  
 - ✅ UBank
+- 🧪 Wise Bank - Experimental
 
 ---
 
 ## ✨ Key Features
 
-- 🏷️ **Custom Categories and Tags** – Search and add your own transaction categories and tags  
+- 🏷️ **Improved Custom Categories and Tags** – Search and add your own transaction categories and tags  
 - 🎯 **Smart Bulk Operations** – Select and edit multiple transactions  
 - 📊 **Advanced Analytics** – Enhanced charts and filtering  
 - 🔄 **Auto-Categorization** – Smart category suggestions  
@@ -48,12 +49,12 @@ Effortlessly import from major Australian banks:
 - 🔄 **Recurring Transaction Support**  
 - 🎨 **Multi-Theme Support**  
 - 📱 **Mobile-Responsive Design-ish**
+- 📅 **Improved Date Selection**
 
 ---
 
 ## 🚀 Future Features
-- Add wise bank support
-- Improvements to adding Categories and Tags  
+- Improve wise bank support
 - Interactive bubble map chart type
 - Select all or select on page
 - Categories and tags need to update with on edit
