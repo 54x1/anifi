@@ -2,6 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Skip link for keyboard users (WCAG 2.4.1) */
+@layer base {
+  .skip-link {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    z-index: 100;
+    padding: 0.75rem 1.5rem;
+    background: oklch(var(--p));
+    color: oklch(var(--pc));
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0 0 0.5rem 0;
+    transition: top 0.2s ease;
+  }
+
+  .skip-link:focus {
+    top: 0;
+    outline: 3px solid oklch(var(--p));
+    outline-offset: 0;
+  }
+
+  /* WCAG 2.4.13 Focus Appearance - visible focus indicators */
+  .focus-ring:focus-visible {
+    outline: 3px solid oklch(var(--p));
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+
+  /* WCAG 2.3.3 Animation - respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
 /* Custom styles for better UX */
 @layer components {
   .chart-container {
@@ -16,7 +58,25 @@
   
   /* Smooth transitions for theme switching */
   * {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    transition: background-color 0.45s cubic-bezier(0.4, 0, 0.2, 1), 
+                color 0.45s cubic-bezier(0.4, 0, 0.2, 1), 
+                border-color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                fill 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                stroke 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Smoother transitions for interactive elements */
+  .btn,
+  .card,
+  input,
+  select,
+  textarea {
+    transition: background-color 0.3s ease,
+                color 0.3s ease,
+                border-color 0.3s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
   }
   
   /* Better hover effects */
@@ -28,6 +88,12 @@
   .card:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Chart card must not lift — canvas shift causes a Chart.js redraw */
+  .chart-card:hover {
+    transform: none;
+    box-shadow: none;
   }
   
   /* Mobile optimizations */

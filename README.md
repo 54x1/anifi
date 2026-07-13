@@ -54,7 +54,7 @@ Effortlessly import from major Australian banks:
 ---
 
 ## 🚀 Future Features
-- Support Remove Tag
+- Support Removing Tags
 - Improve wise bank support
 - Interactive bubble map chart type
 - Select all or select on page
