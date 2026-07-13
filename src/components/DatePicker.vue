@@ -87,32 +87,55 @@ function toDisplay(iso: string) { if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return '
 function display(iso: string) { return new Date(`${iso}T12:00:00`).toLocaleDateString(); }
 function parse(value: string) { const match=value.match(/^(\d{2})-(\d{2})-(\d{4})$/); if (!match) return ''; const iso=`${match[3]}-${match[2]}-${match[1]}`; return localISO(new Date(`${iso}T12:00:00`)) === iso ? iso : ''; }
 function onBeforeInput(e: InputEvent) { if (e.data && !/^\d$/.test(e.data)) e.preventDefault(); error.value=''; }
-function onBlur() { if (!text.value) { emit('update:modelValue',''); error.value=''; return; } text.value=text.value.replace(/\D/g,'').slice(0,8).replace(/^(\d{2})(\d)/,'$1-$2').replace(/^(\d{2}-\d{2})(\d)/,'$1-$2'); const iso=parse(text.value); if (!iso || isDisabled(iso)) error.value='Enter a valid date in the allowed range.'; else pick(iso, false); }
+function onBlur(e: FocusEvent) {
+  // Defer so we can check whether focus moved inside this component (e.g., to the calendar button).
+  // When focus stays inside, skip formatting to avoid cursor-jumping on mobile.
+  const el = e.relatedTarget as Node | null;
+  if (root.value?.contains(el)) return;
+  queueMicrotask(() => {
+    if (document.activeElement === inputEl.value) return; // still focused
+    if (!text.value) { emit('update:modelValue',''); error.value=''; return; }
+    text.value=text.value.replace(/\D/g,'').slice(0,8).replace(/^(\d{2})(\d)/,'$1-$2').replace(/^(\d{2}-\d{2})(\d)/,'$1-$2');
+    const iso=parse(text.value);
+    if (!iso || isDisabled(iso)) error.value='Enter a valid date in the allowed range.';
+    else pick(iso, false);
+  });
+}
 function digitsOnly(e: KeyboardEvent) { if (e.ctrlKey || e.metaKey || ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return; if (!/^\d$/.test(e.key)) e.preventDefault(); }
 function isDisabled(iso: string) { return Boolean((props.min && iso < props.min) || (props.max && iso > props.max)); }
 function pick(iso: string, close=true) { if (iso && isDisabled(iso)) return; emit('update:modelValue',iso); text.value=toDisplay(iso); error.value=''; if (close) open.value=false; }
+let positionTimer: ReturnType<typeof requestAnimationFrame> | null = null;
 function positionPopover() {
   if (!open.value || !root.value) return;
-  if (window.matchMedia('(max-width: 480px)').matches) {
-    popoverStyle.value = {};
-    return;
-  }
-  const anchor = root.value.getBoundingClientRect();
-  const width = Math.min(320, window.innerWidth - 16);
-  const height = popover.value?.offsetHeight || 390;
-  const spaceBelow = window.innerHeight - anchor.bottom;
-  const top = spaceBelow >= height + 8
-    ? anchor.bottom + 8
-    : Math.max(8, anchor.top - height - 8);
-  const left = Math.max(8, Math.min(anchor.left, window.innerWidth - width - 8));
-  popoverStyle.value = { top: `${top}px`, left: `${left}px`, width: `${width}px` };
+  // On mobile, CSS handles centering — skip all JS positioning entirely.
+  if (window.matchMedia('(max-width: 480px)').matches) return;
+  // Debounce with rAF to avoid jitter during scroll/resize
+  if (positionTimer) cancelAnimationFrame(positionTimer);
+  positionTimer = requestAnimationFrame(() => {
+    if (!open.value || !root.value) { positionTimer = null; return; }
+    const anchor = root.value.getBoundingClientRect();
+    const width = Math.min(320, window.innerWidth - 16);
+    const height = popover.value?.offsetHeight || 390;
+    const spaceBelow = window.innerHeight - anchor.bottom;
+    const top = spaceBelow >= height + 8
+      ? anchor.bottom + 8
+      : Math.max(8, anchor.top - height - 8);
+    const left = Math.max(8, Math.min(anchor.left, window.innerWidth - width - 8));
+    popoverStyle.value = { top: `${top}px`, left: `${left}px`, width: `${width}px` };
+    positionTimer = null;
+  });
 }
 async function toggle() {
   open.value=!open.value;
   if (open.value) {
     view.value=monthStart(props.modelValue || localISO());
     await nextTick();
-    positionPopover();
+    // Clear any stale desktop styles when opening on mobile (CSS handles centering).
+    if (window.matchMedia('(max-width: 480px)').matches) {
+      popoverStyle.value = {};
+    } else {
+      positionPopover();
+    }
   }
 }
 function moveMonth(delta: number) { const d=new Date(`${view.value}T12:00:00`); d.setMonth(d.getMonth()+delta); view.value=monthStart(localISO(d)); }
@@ -120,15 +143,26 @@ function outside(e: PointerEvent) {
   const target = e.target as Node;
   if (open.value && !root.value?.contains(target) && !popover.value?.contains(target)) open.value=false;
 }
+// Throttle resize handler to avoid excessive calls during keyboard show/hide
+let resizeThrottle: ReturnType<typeof setTimeout> | null = null;
+function onResize() {
+  if (resizeThrottle) clearTimeout(resizeThrottle);
+  resizeThrottle = setTimeout(() => { resizeThrottle = null; positionPopover(); }, 100);
+}
 onMounted(() => {
   document.addEventListener('pointerdown', outside);
-  window.addEventListener('resize', positionPopover);
-  window.addEventListener('scroll', positionPopover, true);
+  // Only add resize/scroll listeners on desktop — on mobile CSS handles all positioning.
+  if (!window.matchMedia('(max-width: 480px)').matches) {
+    window.addEventListener('resize', onResize);
+    window.addEventListener('scroll', positionPopover, true);
+  }
 });
 onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', outside);
-  window.removeEventListener('resize', positionPopover);
+  window.removeEventListener('resize', onResize);
   window.removeEventListener('scroll', positionPopover, true);
+  if (positionTimer) cancelAnimationFrame(positionTimer);
+  if (resizeThrottle) clearTimeout(resizeThrottle);
 });
 </script>
 
