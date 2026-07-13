@@ -98,7 +98,7 @@ function onBlur(e: FocusEvent) {
     text.value=text.value.replace(/\D/g,'').slice(0,8).replace(/^(\d{2})(\d)/,'$1-$2').replace(/^(\d{2}-\d{2})(\d)/,'$1-$2');
     const iso=parse(text.value);
     if (!iso || isDisabled(iso)) error.value='Enter a valid date in the allowed range.';
-    else pick(iso, false);
+    else { emit('update:modelValue', iso); error.value=''; }
   });
 }
 function digitsOnly(e: KeyboardEvent) { if (e.ctrlKey || e.metaKey || ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return; if (!/^\d$/.test(e.key)) e.preventDefault(); }
@@ -200,6 +200,8 @@ onBeforeUnmount(() => {
     transform: translate(-50%, -50%);
     max-height: calc(100dvh - 1rem);
     overflow: auto;
+    /* Smooth repositioning when keyboard dismisses and viewport changes */
+    transition: top 150ms ease-out;
   }
 }
 </style>
