@@ -2,6 +2,7 @@
   <div ref="root" class="date-picker relative" :class="{ 'date-picker-open': open }">
     <div class="join w-full">
       <input
+        ref="inputEl"
         :id="id"
         v-model="text"
         type="text"
@@ -14,7 +15,7 @@
         :aria-describedby="error ? `${id}-error` : undefined"
         autocomplete="off"
         enterkeyhint="done"
-        @input="onInput"
+        @beforeinput="onBeforeInput"
         @blur="onBlur"
         @keydown="digitsOnly"
       />
@@ -66,6 +67,7 @@ const props = withDefaults(defineProps<{ modelValue: string; id: string; ariaLab
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>();
 const root = ref<HTMLElement | null>(null);
 const popover = ref<HTMLElement | null>(null);
+const inputEl = ref<HTMLInputElement | null>(null);
 const open = ref(false);
 const popoverStyle = ref<Record<string, string>>({});
 const error = ref('');
@@ -84,8 +86,8 @@ function monthStart(iso: string) { return `${iso.slice(0,7)}-01`; }
 function toDisplay(iso: string) { if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return ''; const [y,m,d]=iso.split('-'); return `${d}-${m}-${y}`; }
 function display(iso: string) { return new Date(`${iso}T12:00:00`).toLocaleDateString(); }
 function parse(value: string) { const match=value.match(/^(\d{2})-(\d{2})-(\d{4})$/); if (!match) return ''; const iso=`${match[3]}-${match[2]}-${match[1]}`; return localISO(new Date(`${iso}T12:00:00`)) === iso ? iso : ''; }
-function onInput() { text.value=text.value.replace(/\D/g,'').slice(0,8).replace(/^(\d{2})(\d)/,'$1-$2').replace(/^(\d{2}-\d{2})(\d)/,'$1-$2'); error.value=''; }
-function onBlur() { if (!text.value) { emit('update:modelValue',''); error.value=''; return; } const iso=parse(text.value); if (!iso || isDisabled(iso)) error.value='Enter a valid date in the allowed range.'; else pick(iso, false); }
+function onBeforeInput(e: InputEvent) { if (e.data && !/^\d$/.test(e.data)) e.preventDefault(); error.value=''; }
+function onBlur() { if (!text.value) { emit('update:modelValue',''); error.value=''; return; } text.value=text.value.replace(/\D/g,'').slice(0,8).replace(/^(\d{2})(\d)/,'$1-$2').replace(/^(\d{2}-\d{2})(\d)/,'$1-$2'); const iso=parse(text.value); if (!iso || isDisabled(iso)) error.value='Enter a valid date in the allowed range.'; else pick(iso, false); }
 function digitsOnly(e: KeyboardEvent) { if (e.ctrlKey || e.metaKey || ['Backspace','Delete','Tab','ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return; if (!/^\d$/.test(e.key)) e.preventDefault(); }
 function isDisabled(iso: string) { return Boolean((props.min && iso < props.min) || (props.max && iso > props.max)); }
 function pick(iso: string, close=true) { if (iso && isDisabled(iso)) return; emit('update:modelValue',iso); text.value=toDisplay(iso); error.value=''; if (close) open.value=false; }
