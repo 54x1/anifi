@@ -1,8 +1,8 @@
 # ℹ️ About
 
-## myAniFi – v3.5
+## myBudget Forecaster  – v1.10
 
-**My Financial Forecaster/Tracker.**  
+**Finances Personally Tailored**  
 Take control of your finances by importing your bank statements or adding transactions manually.
 
 ---
@@ -54,14 +54,12 @@ Effortlessly import from major Australian banks:
 ---
 
 ## 🚀 Future Features
-- Support Removing Tags
 - Improve wise bank support
-- Interactive bubble map chart type
+- Improve Interactive bubble map chart type
 - Select all or select on page
 - Categories and tags need to update with on edit
-- Filter by exact amount 
+- Imporve Transaction Filter UI
 - Imporve edit transaction to recurring 
-- Remember last selected option  
 
 ---
 
