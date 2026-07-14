@@ -26,7 +26,7 @@
     <p v-if="error" :id="`${id}-error`" class="text-error text-xs mt-1">{{ error }}</p>
 
     <Teleport to="body">
-    <div v-if="open" :id="`${id}-calendar`" ref="popover" class="date-picker-popover card bg-base-100 shadow-2xl border border-base-300" role="dialog" :aria-label="`Choose ${ariaLabel}`" :style="popoverStyle" @pointerdown="isInteracting = true" @pointerup="isInteracting = false" @pointerleave="isInteracting = false">
+    <div v-if="open" :id="`${id}-calendar`" ref="popover" class="date-picker-popover card bg-base-100 shadow-2xl border border-base-300" role="dialog" :aria-label="`Choose ${ariaLabel}`" :style="popoverStyle" @pointerdown="isInteracting = true" @pointerup="() => { isInteracting = false; lastInteractionTime = Date.now(); }" @pointerleave="isInteracting = false" style="touch-action: manipulation;">
       <div class="card-body p-3">
         <div class="flex items-center justify-between mb-2">
           <button type="button" class="btn btn-ghost btn-sm btn-square" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
@@ -106,10 +106,12 @@ function digitsOnly(e: KeyboardEvent) { if (e.ctrlKey || e.metaKey || ['Backspac
 function isDisabled(iso: string) { return Boolean((props.min && iso < props.min) || (props.max && iso > props.max)); }
 function pick(iso: string, close=true) { if (iso && isDisabled(iso)) return; emit('update:modelValue',iso); text.value=toDisplay(iso); error.value=''; if (close) open.value=false; }
 let positionTimer: ReturnType<typeof requestAnimationFrame> | null = null;
+let interactionTimeoutId: ReturnType<typeof setTimeout> | null = null;
+let lastInteractionTime = 0;
 function positionPopover() {
   if (!open.value || !root.value) return;
-  // Skip repositioning during user interaction to prevent missing taps
-  if (isInteracting.value) return;
+  // Skip repositioning during user interaction or shortly after (to catch delayed scroll events on mobile)
+  if (isInteracting.value || Date.now() - lastInteractionTime < 250) return;
   // On mobile, CSS handles centering — skip all JS positioning entirely.
   if (window.matchMedia('(max-width: 480px)').matches) return;
   // Debounce with rAF to avoid jitter during scroll/resize
@@ -166,6 +168,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', positionPopover, true);
   if (positionTimer) cancelAnimationFrame(positionTimer);
   if (resizeThrottle) clearTimeout(resizeThrottle);
+  if (interactionTimeoutId) clearTimeout(interactionTimeoutId);
 });
 </script>
 
