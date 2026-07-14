@@ -1,5 +1,4 @@
 <template>
-
   <div ref="root" class="date-picker relative" :class="{ 'date-picker-open': open }">
     <div class="join w-full">
       <input

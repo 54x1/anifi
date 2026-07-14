@@ -2001,7 +2001,7 @@
                     <label class="label">
                       <span class="label-text font-medium text-xs">Custom Range</span>
                     </label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 overflow-visible">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <!-- From Date -->
                       <div>
                         <label class="label" for="chartStartDate">
@@ -3143,6 +3143,8 @@ export interface Transaction {
   description: string;
   endDate?: string;
   source?: string;
+  /** Links all occurrences of one recurring series (the anchor's id). */
+  seriesId?: string;
 }
 
 type ToastKind = "success" | "info" | "warning" | "error";
@@ -4545,7 +4547,10 @@ const balanceTablePeriod = ref<BalanceTablePeriod>("month");
 // Transaction form
 const newTransaction = reactive<Transaction>({
   id: '',
-  date: '',
+  // Must start as a real date: the date input's computed getter only DISPLAYS
+  // today as a fallback; an empty model here gets stored as-is and turns every
+  // recurring child date into "NaN-NaN-NaN".
+  date: todayLocalISO(),
   type: 'spending',
   amount: 0,
   category: '',
@@ -4576,6 +4581,9 @@ const loadLastRecurringDefaults = () => {
 watch(
   [() => newTransaction.recurring, () => newTransaction.frequency, () => newTransaction.recursions],
   ([recurring, frequency, recursions]) => {
+    // Editing an existing transaction loads its values into the form; those
+    // programmatic changes must not overwrite the user's add-form defaults.
+    if (currentlyEditingId.value) return;
     safeLocalStorageSet(LS_KEYS.recurringDefaults, {
       recurring,
       frequency,
@@ -8981,8 +8989,10 @@ function addMonthsClamped(iso: string, months: number): string {
 }
 
 function addDays(iso: string, days: number): string {
-  const dt = new Date(iso);
-  dt.setDate(dt.getDate() + days);
+  // Parse as local time — new Date("YYYY-MM-DD") is UTC midnight and shifts a
+  // day backwards in negative-offset timezones once converted back to local.
+  const [y, m, d] = iso.split("-").map(Number);
+  const dt = new Date(y, m - 1, d + days);
   return toLocalISO(dt);
 }
 
@@ -9088,6 +9098,10 @@ function addTransaction() {
     return;
   }
 
+  // The form displays today when the date is empty; make the model match so
+  // an untouched date field never stores "" (which breaks recurring math).
+  if (!newTransaction.date) newTransaction.date = todayLocalISO();
+
   // Compute end date if recurring is on (so both add  edit paths get it)
   const endISO = newTransaction.recurring
     ? computeRecurringEndDate(
@@ -9110,18 +9124,30 @@ function addTransaction() {
         source: newTransaction.source || "Manual",
       };
 
+      // transactions is a shallowRef: in-place splice/index writes are invisible
+      // to watchers and the UI, so every update must assign a new array.
+      const prior = transactions.value[idx];
       if (newTransaction.recurring) {
-        // Expand into a series and REPLACE the single edited row
+        // Expand into a series, replace the edited row, and drop the old
+        // series' other occurrences so re-editing never duplicates them.
         const series = generateRecurringTransactions(baseTx);
-        // Replace 1 item with N items
-        transactions.value.splice(idx, 1, ...series);
+        // Only rewriting the series ANCHOR replaces the whole series; editing a
+        // child into a new series must not silently delete its old siblings.
+        const oldSeriesId = prior.recurring ? (prior.seriesId ?? prior.id) : undefined;
+        transactions.value = transactions.value.flatMap((t) => {
+          if (t.id === prior.id) return series;
+          if (oldSeriesId && t.seriesId === oldSeriesId) return [];
+          return [t];
+        });
         pushToast(
           `Updated into ${series.length} recurring transactions`,
           "success"
         );
       } else {
         // Plain edit (non-recurring)
-        transactions.value[idx] = baseTx;
+        const next = transactions.value.slice();
+        next[idx] = baseTx;
+        transactions.value = next;
         pushToast("Transaction updated", "success");
       }
 
@@ -9184,16 +9210,17 @@ function addTransaction() {
     id: `${Date.now()}-${Math.floor(Math.random() * 10000)}`,
     source: newTransaction.source || "Manual",
     endDate: endISO,
+    seriesId: undefined, // never inherit a series link from a previous edit
   };
 
   if (newTransaction.recurring) {
     const series = generateRecurringTransactions(baseTx);
-    transactions.value.push(...series);
+    transactions.value = [...transactions.value, ...series];
     // OPTIMIZED: Incrementally update category set
     categorySet.add(baseTx.category);
     pushToast(`Added ${series.length} recurring transactions`, "success");
   } else {
-    transactions.value.push(baseTx);
+    transactions.value = [...transactions.value, baseTx];
     // OPTIMIZED: Incrementally update category set
     categorySet.add(baseTx.category);
     pushToast("Transaction added", "success");
@@ -9230,6 +9257,7 @@ function resetForm() {
     frequency: lastRecurring.frequency,
     recursions: lastRecurring.recursions,
     endDate: "",
+    seriesId: undefined, // clear any series link left over from an edit
   });
   currentlyEditingId.value = null;
   
@@ -9239,8 +9267,12 @@ function resetForm() {
 }
 
 function editTransaction(t: Transaction) {
-  Object.assign(newTransaction, t);
+  // Set the editing id first so the recurring-defaults watcher (flushed after
+  // this tick) sees an active edit and skips persisting these loaded values.
   currentlyEditingId.value = t.id;
+  // Copy tags — sharing the array would let form edits mutate the original
+  // transaction even when the edit is cancelled.
+  Object.assign(newTransaction, t, { tags: [...(t.tags ?? [])] });
   activeTab.value = "add";
   scrollAddIntoView();
   focusAmount();
@@ -9251,8 +9283,8 @@ function editTransaction(t: Transaction) {
 
 function deleteTransaction(id: string) {
   if (confirm("Delete this transaction?")) {
-    const i = transactions.value.findIndex((t) => t.id === id);
-    if (i > -1) transactions.value.splice(i, 1);
+    // shallowRef: assign a new array, in-place splice is invisible
+    transactions.value = transactions.value.filter((t) => t.id !== id);
     pushToast("Transaction deleted", "success");
   }
 }
@@ -9261,8 +9293,9 @@ function duplicateTx(t: Transaction) {
   const copy: Transaction = {
     ...t,
     id: `${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+    seriesId: undefined, // a duplicate is independent of the original series
   };
-  transactions.value.push(copy);
+  transactions.value = [...transactions.value, copy];
   // OPTIMIZED: Update category set incrementally
   categorySet.add(copy.category);
   pushToast("Transaction duplicated", "success");
@@ -9304,7 +9337,9 @@ function generateRecurringTransactions(baseTx: Transaction): Transaction[] {
 
     series.push({
       ...baseTx,
-      id: `${Date.now()}-${Math.floor(Math.random() * 10000)}-${i}`,
+      // the anchor keeps its id (edits must preserve it); children get new ids
+      id: i === 0 ? baseTx.id : `${Date.now()}-${Math.floor(Math.random() * 10000)}-${i}`,
+      seriesId: baseTx.id,
       date: occurrenceDate,
       // only the first (anchor) item carries recurring meta
       recurring: i === 0 ? baseTx.recurring : false,
@@ -9321,30 +9356,23 @@ function calculateNextOccurrenceDate(
   frequency: RecurringFrequency,
   occurrenceIndex: number
 ): string {
-  const date = new Date(startDate);
-
+  // Use the same clamped, timezone-safe helpers as computeRecurringEndDate so
+  // occurrences match the advertised end date (Jan 31 monthly → Feb 28, not Mar 3).
   switch (frequency) {
     case "daily":
-      date.setDate(date.getDate() + occurrenceIndex);
-      break;
+      return addDays(startDate, occurrenceIndex);
     case "weekly":
-      date.setDate(date.getDate() + occurrenceIndex * 7);
-      break;
+      return addDays(startDate, occurrenceIndex * 7);
     case "fortnightly":
-      date.setDate(date.getDate() + occurrenceIndex * 14);
-      break;
+      return addDays(startDate, occurrenceIndex * 14);
     case "monthly":
-      date.setMonth(date.getMonth() + occurrenceIndex);
-      break;
+      return addMonthsClamped(startDate, occurrenceIndex);
     case "quarterly":
-      date.setMonth(date.getMonth() + occurrenceIndex * 3);
-      break;
+      return addMonthsClamped(startDate, occurrenceIndex * 3);
     case "yearly":
-      date.setFullYear(date.getFullYear() + occurrenceIndex);
-      break;
+      return addMonthsClamped(startDate, occurrenceIndex * 12);
   }
-
-  return toLocalISO(date);
+  return startDate;
 }
 
 // Transaction selection
@@ -10399,6 +10427,7 @@ function validateTransactionSchema(tx: any): boolean {
   if (tx.source && String(tx.source).length > 100) return false;
   if (tx.amount !== undefined && (typeof tx.amount !== 'number' || !isFinite(tx.amount))) return false;
   if (tx.recursions && (typeof tx.recursions !== 'number' || tx.recursions < 1 || tx.recursions > 3650)) return false;
+  if (tx.seriesId && (typeof tx.seriesId !== 'string' || tx.seriesId.length > 100)) return false;
   if (tx.tags && Array.isArray(tx.tags)) {
     if (tx.tags.length > 20) return false;
     for (const tag of tx.tags) {
@@ -10447,6 +10476,7 @@ function normalizeTransaction(raw: any): Transaction {
     recursions: Math.max(1, Number(raw?.recursions ?? 1)),
     endDate: String(raw?.endDate ?? ""),
     source: decodeHtmlEntities(String(raw?.source ?? DEFAULT_SOURCE)),
+    seriesId: raw?.seriesId ? String(raw.seriesId) : undefined,
   };
 }
 
@@ -10897,19 +10927,16 @@ function goHome() {
 }
 
 /* ===== Advanced Settings Modal ===== */
-/* Force overflow visible when calendar is open, with higher specificity to override DaisyUI */
-.advanced-modal-box.overflow-visible {
-  overflow: visible !important;
-}
-
-/* Modal content area - scrollable on mobile */
+/* NOTE: the modal must NOT force overflow: visible — that overrides DaisyUI's
+   .modal-box scrolling (overflow-y: auto + max-height) and makes tall content
+   unreachable. The old hack existed so the date-picker calendar could escape
+   the box, but the calendar is teleported to <body> now and never clips. */
 .advanced-modal-content {
   min-height: 0; /* Allow flex shrinking */
-  overflow: visible;
 }
 
 #advancedSettingsModal { z-index: 10000; }
-.advanced-modal-box { position: relative; z-index: 10001; overflow: visible; }
+.advanced-modal-box { position: relative; z-index: 10001; }
 
 /* Mobile: advanced modal full screen with proper scroll */
 @media screen and (max-width: 640px) {
