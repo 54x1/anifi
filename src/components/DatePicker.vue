@@ -26,7 +26,7 @@
     <p v-if="error" :id="`${id}-error`" class="text-error text-xs mt-1">{{ error }}</p>
 
     <Teleport to="body">
-    <div v-if="open" :id="`${id}-calendar`" ref="popover" class="date-picker-popover card bg-base-100 shadow-2xl border border-base-300" role="dialog" :aria-label="`Choose ${ariaLabel}`" :style="popoverStyle">
+    <div v-if="open" :id="`${id}-calendar`" ref="popover" class="date-picker-popover card bg-base-100 shadow-2xl border border-base-300" role="dialog" :aria-label="`Choose ${ariaLabel}`" :style="popoverStyle" @pointerdown="isInteracting = true" @pointerup="isInteracting = false" @pointerleave="isInteracting = false">
       <div class="card-body p-3">
         <div class="flex items-center justify-between mb-2">
           <button type="button" class="btn btn-ghost btn-sm btn-square" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
@@ -69,6 +69,7 @@ const root = ref<HTMLElement | null>(null);
 const popover = ref<HTMLElement | null>(null);
 const inputEl = ref<HTMLInputElement | null>(null);
 const open = ref(false);
+const isInteracting = ref(false);
 const popoverStyle = ref<Record<string, string>>({});
 const error = ref('');
 const text = ref(toDisplay(props.modelValue));
@@ -107,6 +108,8 @@ function pick(iso: string, close=true) { if (iso && isDisabled(iso)) return; emi
 let positionTimer: ReturnType<typeof requestAnimationFrame> | null = null;
 function positionPopover() {
   if (!open.value || !root.value) return;
+  // Skip repositioning during user interaction to prevent missing taps
+  if (isInteracting.value) return;
   // On mobile, CSS handles centering — skip all JS positioning entirely.
   if (window.matchMedia('(max-width: 480px)').matches) return;
   // Debounce with rAF to avoid jitter during scroll/resize
