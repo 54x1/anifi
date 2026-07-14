@@ -26,7 +26,7 @@
     <p v-if="error" :id="`${id}-error`" class="text-error text-xs mt-1">{{ error }}</p>
 
     <Teleport to="body">
-    <div v-if="open" :id="`${id}-calendar`" ref="popover" class="date-picker-popover card bg-base-100 shadow-2xl border border-base-300" role="dialog" :aria-label="`Choose ${ariaLabel}`" :style="popoverStyle" @pointerdown="isInteracting = true" @pointerup="() => { isInteracting = false; lastInteractionTime = Date.now(); }" @pointerleave="isInteracting = false" style="touch-action: manipulation;">
+    <div v-if="open" :id="`${id}-calendar`" ref="popover" class="date-picker-popover card bg-base-100 shadow-2xl border border-base-300" role="dialog" :aria-label="`Choose ${ariaLabel}`" :style="mobilePopoverStyle" @pointerdown="isInteracting = true" @pointerup="() => { isInteracting = false; lastInteractionTime = Date.now(); }" @pointerleave="isInteracting = false" style="touch-action: manipulation;">
       <div class="card-body p-3">
         <div class="flex items-center justify-between mb-2">
           <button type="button" class="btn btn-ghost btn-sm btn-square" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
@@ -77,6 +77,8 @@ const view = ref(monthStart(props.modelValue || localISO()));
 const today = localISO();
 
 watch(() => props.modelValue, value => { text.value = toDisplay(value); if (value) view.value = monthStart(value); });
+const isMobile = computed(() => window.matchMedia('(max-width: 480px)').matches);
+const mobilePopoverStyle = computed(() => isMobile.value ? {} : popoverStyle.value);
 const monthLabel = computed(() => new Date(`${view.value}T12:00:00`).toLocaleDateString(undefined, { month: 'long', year: 'numeric' }));
 const cells = computed(() => {
   const first = new Date(`${view.value}T12:00:00`); const start = new Date(first); start.setDate(1 - first.getDay());
