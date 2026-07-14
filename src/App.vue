@@ -415,6 +415,32 @@
               </div>
 
               <!-- Table Area -->
+              <!-- Mobile Sort Controls (the table headers that provide sorting are lg-only) -->
+              <div class="lg:hidden flex items-center gap-2 mb-3">
+                <label class="text-sm font-medium shrink-0" for="mobileSortField">Sort by</label>
+                <select
+                  id="mobileSortField"
+                  v-model="sortField"
+                  class="select select-bordered select-sm flex-1 min-w-0"
+                  aria-label="Sort transactions by"
+                  @change="currentPage = 1"
+                >
+                  <option value="date">Date</option>
+                  <option value="type">Type</option>
+                  <option value="amount">Amount</option>
+                  <option value="category">Category</option>
+                  <option value="description">Description</option>
+                </select>
+                <button
+                  type="button"
+                  class="btn btn-outline btn-sm shrink-0 gap-1"
+                  :aria-label="sortOrder === 'asc' ? 'Sorted ascending, tap to sort descending' : 'Sorted descending, tap to sort ascending'"
+                  @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; currentPage = 1"
+                >
+                  <span aria-hidden="true">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
+                  {{ sortOrder === 'asc' ? 'Asc' : 'Desc' }}
+                </button>
+              </div>
               <!-- Mobile Card View -->
               <div class="lg:hidden space-y-3">
                 <div v-for="(t, i) in paginatedTransactions" :key="t.id" :id="`tx-${t.id}`"
