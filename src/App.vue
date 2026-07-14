@@ -24,13 +24,14 @@
       <div class="navbar-start">
         <a href="#" class="flex items-center gap-3 min-w-0" @click.prevent="goHome">
           <!-- Favicon logo (coffee cup motif) -->
-          <img src="./assets/favicon.svg" class="shrink-0" width="36" height="36" alt="mybudget logo" aria-label="mybudget logo" />
+          <img src="./assets/favicon.svg" class="shrink-0" width="36" height="36" alt="mybudget logo"
+            aria-label="mybudget logo" />
           <div class="flex flex-col min-w-0 logo-text">
             <h1 class="text-lg md:text-xl font-normal text-base-content leading-tight tracking-tight">
               <span class="logo-line-1">mybudget</span><span class="logo-line-2 font-semibold"> Forecaster</span>
             </h1>
             <span class="text-[10px] text-base-content/40 font-normal tracking-[0.2em] uppercase hidden lg:inline">
-                Finances Personally Tailored
+              Finances Personally Tailored
             </span>
           </div>
         </a>
@@ -38,8 +39,9 @@
       <nav class="navbar-center hidden lg:flex" aria-label="Primary">
         <div class="tabs tabs-boxed gap-1" role="tablist" aria-label="Main sections">
           <button v-for="tab in tabs" :key="tab.id" type="button" role="tab" :id="`tab-${tab.id}`"
-            class="tab focus-ring target-min px-4 md:px-5" :class="{ 'tab-active': activeTab === tab.id }" @click="onTab(tab.id)"
-            :aria-selected="activeTab === tab.id" :aria-controls="`panel-${tab.id}`" :aria-current="activeTab === tab.id ? 'page' : null">
+            class="tab focus-ring target-min px-4 md:px-5" :class="{ 'tab-active': activeTab === tab.id }"
+            @click="onTab(tab.id)" :aria-selected="activeTab === tab.id" :aria-controls="`panel-${tab.id}`"
+            :aria-current="activeTab === tab.id ? 'page' : null">
             <span aria-hidden="true" class="text-base">{{ tab.icon }}</span>
             <span class="ml-1.5 text-sm font-medium">{{ tab.label }}</span>
           </button>
@@ -57,11 +59,12 @@
           </div>
           <!-- Date Format Picker -->
           <details class="dropdown dropdown-end transition-none mobile-dropdown-wrap">
-            <summary class="btn btn-ghost btn-sm md:btn-md gap-1 transition-none" aria-haspopup="listbox" title="Date format">
+            <summary class="btn btn-ghost btn-sm md:btn-md gap-1 transition-none" aria-haspopup="listbox"
+              title="Date format">
               📅 <span class="sr-only">Choose date format ({{ selectedDateFormat }})</span>
             </summary>
-            <ul class="dropdown-content z-[60] menu p-2 shadow bg-base-100 rounded-box w-64 mobile-dropdown-content" role="listbox"
-              aria-label="Date format">
+            <ul class="dropdown-content z-[60] menu p-2 shadow bg-base-100 rounded-box w-64 mobile-dropdown-content"
+              role="listbox" aria-label="Date format">
               <li class="menu-title"><span class="text-xs opacity-60">Date Display Format</span></li>
               <li v-for="opt in dateFormatOptions" :key="opt.value">
                 <button type="button" role="option" class="justify-between gap-2"
@@ -77,13 +80,15 @@
             </ul>
           </details>
           <!-- Accessible Theme picker -->
-          <details ref="themeDropdownRef" class="dropdown dropdown-end transition-none mobile-dropdown-wrap" @toggle="onThemeToggle">
-            <summary class="btn btn-ghost btn-sm md:btn-md gap-1 transition-none" aria-haspopup="listbox" :aria-expanded="String(themeOpen)"
-              title="Theme">
+          <details ref="themeDropdownRef" class="dropdown dropdown-end transition-none mobile-dropdown-wrap"
+            @toggle="onThemeToggle">
+            <summary class="btn btn-ghost btn-sm md:btn-md gap-1 transition-none" aria-haspopup="listbox"
+              :aria-expanded="String(themeOpen)" title="Theme">
               🎨 <span class="sr-only">Choose theme ({{ currentTheme }})</span>
             </summary>
 
-            <ul class="dropdown-content z-[60] menu p-2 shadow bg-base-100 rounded-box w-max max-h-96 overflow-y-auto mobile-dropdown-content"
+            <ul
+              class="dropdown-content z-[60] menu p-2 shadow bg-base-100 rounded-box w-max max-h-96 overflow-y-auto mobile-dropdown-content"
               role="listbox" aria-label="Themes">
               <li v-for="theme in availableThemes" :key="theme">
                 <button type="button" role="option" class="justify-between gap-2"
@@ -105,10 +110,12 @@
     </header>
 
     <!-- Mobile Navigation -->
-    <nav class="btm-nav lg:hidden z-[55] shadow-[0_-2px_6px_0px_rgba(0,0,0,0.1)] border-t border-base-300 safe-area-bottom"
+    <nav
+      class="btm-nav lg:hidden z-[55] shadow-[0_-2px_6px_0px_rgba(0,0,0,0.1)] border-t border-base-300 safe-area-bottom"
       aria-label="Primary (mobile)">
       <button v-for="tab in tabs" :key="tab.id" :class="{ active: activeTab === tab.id }" @click="onTab(tab.id)"
-        type="button" class="target-min focus-ring min-h-[48px] min-w-[48px]" :aria-current="activeTab === tab.id ? 'page' : null">
+        type="button" class="target-min focus-ring min-h-[48px] min-w-[48px]"
+        :aria-current="activeTab === tab.id ? 'page' : null">
         <span class="text-lg" aria-hidden="true">{{ tab.icon }}</span>
         <span class="btm-nav-label text-xs">{{ tab.label }}</span>
       </button>
@@ -240,8 +247,9 @@
                 <div class="flex flex-wrap gap-2 items-center">
                   <span class="text-xs md:text-sm text-base-content/60">View:</span>
                   <!-- Slide pill Simple/Advanced -->
-                  <div class="relative inline-grid grid-cols-2 w-full sm:w-auto items-center rounded-full bg-base-200 p-0.5 sm:p-1" role="tablist"
-                    aria-label="View mode" @keydown.left.prevent="showAdvancedTransactionsView = false"
+                  <div
+                    class="relative inline-grid grid-cols-2 w-full sm:w-auto items-center rounded-full bg-base-200 p-0.5 sm:p-1"
+                    role="tablist" aria-label="View mode" @keydown.left.prevent="showAdvancedTransactionsView = false"
                     @keydown.right.prevent="showAdvancedTransactionsView = true" tabindex="0">
                     <!-- Sliding thumb -->
                     <span
@@ -254,7 +262,8 @@
 
                     <!-- Simple -->
                     <button type="button" role="tab" :aria-selected="String(!showAdvancedTransactionsView)"
-                      class="relative z-10 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full transition-colors" :class="!showAdvancedTransactionsView
+                      class="relative z-10 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full transition-colors"
+                      :class="!showAdvancedTransactionsView
                         ? 'text-primary-content font-semibold'
                         : 'text-base-content/70'
                         " @click="showAdvancedTransactionsView = false">
@@ -263,7 +272,8 @@
 
                     <!-- Advanced -->
                     <button type="button" role="tab" :aria-selected="String(showAdvancedTransactionsView)"
-                      class="relative z-10 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full transition-colors" :class="showAdvancedTransactionsView
+                      class="relative z-10 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm rounded-full transition-colors"
+                      :class="showAdvancedTransactionsView
                         ? 'text-primary-content font-semibold'
                         : 'text-base-content/70'
                         " @click="showAdvancedTransactionsView = true">
@@ -418,25 +428,17 @@
               <!-- Mobile Sort Controls (the table headers that provide sorting are lg-only) -->
               <div class="lg:hidden flex items-center gap-2 mb-3">
                 <label class="text-sm font-medium shrink-0" for="mobileSortField">Sort by</label>
-                <select
-                  id="mobileSortField"
-                  v-model="sortField"
-                  class="select select-bordered select-sm flex-1 min-w-0"
-                  aria-label="Sort transactions by"
-                  @change="currentPage = 1"
-                >
+                <select id="mobileSortField" v-model="sortField" class="select select-bordered select-sm flex-1 min-w-0"
+                  aria-label="Sort transactions by" @change="currentPage = 1">
                   <option value="date">Date</option>
                   <option value="type">Type</option>
                   <option value="amount">Amount</option>
                   <option value="category">Category</option>
                   <option value="description">Description</option>
                 </select>
-                <button
-                  type="button"
-                  class="btn btn-outline btn-sm shrink-0 gap-1"
+                <button type="button" class="btn btn-outline btn-sm shrink-0 gap-1"
                   :aria-label="sortOrder === 'asc' ? 'Sorted ascending, tap to sort descending' : 'Sorted descending, tap to sort ascending'"
-                  @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; currentPage = 1"
-                >
+                  @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; currentPage = 1">
                   <span aria-hidden="true">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span>
                   {{ sortOrder === 'asc' ? 'Asc' : 'Desc' }}
                 </button>
@@ -450,8 +452,8 @@
                     <!-- Header: Date, Type, Amount -->
                     <div class="flex items-center justify-between">
                       <div class="flex items-center gap-2">
-                        <input type="checkbox" class="checkbox checkbox-sm"
-                          :checked="isSelected(t.id)" @change="toggleSelectRow(t.id)"
+                        <input type="checkbox" class="checkbox checkbox-sm" :checked="isSelected(t.id)"
+                          @change="toggleSelectRow(t.id)"
                           :aria-label="`Select transaction on ${formatDate(t.date)} for $${t.amount.toFixed(2)}`" />
                         <span class="text-sm font-medium">{{ formatDate(t.date) }}</span>
                       </div>
@@ -482,7 +484,8 @@
                       <button type="button" class="btn btn-ghost btn-xs" @click="duplicateTx(t)" aria-label="Duplicate">
                         📄
                       </button>
-                      <button type="button" class="btn btn-ghost btn-xs text-error" @click="deleteTransaction(t.id)" aria-label="Delete">
+                      <button type="button" class="btn btn-ghost btn-xs text-error" @click="deleteTransaction(t.id)"
+                        aria-label="Delete">
                         🗑️
                       </button>
                     </div>
@@ -658,15 +661,8 @@
         </template>
 
         <!-- Add Transaction -->
-        <section
-          v-if="activeTab === 'add'"
-          :id="'panel-add'"
-          role="tabpanel"
-          :aria-labelledby="'tab-add'"
-          ref="addSectionRef"
-          class="card bg-base-100 shadow-xl mb-6"
-          tabindex="0"
-          aria-labelledby="addHeading">
+        <section v-if="activeTab === 'add'" :id="'panel-add'" role="tabpanel" :aria-labelledby="'tab-add'"
+          ref="addSectionRef" class="card bg-base-100 shadow-xl mb-6" tabindex="0" aria-labelledby="addHeading">
           <div class="card-body">
             <div class="flex items-center justify-between gap-2">
               <h2 id="addHeading" class="card-title">
@@ -713,10 +709,9 @@
                 <div class="join">
                   <span class="join-item btn btn-disabled" aria-hidden="true">$</span>
                   <input id="addAmount" ref="amountInputRef" v-model.number="newTransaction.amount" type="number"
-                    step="0.01" min="0.01" placeholder="0.00"
-                    class="input input-bordered join-item flex-1" :class="{ 'input-error': amountError }"
-                    required inputmode="decimal" @focus="scrollIntoView($event)" @input="clearAmountError"
-                    aria-invalid="!!amountError" aria-describedby="addAmountError" />
+                    step="0.01" min="0.01" placeholder="0.00" class="input input-bordered join-item flex-1"
+                    :class="{ 'input-error': amountError }" required inputmode="decimal" @focus="scrollIntoView($event)"
+                    @input="clearAmountError" aria-invalid="!!amountError" aria-describedby="addAmountError" />
                 </div>
                 <p class="mt-1 text-xs opacity-70">
                   Enter a positive amount. Type switches don’t change the sign.
@@ -728,8 +723,8 @@
                 <label class="label">
                   <span class="label-text font-medium">Category</span>
                   <button v-if="currentCategory" type="button"
-                    class="label-text-alt text-primary hover:underline transition-all"
-                    @click="clearCategory" aria-label="Clear selected category">
+                    class="label-text-alt text-primary hover:underline transition-all" @click="clearCategory"
+                    aria-label="Clear selected category">
                     Clear
                   </button>
                 </label>
@@ -1308,17 +1303,11 @@
         </section>
 
         <!-- Import / Export -->
-        <section
-          v-if="activeTab === 'import'"
-          :id="'panel-import'"
-          role="tabpanel"
-          :aria-labelledby="'tab-import'"
-          class="card bg-base-100 shadow-xl mb-6"
-          tabindex="0"
-        aria-labelledby="importExportHeading">
-          
+        <section v-if="activeTab === 'import'" :id="'panel-import'" role="tabpanel" :aria-labelledby="'tab-import'"
+          class="card bg-base-100 shadow-xl mb-6" tabindex="0" aria-labelledby="importExportHeading">
+
           <div class="card-body">
-                        <h2 id="importExportHeading" class="card-title">
+            <h2 id="importExportHeading" class="card-title">
               📥 Import / 📤 Export
             </h2>
 
@@ -1474,26 +1463,23 @@
         </section>
 
         <!-- Charts Section -->
-        <section
-          v-if="activeTab === 'chart'"
-          :id="'panel-chart'"
-          role="tabpanel"
-          :aria-labelledby="'tab-chart'"
-          class="space-y-4 md:space-y-6"
-          tabindex="0"
-          aria-live="polite"
-        >
+        <section v-if="activeTab === 'chart'" :id="'panel-chart'" role="tabpanel" :aria-labelledby="'tab-chart'"
+          class="space-y-4 md:space-y-6" tabindex="0" aria-live="polite">
           <!-- Import Success Banner -->
           <div v-if="lastImportSummary" class="alert alert-success shadow-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div class="flex-1">
               <h3 class="font-semibold">Import Complete!</h3>
               <p class="text-sm">{{ lastImportSummary }}</p>
             </div>
-            <button type="button" class="btn btn-sm btn-circle btn-ghost" @click="lastImportSummary = ''" aria-label="Dismiss import summary">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button type="button" class="btn btn-sm btn-circle btn-ghost" @click="lastImportSummary = ''"
+              aria-label="Dismiss import summary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -1517,82 +1503,117 @@
               <!-- Mobile: compact info bar showing current settings -->
               <div class="flex flex-wrap items-center gap-1.5 sm:gap-1 mb-3 sm:mb-2">
                 <div class="badge badge-outline badge-sm gap-1" title="Group by">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-2.5 sm:w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-2.5 sm:w-2.5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <span class="text-xs sm:text-[11px]">{{ chartConfig.groupBy }}</span>
                 </div>
                 <div class="badge badge-outline badge-sm gap-1" title="Date range">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-2.5 sm:w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-2.5 sm:w-2.5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <span class="text-xs sm:text-[11px]">{{ selectedDatePreset || 'Custom' }}</span>
                 </div>
                 <div class="flex-1"></div>
-                <button class="btn btn-sm btn-ghost gap-1 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0" @click="showAdvancedFilters = true" aria-label="Open advanced settings" title="Open chart settings">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-3 sm:w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <button class="btn btn-sm btn-ghost gap-1 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0"
+                  @click="showAdvancedFilters = true" aria-label="Open advanced settings" title="Open chart settings">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-3 sm:w-3" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </button>
               </div>
 
               <!-- Row 2: Chart Type Selectors - 2-row 4-col grid on mobile, single row on larger screens -->
               <div class="flex justify-center mb-3 sm:mb-2">
-                <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 sm:gap-1 w-full max-w-md" role="group" aria-label="Chart type">
+                <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 sm:gap-1 w-full max-w-md" role="group"
+                  aria-label="Chart type">
                   <label class="btn btn-sm btn-square sm:btn-auto mx-auto gap-0.5 min-h-[44px] sm:min-h-0"
                     :class="[chartConfig.type === 'bar' ? 'btn-primary' : 'btn-ghost hover:bg-base-200']"
-                    aria-label="Bar chart" :aria-pressed="chartConfig.type === 'bar'" title="Bar chart: compare income, spending, and net across periods">
-                    <input type="radio" name="chartType" value="bar" v-model="chartConfig.type" class="hidden chart-type-radio" />
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    aria-label="Bar chart" :aria-pressed="chartConfig.type === 'bar'"
+                    title="Bar chart: compare income, spending, and net across periods">
+                    <input type="radio" name="chartType" value="bar" v-model="chartConfig.type"
+                      class="hidden chart-type-radio" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                     <span class="text-[11px] sm:text-[10px]">Bar</span>
                   </label>
                   <label class="btn btn-sm btn-square sm:btn-auto mx-auto gap-0.5 min-h-[44px] sm:min-h-0"
                     :class="[chartConfig.type === 'line' ? 'btn-primary' : 'btn-ghost hover:bg-base-200']"
-                    aria-label="Line chart" :aria-pressed="chartConfig.type === 'line'" title="Line chart: track trends and movement over time">
-                    <input type="radio" name="chartType" value="line" v-model="chartConfig.type" class="hidden chart-type-radio" />
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    aria-label="Line chart" :aria-pressed="chartConfig.type === 'line'"
+                    title="Line chart: track trends and movement over time">
+                    <input type="radio" name="chartType" value="line" v-model="chartConfig.type"
+                      class="hidden chart-type-radio" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                     </svg>
                     <span class="text-[11px] sm:text-[10px]">Line</span>
                   </label>
                   <label class="btn btn-sm btn-square sm:btn-auto mx-auto gap-0.5 min-h-[44px] sm:min-h-0"
                     :class="[chartConfig.type === 'pie' ? 'btn-primary' : 'btn-ghost hover:bg-base-200']"
-                    aria-label="Pie chart" :aria-pressed="chartConfig.type === 'pie'" title="Pie chart: compare spending share by category or tag">
-                    <input type="radio" name="chartType" value="pie" v-model="chartConfig.type" class="hidden chart-type-radio" />
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                    aria-label="Pie chart" :aria-pressed="chartConfig.type === 'pie'"
+                    title="Pie chart: compare spending share by category or tag">
+                    <input type="radio" name="chartType" value="pie" v-model="chartConfig.type"
+                      class="hidden chart-type-radio" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
                     </svg>
                     <span class="text-[11px] sm:text-[10px]">Pie</span>
                   </label>
                   <label class="btn btn-sm btn-square sm:btn-auto mx-auto gap-0.5 min-h-[44px] sm:min-h-0"
                     :class="[chartConfig.type === 'doughnut' ? 'btn-primary' : 'btn-ghost hover:bg-base-200']"
-                    aria-label="Doughnut chart" :aria-pressed="chartConfig.type === 'doughnut'" title="Doughnut chart: a ring view of the same spending breakdown">
-                    <input type="radio" name="chartType" value="doughnut" v-model="chartConfig.type" class="hidden chart-type-radio" />
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                    aria-label="Doughnut chart" :aria-pressed="chartConfig.type === 'doughnut'"
+                    title="Doughnut chart: a ring view of the same spending breakdown">
+                    <input type="radio" name="chartType" value="doughnut" v-model="chartConfig.type"
+                      class="hidden chart-type-radio" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
                     </svg>
                     <span class="text-[11px] sm:text-[10px]">Donut</span>
                   </label>
                   <label class="btn btn-sm btn-square sm:btn-auto mx-auto gap-0.5 min-h-[44px] sm:min-h-0"
                     :class="[chartConfig.type === 'radar' ? 'btn-primary' : 'btn-ghost hover:bg-base-200']"
-                    aria-label="Radar chart" :aria-pressed="chartConfig.type === 'radar'" title="Radar chart: compare category totals across months">
-                    <input type="radio" name="chartType" value="radar" v-model="chartConfig.type" class="hidden chart-type-radio" />
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l5-5m0 0l5 5m-5-5v12" />
+                    aria-label="Radar chart" :aria-pressed="chartConfig.type === 'radar'"
+                    title="Radar chart: compare category totals across months">
+                    <input type="radio" name="chartType" value="radar" v-model="chartConfig.type"
+                      class="hidden chart-type-radio" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 12l5-5m0 0l5 5m-5-5v12" />
                     </svg>
                     <span class="text-[11px] sm:text-[10px]">Radar</span>
                   </label>
                   <label class="btn btn-sm btn-square sm:btn-auto mx-auto gap-0.5 min-h-[44px] sm:min-h-0"
                     :class="[chartConfig.type === 'scatter' ? 'btn-primary' : 'btn-ghost hover:bg-base-200']"
-                    aria-label="Scatter chart" :aria-pressed="chartConfig.type === 'scatter'" title="Scatter chart: inspect transaction spread over time">
-                    <input type="radio" name="chartType" value="scatter" v-model="chartConfig.type" class="hidden chart-type-radio" />
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="currentColor" viewBox="0 0 24 24">
+                    aria-label="Scatter chart" :aria-pressed="chartConfig.type === 'scatter'"
+                    title="Scatter chart: inspect transaction spread over time">
+                    <input type="radio" name="chartType" value="scatter" v-model="chartConfig.type"
+                      class="hidden chart-type-radio" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="currentColor"
+                      viewBox="0 0 24 24">
                       <circle cx="6" cy="6" r="2" />
                       <circle cx="18" cy="8" r="2" />
                       <circle cx="10" cy="16" r="2" />
@@ -1602,30 +1623,32 @@
                   </label>
                   <label class="btn btn-sm btn-square sm:btn-auto mx-auto gap-0.5 min-h-[44px] sm:min-h-0"
                     :class="[chartConfig.type === 'bubbleHierarchy' ? 'btn-primary' : 'btn-ghost hover:bg-base-200']"
-                    aria-label="Bubble map chart" :aria-pressed="chartConfig.type === 'bubbleHierarchy'" title="Bubble map chart: explore the category and tag hierarchy">
-                    <input type="radio" name="chartType" value="bubbleHierarchy" v-model="chartConfig.type" class="hidden chart-type-radio" />
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    aria-label="Bubble map chart" :aria-pressed="chartConfig.type === 'bubbleHierarchy'"
+                    title="Bubble map chart: explore the category and tag hierarchy">
+                    <input type="radio" name="chartType" value="bubbleHierarchy" v-model="chartConfig.type"
+                      class="hidden chart-type-radio" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
                       <circle cx="12" cy="12" r="3" />
                       <circle cx="6" cy="7" r="2" />
                       <circle cx="18" cy="8" r="2" />
                       <circle cx="8" cy="17" r="2" />
                       <circle cx="16" cy="16" r="2" />
-                      <path stroke-linecap="round" stroke-width="1.5" d="M8.5 8.5L10.5 10.5M13.5 10.5L15.5 9.5M10 13.5L9 15.5M14 13.5L15 14.5" />
+                      <path stroke-linecap="round" stroke-width="1.5"
+                        d="M8.5 8.5L10.5 10.5M13.5 10.5L15.5 9.5M10 13.5L9 15.5M14 13.5L15 14.5" />
                     </svg>
                     <span class="text-[11px] sm:text-[10px]">Bubble</span>
                   </label>
-                  <button
-                    type="button"
+                  <button type="button"
                     class="btn btn-sm btn-square sm:btn-auto mx-auto gap-0.5 chart-view-toggle min-h-[44px] sm:min-h-0"
                     :class="[showBalanceTable ? 'btn-primary' : 'btn-ghost hover:bg-base-200']"
-                    :aria-pressed="showBalanceTable"
-                    aria-label="Balance sheet table"
-                    title="Balance sheet table: show rows and columns"
-                    @click="chartConfig.type = 'table'"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    :aria-pressed="showBalanceTable" aria-label="Balance sheet table"
+                    title="Balance sheet table: show rows and columns" @click="chartConfig.type = 'table'">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-4 sm:w-4" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                       <rect x="4" y="4" width="16" height="16" rx="2" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 9h16M4 15h16M9 4v16M15 4v16" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 9h16M4 15h16M9 4v16M15 4v16" />
                     </svg>
                     <span class="text-[11px] sm:text-[10px]">Table</span>
                   </button>
@@ -1634,37 +1657,31 @@
 
               <!-- Row 3: Category Series Selector (all chart types) - Color-coded compact badges -->
               <div class="flex flex-wrap justify-center gap-1.5 xs:gap-1 mb-2 xs:mb-2">
-                <button
-                  type="button"
-                  class="btn btn-xs btn-ghost gap-0.5 xs:btn-sm-xs"
+                <button type="button" class="btn btn-xs btn-ghost gap-0.5 xs:btn-sm-xs"
                   :class="{ 'btn-primary': selectedCategoriesChart.length === 0 || selectedCategoriesChart.length === chartCategories.length }"
                   @click="selectedCategoriesChart.length === 0 || selectedCategoriesChart.length === chartCategories.length ? unselectAllCategoriesChart() : selectAllCategoriesChart()"
-                  title="Select/Deselect all categories"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 xs:h-2.5 xs:w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  title="Select/Deselect all categories">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 xs:h-2.5 xs:w-2.5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span class="text-[10px] xs:text-[9px]">All ({{ selectedCategoriesChart.length || chartCategories.length }}/{{ chartCategories.length }})</span>
+                  <span class="text-[10px] xs:text-[9px]">All ({{ selectedCategoriesChart.length ||
+                    chartCategories.length }}/{{
+                    chartCategories.length }})</span>
                 </button>
-                <button
-                  v-for="cat in visibleChartCategories"
-                  :key="cat"
-                  type="button"
+                <button v-for="cat in visibleChartCategories" :key="cat" type="button"
                   class="badge badge-sm xs:badge-xs cursor-pointer focus-ring target-min transition-all hover:scale-105 border-2"
                   :class="{ 'opacity-100 ring-1': selectedCategoriesChart.includes(cat), 'opacity-40 badge-outline': !selectedCategoriesChart.includes(cat) }"
                   :style="{ backgroundColor: selectedCategoriesChart.includes(cat) ? getCategoryColor(cat) : 'transparent', borderColor: getCategoryColor(cat), color: selectedCategoriesChart.includes(cat) ? '#fff' : 'inherit' }"
                   @click="toggleCategoryForChart(cat)"
-                  :title="selectedCategoriesChart.includes(cat) ? `Deselect ${cat}` : `Select ${cat}`"
-                >
+                  :title="selectedCategoriesChart.includes(cat) ? `Deselect ${cat}` : `Select ${cat}`">
                   {{ cat }}
                 </button>
-                <button
-                  v-if="chartCategories.length > BADGE_INITIAL_SHOW"
-                  type="button"
+                <button v-if="chartCategories.length > BADGE_INITIAL_SHOW" type="button"
                   class="badge badge-sm badge-ghost cursor-pointer hover:badge-neutral transition-all"
                   @click="showAllCategoryBadges = !showAllCategoryBadges"
-                  :title="showAllCategoryBadges ? 'Show fewer categories' : `Show ${chartCategories.length - BADGE_INITIAL_SHOW} more categories`"
-                >
+                  :title="showAllCategoryBadges ? 'Show fewer categories' : `Show ${chartCategories.length - BADGE_INITIAL_SHOW} more categories`">
                   {{ showAllCategoryBadges ? '↑ Less' : `+${chartCategories.length - BADGE_INITIAL_SHOW} more` }}
                 </button>
               </div>
@@ -1675,21 +1692,31 @@
                   <div class="flex flex-wrap items-center justify-between gap-3 border-b border-base-300 pb-3">
                     <div>
                       <h3 class="text-sm font-semibold tracking-wide uppercase">Balance Sheet Summary</h3>
-                      <p class="text-xs text-base-content/60">Grouped by {{ balanceTablePeriod }} with monthly as the default.</p>
+                      <p class="text-xs text-base-content/60">Grouped by {{ balanceTablePeriod }} with monthly as the
+                        default.
+                      </p>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2">
                       <div class="join join-horizontal" role="tablist" aria-label="Balance sheet period">
-                        <button type="button" role="tab" class="join-item btn btn-xs" :class="balanceTablePeriod === 'day' ? 'btn-active' : 'btn-ghost'" :aria-selected="String(balanceTablePeriod === 'day')" @click="balanceTablePeriod = 'day'">
+                        <button type="button" role="tab" class="join-item btn btn-xs"
+                          :class="balanceTablePeriod === 'day' ? 'btn-active' : 'btn-ghost'"
+                          :aria-selected="String(balanceTablePeriod === 'day')" @click="balanceTablePeriod = 'day'">
                           Day
                         </button>
-                        <button type="button" role="tab" class="join-item btn btn-xs" :class="balanceTablePeriod === 'week' ? 'btn-active' : 'btn-ghost'" :aria-selected="String(balanceTablePeriod === 'week')" @click="balanceTablePeriod = 'week'">
+                        <button type="button" role="tab" class="join-item btn btn-xs"
+                          :class="balanceTablePeriod === 'week' ? 'btn-active' : 'btn-ghost'"
+                          :aria-selected="String(balanceTablePeriod === 'week')" @click="balanceTablePeriod = 'week'">
                           Week
                         </button>
-                        <button type="button" role="tab" class="join-item btn btn-xs" :class="balanceTablePeriod === 'month' ? 'btn-active' : 'btn-ghost'" :aria-selected="String(balanceTablePeriod === 'month')" @click="balanceTablePeriod = 'month'">
+                        <button type="button" role="tab" class="join-item btn btn-xs"
+                          :class="balanceTablePeriod === 'month' ? 'btn-active' : 'btn-ghost'"
+                          :aria-selected="String(balanceTablePeriod === 'month')" @click="balanceTablePeriod = 'month'">
                           Month
                         </button>
-                        <button type="button" role="tab" class="join-item btn btn-xs" :class="balanceTablePeriod === 'year' ? 'btn-active' : 'btn-ghost'" :aria-selected="String(balanceTablePeriod === 'year')" @click="balanceTablePeriod = 'year'">
+                        <button type="button" role="tab" class="join-item btn btn-xs"
+                          :class="balanceTablePeriod === 'year' ? 'btn-active' : 'btn-ghost'"
+                          :aria-selected="String(balanceTablePeriod === 'year')" @click="balanceTablePeriod = 'year'">
                           Year
                         </button>
                       </div>
@@ -1705,12 +1732,17 @@
                         <div class="flex items-center justify-between">
                           <span class="font-semibold text-sm">{{ row.label }}</span>
                           <span class="font-bold" :class="row.balance >= 0 ? 'text-success' : 'text-error'">
-                            {{ row.balance >= 0 ? '+' : '-' }}${{ Math.abs(row.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                            {{ row.balance >= 0 ? '+' : '-' }}${{ Math.abs(row.balance).toLocaleString('en-US', {
+                              minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
                           </span>
                         </div>
                         <div class="flex justify-between text-xs">
-                          <span class="text-success">Income: ${{ row.income.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-                          <span class="text-error">Spending: ${{ row.spending.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+                          <span class="text-success">Income: ${{ row.income.toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2 }) }}</span>
+                          <span class="text-error">Spending: ${{ row.spending.toLocaleString('en-US', {
+                            minimumFractionDigits:
+                            2, maximumFractionDigits: 2 }) }}</span>
                         </div>
                       </div>
                     </div>
@@ -1722,13 +1754,19 @@
                       <div class="card-body p-3">
                         <div class="flex items-center justify-between">
                           <span class="font-bold">Total</span>
-                          <span class="font-bold" :class="balanceSheetTotals.balance >= 0 ? 'text-success' : 'text-error'">
-                            {{ balanceSheetTotals.balance >= 0 ? '+' : '-' }}${{ Math.abs(balanceSheetTotals.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                          <span class="font-bold"
+                            :class="balanceSheetTotals.balance >= 0 ? 'text-success' : 'text-error'">
+                            {{ balanceSheetTotals.balance >= 0 ? '+' : '-' }}${{
+                              Math.abs(balanceSheetTotals.balance).toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                            maximumFractionDigits: 2 }) }}
                           </span>
                         </div>
                         <div class="flex justify-between text-xs">
-                          <span class="text-success">Income: ${{ balanceSheetTotals.income.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
-                          <span class="text-error">Spending: ${{ balanceSheetTotals.spending.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+                          <span class="text-success">Income: ${{ balanceSheetTotals.income.toLocaleString('en-US', {
+                            minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
+                          <span class="text-error">Spending: ${{ balanceSheetTotals.spending.toLocaleString('en-US', {
+                            minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>
                         </div>
                       </div>
                     </div>
@@ -1747,10 +1785,14 @@
                       <tbody>
                         <tr v-for="row in balanceSheetRows" :key="row.key">
                           <td class="font-medium">{{ row.label }}</td>
-                          <td class="text-right text-success font-semibold">${{ row.income.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
-                          <td class="text-right text-error font-semibold">${{ row.spending.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
-                          <td class="text-right font-semibold" :class="row.balance >= 0 ? 'text-success' : 'text-error'">
-                            {{ row.balance >= 0 ? '+' : '-' }}${{ Math.abs(row.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                          <td class="text-right text-success font-semibold">${{ row.income.toLocaleString('en-US', {
+                            minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
+                          <td class="text-right text-error font-semibold">${{ row.spending.toLocaleString('en-US', {
+                            minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
+                          <td class="text-right font-semibold"
+                            :class="row.balance >= 0 ? 'text-success' : 'text-error'">
+                            {{ row.balance >= 0 ? '+' : '-' }}${{ Math.abs(row.balance).toLocaleString('en-US', {
+                              minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
                           </td>
                         </tr>
                         <tr v-if="balanceSheetRows.length === 0">
@@ -1762,10 +1804,16 @@
                       <tfoot>
                         <tr>
                           <th scope="row">Total</th>
-                          <th class="text-right text-success">${{ balanceSheetTotals.income.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</th>
-                          <th class="text-right text-error">${{ balanceSheetTotals.spending.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</th>
-                          <th class="text-right" :class="balanceSheetTotals.balance >= 0 ? 'text-success' : 'text-error'">
-                            {{ balanceSheetTotals.balance >= 0 ? '+' : '-' }}${{ Math.abs(balanceSheetTotals.balance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                          <th class="text-right text-success">${{ balanceSheetTotals.income.toLocaleString('en-US', {
+                            minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</th>
+                          <th class="text-right text-error">${{ balanceSheetTotals.spending.toLocaleString('en-US', {
+                            minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</th>
+                          <th class="text-right"
+                            :class="balanceSheetTotals.balance >= 0 ? 'text-success' : 'text-error'">
+                            {{ balanceSheetTotals.balance >= 0 ? '+' : '-' }}${{
+                              Math.abs(balanceSheetTotals.balance).toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                            maximumFractionDigits: 2 }) }}
                           </th>
                         </tr>
                       </tfoot>
@@ -1774,57 +1822,53 @@
                 </div>
                 <div v-else class="chart-canvas-area">
                   <!-- Loading Skeleton -->
-                  <div v-if="chartLoading" class="absolute inset-0 z-10 flex items-center justify-center bg-base-200/80 rounded-lg backdrop-blur-sm" aria-live="polite">
+                  <div v-if="chartLoading"
+                    class="absolute inset-0 z-10 flex items-center justify-center bg-base-200/80 rounded-lg backdrop-blur-sm"
+                    aria-live="polite">
                     <div class="flex flex-col items-center gap-2">
                       <span class="loading loading-spinner loading-md text-primary"></span>
                       <span class="text-xs text-base-content/60">Loading chart...</span>
                     </div>
                   </div>
-                  <div v-if="chartConfig.type === 'bubbleHierarchy'"
-                    ref="bubbleHierarchyContainer"
+                  <div v-if="chartConfig.type === 'bubbleHierarchy'" ref="bubbleHierarchyContainer"
                     class="relative w-full max-h-[400px] xs:max-h-[240px] md:max-h-[450px] lg:max-h-[500px] xl:max-h-[600px]"
-                    style="min-height: 200px; aspect-ratio: 16/9;"
-                    role="img"
-                    :aria-label="getChartAriaLabel()"
-                    :aria-describedby="'chartHeading'"
-                  >
-                    <svg
-                      ref="bubbleHierarchySvg"
-                      class="w-full h-full"
-                    ></svg>
+                    style="min-height: 200px; aspect-ratio: 16/9;" role="img" :aria-label="getChartAriaLabel()"
+                    :aria-describedby="'chartHeading'">
+                    <svg ref="bubbleHierarchySvg" class="w-full h-full"></svg>
                   </div>
                   <div v-else-if="chartData.labels.length === 0"
                     class="flex flex-col items-center justify-center py-10 text-center text-base-content/60 gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 opacity-30" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                     <template v-if="transactions.length === 0">
                       <p class="font-semibold text-sm">No transactions yet</p>
                       <p class="text-xs">Add your first transaction to see your financial overview.</p>
-                      <button type="button" class="btn btn-sm btn-primary mt-1" @click="onTab('add')">Add Transaction</button>
+                      <button type="button" class="btn btn-sm btn-primary mt-1" @click="onTab('add')">Add
+                        Transaction</button>
                     </template>
                     <template v-else>
                       <p class="font-semibold text-sm">No data matches the current filters</p>
-                      <p class="text-xs">Try selecting more categories, adjusting the date range, or resetting filters.</p>
+                      <p class="text-xs">Try selecting more categories, adjusting the date range, or resetting filters.
+                      </p>
                       <div class="flex gap-2 mt-1">
-                        <button type="button" class="btn btn-sm btn-ghost" @click="selectAllCategoriesChart(); resetDateFilter()">Reset filters</button>
-                        <button type="button" class="btn btn-sm btn-ghost" @click="showAdvancedFilters = true">Open settings</button>
+                        <button type="button" class="btn btn-sm btn-ghost"
+                          @click="selectAllCategoriesChart(); resetDateFilter()">Reset filters</button>
+                        <button type="button" class="btn btn-sm btn-ghost" @click="showAdvancedFilters = true">Open
+                          settings</button>
                       </div>
                     </template>
                   </div>
-                  <canvas
-                    v-else
-                    ref="chartCanvas"
-                    role="img"
-                    :aria-label="getChartAriaLabel()"
+                  <canvas v-else ref="chartCanvas" role="img" :aria-label="getChartAriaLabel()"
                     :aria-describedby="'chartHeading'"
-                    class="w-full max-h-[400px] xs:max-h-[240px] md:max-h-[450px] lg:max-h-[500px] xl:max-h-[600px]"
-                  ></canvas>
+                    class="w-full max-h-[400px] xs:max-h-[240px] md:max-h-[450px] lg:max-h-[500px] xl:max-h-[600px]"></canvas>
                   <!-- External tooltip: rendered as HTML above the canvas so custom plugin overlays can't cover it -->
-                  <div v-if="chartConfig.type !== 'bubbleHierarchy'"
-                       ref="chartTooltipEl" class="absolute z-[1000] pointer-events-none opacity-0 transition-opacity duration-150 ease"
-                       style="padding: 12px; border-radius: 8px; max-width: 300px; font-size: 12px;"
-                       :style="chartTooltipStyle">
+                  <div v-if="chartConfig.type !== 'bubbleHierarchy'" ref="chartTooltipEl"
+                    class="absolute z-[1000] pointer-events-none opacity-0 transition-opacity duration-150 ease"
+                    style="padding: 12px; border-radius: 8px; max-width: 300px; font-size: 12px;"
+                    :style="chartTooltipStyle">
                   </div>
                 </div>
               </div>
@@ -1833,16 +1877,13 @@
               <div class="flex justify-between items-center mt-3 text-sm text-base-content/60 xs:text-xs">
                 <span class="truncate">{{ chartFilteredForStats.length }} transactions • {{ formatDateRange() }}</span>
                 <div class="flex items-center gap-1">
-                  <button
-                    v-if="!showBalanceTable && chartData.labels.length > 0"
-                    type="button"
-                    class="btn btn-ghost btn-xs gap-1"
-                    @click="downloadChartAsPng"
-                    title="Download chart as PNG"
-                    aria-label="Download chart image as PNG"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  <button v-if="!showBalanceTable && chartData.labels.length > 0" type="button"
+                    class="btn btn-ghost btn-xs gap-1" @click="downloadChartAsPng" title="Download chart as PNG"
+                    aria-label="Download chart image as PNG">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                     </svg>
                     PNG
                   </button>
@@ -1857,40 +1898,52 @@
           <div class="stats stats-vertical lg:stats-horizontal shadow-lg w-full xs:stats-md">
             <div class="stat">
               <div class="stat-figure text-success xs:stat-figure-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
                 </svg>
               </div>
               <div class="stat-title xs:text-xs">Total Income</div>
-              <div class="stat-value text-success xs:text-base">${{ chartTotalIncome.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
+              <div class="stat-value text-success xs:text-base">${{ chartTotalIncome.toLocaleString('en-US', {
+                minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
               <div class="stat-desc xs:text-[10px]">{{ incomeTransactions.length }} transactions</div>
             </div>
             <div class="stat">
               <div class="stat-figure text-error xs:stat-figure-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 13l-5 5m0 0l-5-5m5 5V6" />
                 </svg>
               </div>
               <div class="stat-title xs:text-xs">Total Spending</div>
-              <div class="stat-value text-error xs:text-base">${{ chartTotalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
+              <div class="stat-value text-error xs:text-base">${{ chartTotalExpenses.toLocaleString('en-US', {
+                minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
               <div class="stat-desc xs:text-[10px]">{{ expenseTransactions.length }} transactions</div>
             </div>
             <div class="stat">
               <div class="stat-figure" :class="chartNetBalance >= 0 ? 'text-success' : 'text-error'">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
               <div class="stat-title xs:text-xs">Net Balance</div>
               <div class="stat-value" :class="chartNetBalance >= 0 ? 'text-success' : 'text-error'">
-                {{ chartNetBalance >= 0 ? '+' : '-' }}${{ Math.abs(chartNetBalance).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                {{ chartNetBalance >= 0 ? '+' : '-' }}${{ Math.abs(chartNetBalance).toLocaleString('en-US', {
+                  minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
               </div>
-              <div class="stat-desc" :class="chartNetBalance >= 0 ? 'text-success' : 'text-error'" :aria-live="'polite'">{{ chartNetBalance >= 0 ? 'Surplus' : 'Deficit' }}</div>
+              <div class="stat-desc" :class="chartNetBalance >= 0 ? 'text-success' : 'text-error'"
+                :aria-live="'polite'">{{
+                  chartNetBalance >= 0 ? 'Surplus' : 'Deficit' }}</div>
             </div>
             <div class="stat">
               <div class="stat-figure text-warning xs:stat-figure-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
               <div class="stat-title xs:text-xs">Savings Rate</div>
@@ -1907,18 +1960,23 @@
           <div class="stats stats-vertical lg:stats-horizontal shadow-lg w-full xs:stats-md">
             <div class="stat">
               <div class="stat-figure text-info xs:stat-figure-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m0 3V7m6 6v-3m0 3V7" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 7h6m0 10v-3m0 3V7m6 6v-3m0 3V7" />
                 </svg>
               </div>
               <div class="stat-title xs:text-xs">Avg Transaction</div>
-              <div class="stat-value text-info xs:text-base">${{ chartAvgTransaction.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
+              <div class="stat-value text-info xs:text-base">${{ chartAvgTransaction.toLocaleString('en-US', {
+                minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
               <div class="stat-desc xs:text-[10px]">{{ chartFilteredForStats.length }} total transactions</div>
             </div>
             <div class="stat">
               <div class="stat-figure text-secondary xs:stat-figure-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V5a2 2 0 012-2z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V5a2 2 0 012-2z" />
                 </svg>
               </div>
               <div class="stat-title xs:text-xs">Top Category</div>
@@ -1927,8 +1985,10 @@
             </div>
             <div class="stat">
               <div class="stat-figure text-accent xs:stat-figure-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
               <div class="stat-title xs:text-xs">Date Range</div>
@@ -1937,8 +1997,10 @@
             </div>
             <div class="stat">
               <div class="stat-figure text-warning xs:stat-figure-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 xs:h-4 xs:w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
               <div class="stat-title xs:text-xs">Income vs Spending</div>
@@ -1952,239 +2014,316 @@
 
 
           <!-- Advanced Settings Modal Popup -->
-          <dialog
-            v-if="showAdvancedFilters"
-            id="advancedSettingsModal"
-            class="modal modal-bottom sm:modal-middle"
-            ref="advancedSettingsModal"
-            :open="showAdvancedFilters"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="advancedSettingsTitle"
-            @keydown.escape="showAdvancedFilters = false"
-          >
+          <dialog v-if="showAdvancedFilters" id="advancedSettingsModal" class="modal modal-bottom sm:modal-middle"
+            ref="advancedSettingsModal" :open="showAdvancedFilters" role="dialog" aria-modal="true"
+            aria-labelledby="advancedSettingsTitle" @keydown.escape="showAdvancedFilters = false">
             <form method="dialog" class="modal-box max-w-2xl advanced-modal-box">
               <!-- Modal Header (sticky on mobile) -->
               <div class="flex justify-between items-center mb-2 advanced-modal-header">
                 <h3 id="advancedSettingsTitle" class="font-bold text-lg flex items-center gap-2">
                   <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
                   Advanced Settings
                 </h3>
-                <button
-                  type="button"
-                  class="btn btn-sm btn-circle btn-ghost focus-ring target-min"
-                  @click="showAdvancedFilters = false"
-                  aria-label="Close advanced settings"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <button type="button" class="btn btn-sm btn-circle btn-ghost focus-ring target-min"
+                  @click="showAdvancedFilters = false" aria-label="Close advanced settings">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
               <!-- Scrollable Content Area -->
               <div class="advanced-modal-content flex-1 overflow-y-auto">
-                <p class="text-sm text-base-content/60 mb-3">Customize chart appearance, filters, and data series. Sections collapse to save space.</p>
+                <p class="text-sm text-base-content/60 mb-3">Customize chart appearance, filters, and data series.
+                  Sections
+                  collapse to save space.</p>
 
                 <!-- Collapsible: Date & Time Range -->
-              <details class="collapse collapse-arrow bg-base-200/50 mb-2 rounded-lg" open>
-                <summary class="collapse-title font-semibold flex items-center gap-2 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  Date & Time Range
-                  <span class="badge badge-sm badge-info ml-auto">{{ selectedDatePreset || 'Custom' }}</span>
-                </summary>
-                <div class="collapse-content space-y-4">
-                  <!-- Quick Presets (dynamic from transaction data) -->
-                  <div>
-                    <label class="label cursor-pointer">
-                      <span class="label-text font-medium text-xs">Quick Presets</span>
-                      <span v-if="transactionDateRange.earliest" class="label-text-alt text-[10px] opacity-60">
-                        ({{ formatChartDate(transactionDateRange.earliest) }} → {{ formatChartDate(transactionDateRange.latest) }})
+                <details class="collapse collapse-arrow bg-base-200/50 mb-2 rounded-lg" open>
+                  <summary class="collapse-title font-semibold flex items-center gap-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Date & Time Range
+                    <span class="badge badge-sm badge-info ml-auto">{{ selectedDatePreset || 'Custom' }}</span>
+                  </summary>
+                  <div class="collapse-content space-y-4">
+                    <!-- Quick Presets (dynamic from transaction data) -->
+                    <div>
+                      <label class="label cursor-pointer">
+                        <span class="label-text font-medium text-xs">Quick Presets</span>
+                        <span v-if="transactionDateRange.earliest" class="label-text-alt text-[10px] opacity-60">
+                          ({{ formatChartDate(transactionDateRange.earliest) }} → {{
+                            formatChartDate(transactionDateRange.latest) }})
+                        </span>
+                      </label>
+                      <div class="flex flex-wrap gap-1.5">
+                        <button type="button" v-for="preset in dynamicDatePresets" :key="preset.label"
+                          class="btn btn-xs btn-outline focus-ring target-min"
+                          :class="{ 'btn-primary': isSelectedPreset(preset) }" @click="applyDatePreset(preset)">
+                          {{ preset.label }}
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Custom Range -->
+                    <div>
+                      <label class="label">
+                        <span class="label-text font-medium text-xs">Custom Range</span>
+                      </label>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- From Date -->
+                        <div>
+                          <label class="label" for="chartStartDate">
+                            <span class="label-text text-xs">From</span>
+                          </label>
+                          <DatePicker id="chartStartDate" v-model="dateFilter.start" aria-label="chart start date"
+                            :max="dateFilter.end" />
+                        </div>
+
+                        <!-- To Date -->
+                        <div>
+                          <label class="label" for="chartEndDate">
+                            <span class="label-text text-xs">To</span>
+                          </label>
+                          <DatePicker id="chartEndDate" v-model="dateFilter.end" aria-label="chart end date"
+                            :min="dateFilter.start" />
+                        </div>
+                      </div>
+                      <p class="text-[10px] text-base-content/50 mt-1.5">
+                        💡 Leave empty for unlimited range.
+                      </p>
+                    </div>
+                  </div>
+                </details>
+
+                <!-- Collapsible: Filter Display Mode (Pie/Doughnut only) -->
+                <details v-if="chartConfig.type === 'pie' || chartConfig.type === 'doughnut'"
+                  class="collapse collapse-arrow bg-base-200/50 mb-2 rounded-lg" open>
+                  <summary class="collapse-title font-semibold flex items-center gap-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-accent" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                    </svg>
+                    Filter Display Mode
+                    <span class="badge badge-sm badge-accent ml-auto">{{ chartFilterDisplayMode === 'both' ? 'Both' :
+                      chartFilterDisplayMode === 'categories' ? 'Categories' : 'Tags' }}</span>
+                  </summary>
+                  <div class="collapse-content">
+                    <div class="join border-base-300 rounded-lg overflow-hidden" role="radiogroup"
+                      aria-label="Filter display mode">
+                      <button type="button" class="join-item btn btn-sm flex-1 focus-ring target-min"
+                        :class="{ 'btn-primary': chartFilterDisplayMode === 'both', 'btn-ghost': chartFilterDisplayMode !== 'both' }"
+                        role="radio" :aria-checked="chartFilterDisplayMode === 'both'"
+                        @click="chartFilterDisplayMode = 'both'">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 21a18 18 0 0018 0" />
+                        </svg>
+                        Both
+                      </button>
+                      <button type="button" class="join-item btn btn-sm flex-1 focus-ring target-min"
+                        :class="{ 'btn-primary': chartFilterDisplayMode === 'categories', 'btn-ghost': chartFilterDisplayMode !== 'categories' }"
+                        role="radio" :aria-checked="chartFilterDisplayMode === 'categories'"
+                        @click="chartFilterDisplayMode = 'categories'">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        Categories
+                      </button>
+                      <button type="button" class="join-item btn btn-sm flex-1 focus-ring target-min"
+                        :class="{ 'btn-primary': chartFilterDisplayMode === 'tags', 'btn-ghost': chartFilterDisplayMode !== 'tags' }"
+                        role="radio" :aria-checked="chartFilterDisplayMode === 'tags'"
+                        @click="chartFilterDisplayMode = 'tags'">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        Tags
+                      </button>
+                    </div>
+                    <p class="text-[10px] text-base-content/50 mt-2">Choose what the pie/doughnut chart groups by. Tags
+                      depend
+                      on selected categories.</p>
+                  </div>
+                </details>
+
+                <!-- Collapsible: Filter Logic -->
+                <details class="collapse collapse-arrow bg-base-200/50 mb-2 rounded-lg">
+                  <summary class="collapse-title font-semibold flex items-center gap-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-warning" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    Filter Logic
+                    <span class="badge badge-sm badge-ghost ml-auto">{{ chartSelectionMode === 'or' ? 'OR' : 'AND'
+                      }}</span>
+                  </summary>
+                  <div class="collapse-content">
+                    <div class="join border-base-300 rounded-lg overflow-hidden" role="radiogroup"
+                      aria-label="Filter mode">
+                      <button type="button" class="join-item btn btn-sm flex-1 focus-ring target-min"
+                        :class="{ 'btn-primary': chartSelectionMode === 'or', 'btn-ghost': chartSelectionMode !== 'or' }"
+                        role="radio" :aria-checked="chartSelectionMode === 'or'" @click="chartSelectionMode = 'or'">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                        Match Any (OR)
+                      </button>
+                      <button type="button" class="join-item btn btn-sm flex-1 focus-ring target-min"
+                        :class="{ 'btn-primary': chartSelectionMode === 'and', 'btn-ghost': chartSelectionMode !== 'and' }"
+                        role="radio" :aria-checked="chartSelectionMode === 'and'" @click="chartSelectionMode = 'and'">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 13h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Match All (AND)
+                      </button>
+                    </div>
+                    <p class="text-[10px] text-base-content/50 mt-2">OR: show items matching any selected filter. AND:
+                      show
+                      items matching all selected filters.</p>
+                  </div>
+                </details>
+
+                <!-- Collapsible: Categories -->
+                <details v-if="chartFilterDisplayMode === 'both' || chartFilterDisplayMode === 'categories'"
+                  class="collapse collapse-arrow bg-base-200/50 mb-2 rounded-lg">
+                  <summary class="collapse-title font-semibold flex items-center gap-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-accent" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    Categories
+                    <span class="badge badge-sm badge-primary ml-auto">{{ selectedCategoriesChart.length }}/{{
+                      chartCategories.length }}</span>
+                  </summary>
+                  <div class="collapse-content">
+                    <div
+                      class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-2 border border-base-300 rounded-lg bg-base-100"
+                      role="listbox" aria-multiselectable="true">
+                      <button v-for="category in chartCategories" :key="category" type="button"
+                        class="badge badge-md badge-outline cursor-pointer focus-ring target-min transition-all hover:scale-105"
+                        :class="{ 'badge-primary': selectedCategoriesChart.includes(category) }" role="option"
+                        :aria-selected="selectedCategoriesChart.includes(category)"
+                        @click="toggleCategoryForChart(category)">{{
+                        category }}</button>
+                    </div>
+                    <div class="mt-2 flex gap-2">
+                      <button type="button" class="btn btn-xs btn-ghost focus-ring target-min"
+                        @click="selectAllCategoriesChart()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>Select All</button>
+                      <button type="button" class="btn btn-xs btn-ghost focus-ring target-min"
+                        @click="unselectAllCategoriesChart()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                        </svg>Clear</button>
+                    </div>
+                  </div>
+                </details>
+
+                <!-- Collapsible: Tags -->
+                <details v-if="chartFilterDisplayMode === 'both' || chartFilterDisplayMode === 'tags'"
+                  class="collapse collapse-arrow bg-base-200/50 mb-2 rounded-lg">
+                  <summary class="collapse-title font-semibold flex items-center gap-2 text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-secondary" fill="none"
+                      viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                    Tags
+                    <span class="badge badge-sm badge-secondary ml-auto">{{ selectedTagsChart.length }}/{{
+                      availableTagsForChart.length }}</span>
+                  </summary>
+                  <div class="collapse-content space-y-3">
+                    <p class="text-xs text-base-content/60">
+                      Select tags to include in chart filtering. Click tags to toggle selection.
+                    </p>
+                    <div
+                      class="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-3 border border-base-300 rounded-lg bg-base-100"
+                      role="listbox" aria-multiselectable="true" aria-label="Available tags">
+                      <button v-for="tag in availableTagsForChart" :key="tag" type="button"
+                        class="badge badge-md badge-outline cursor-pointer focus-ring target-min transition-all hover:scale-105"
+                        :class="{
+                          'badge-secondary text-secondary-content': selectedTagsChart.includes(tag),
+                          'opacity-40': selectedTagsChart.length === availableTagsForChart.length
+                        }" role="option" :aria-selected="selectedTagsChart.includes(tag)"
+                        @click="toggleTagForChart(tag)">
+                        {{ tag }}
+                      </button>
+                      <span v-if="availableTagsForChart.length === 0" class="text-xs text-base-content/50 italic">
+                        No tags available. Add tags to transactions first.
                       </span>
-                    </label>
-                    <div class="flex flex-wrap gap-1.5">
-                      <button
-                        type="button"
-                        v-for="preset in dynamicDatePresets"
-                        :key="preset.label"
-                        class="btn btn-xs btn-outline focus-ring target-min"
-                        :class="{ 'btn-primary': isSelectedPreset(preset) }"
-                        @click="applyDatePreset(preset)"
-                      >
-                        {{ preset.label }}
+                    </div>
+                    <div class="flex gap-2">
+                      <button type="button" class="btn btn-xs btn-outline focus-ring target-min flex-1"
+                        @click="selectAllAvailableTagsForChart">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Select All
+                      </button>
+                      <button type="button" class="btn btn-xs btn-ghost focus-ring target-min flex-1"
+                        @click="unselectAllTagsForChart">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Clear Selection
                       </button>
                     </div>
                   </div>
+                </details>
+              </div>
 
-                  <!-- Custom Range -->
-                  <div>
-                    <label class="label">
-                      <span class="label-text font-medium text-xs">Custom Range</span>
-                    </label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <!-- From Date -->
-                      <div>
-                        <label class="label" for="chartStartDate">
-                          <span class="label-text text-xs">From</span>
-                        </label>
-                        <DatePicker id="chartStartDate" v-model="dateFilter.start" aria-label="chart start date" :max="dateFilter.end" />
-                      </div>
-
-                      <!-- To Date -->
-                      <div>
-                        <label class="label" for="chartEndDate">
-                          <span class="label-text text-xs">To</span>
-                        </label>
-                        <DatePicker id="chartEndDate" v-model="dateFilter.end" aria-label="chart end date" :min="dateFilter.start" />
-                      </div>
-                    </div>
-                    <p class="text-[10px] text-base-content/50 mt-1.5">
-                      💡 Leave empty for unlimited range.
-                    </p>
-                  </div>
-                </div>
-              </details>
-
-              <!-- Collapsible: Filter Display Mode (Pie/Doughnut only) -->
-              <details v-if="chartConfig.type === 'pie' || chartConfig.type === 'doughnut'" class="collapse collapse-arrow bg-base-200/50 mb-2 rounded-lg" open>
-                <summary class="collapse-title font-semibold flex items-center gap-2 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+              <!-- Sticky Action Bar -->
+              <div
+                class="sticky bottom-0 bg-base-100/95 backdrop-blur border-t border-base-300 p-3 -mx-3 flex justify-between gap-2 safe-area-pb advanced-modal-footer"
+                style="z-index: 10;">
+                <button type="button" class="btn btn-sm btn-outline btn-error focus-ring target-min gap-1"
+                  @click="resetChartSettings()">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
-                  Filter Display Mode
-                  <span class="badge badge-sm badge-accent ml-auto">{{ chartFilterDisplayMode === 'both' ? 'Both' : chartFilterDisplayMode === 'categories' ? 'Categories' : 'Tags' }}</span>
-                </summary>
-                <div class="collapse-content">
-                  <div class="join border-base-300 rounded-lg overflow-hidden" role="radiogroup" aria-label="Filter display mode">
-                    <button type="button" class="join-item btn btn-sm flex-1 focus-ring target-min" :class="{ 'btn-primary': chartFilterDisplayMode === 'both', 'btn-ghost': chartFilterDisplayMode !== 'both' }" role="radio" :aria-checked="chartFilterDisplayMode === 'both'" @click="chartFilterDisplayMode = 'both'">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21a18 18 0 0018 0" /></svg>
-                      Both
-                    </button>
-                    <button type="button" class="join-item btn btn-sm flex-1 focus-ring target-min" :class="{ 'btn-primary': chartFilterDisplayMode === 'categories', 'btn-ghost': chartFilterDisplayMode !== 'categories' }" role="radio" :aria-checked="chartFilterDisplayMode === 'categories'" @click="chartFilterDisplayMode = 'categories'">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
-                      Categories
-                    </button>
-                    <button type="button" class="join-item btn btn-sm flex-1 focus-ring target-min" :class="{ 'btn-primary': chartFilterDisplayMode === 'tags', 'btn-ghost': chartFilterDisplayMode !== 'tags' }" role="radio" :aria-checked="chartFilterDisplayMode === 'tags'" @click="chartFilterDisplayMode = 'tags'">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
-                      Tags
-                    </button>
-                  </div>
-                  <p class="text-[10px] text-base-content/50 mt-2">Choose what the pie/doughnut chart groups by. Tags depend on selected categories.</p>
-                </div>
-              </details>
-
-              <!-- Collapsible: Filter Logic -->
-              <details class="collapse collapse-arrow bg-base-200/50 mb-2 rounded-lg">
-                <summary class="collapse-title font-semibold flex items-center gap-2 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                  </svg>
-                  Filter Logic
-                  <span class="badge badge-sm badge-ghost ml-auto">{{ chartSelectionMode === 'or' ? 'OR' : 'AND' }}</span>
-                </summary>
-                <div class="collapse-content">
-                  <div class="join border-base-300 rounded-lg overflow-hidden" role="radiogroup" aria-label="Filter mode">
-                    <button type="button" class="join-item btn btn-sm flex-1 focus-ring target-min" :class="{ 'btn-primary': chartSelectionMode === 'or', 'btn-ghost': chartSelectionMode !== 'or' }" role="radio" :aria-checked="chartSelectionMode === 'or'" @click="chartSelectionMode = 'or'">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
-                      Match Any (OR)
-                    </button>
-                    <button type="button" class="join-item btn btn-sm flex-1 focus-ring target-min" :class="{ 'btn-primary': chartSelectionMode === 'and', 'btn-ghost': chartSelectionMode !== 'and' }" role="radio" :aria-checked="chartSelectionMode === 'and'" @click="chartSelectionMode = 'and'">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                      Match All (AND)
-                    </button>
-                  </div>
-                  <p class="text-[10px] text-base-content/50 mt-2">OR: show items matching any selected filter. AND: show items matching all selected filters.</p>
-                </div>
-              </details>
-
-              <!-- Collapsible: Categories -->
-              <details v-if="chartFilterDisplayMode === 'both' || chartFilterDisplayMode === 'categories'" class="collapse collapse-arrow bg-base-200/50 mb-2 rounded-lg">
-                <summary class="collapse-title font-semibold flex items-center gap-2 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                  </svg>
-                  Categories
-                  <span class="badge badge-sm badge-primary ml-auto">{{ selectedCategoriesChart.length }}/{{ chartCategories.length }}</span>
-                </summary>
-                <div class="collapse-content">
-                  <div class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-2 border border-base-300 rounded-lg bg-base-100" role="listbox" aria-multiselectable="true">
-                    <button v-for="category in chartCategories" :key="category" type="button" class="badge badge-md badge-outline cursor-pointer focus-ring target-min transition-all hover:scale-105" :class="{ 'badge-primary': selectedCategoriesChart.includes(category) }" role="option" :aria-selected="selectedCategoriesChart.includes(category)" @click="toggleCategoryForChart(category)">{{ category }}</button>
-                  </div>
-                  <div class="mt-2 flex gap-2">
-                    <button type="button" class="btn btn-xs btn-ghost focus-ring target-min" @click="selectAllCategoriesChart()">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>Select All</button>
-                    <button type="button" class="btn btn-xs btn-ghost focus-ring target-min" @click="unselectAllCategoriesChart()">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>Clear</button>
-                  </div>
-                </div>
-              </details>
-
-              <!-- Collapsible: Tags -->
-              <details v-if="chartFilterDisplayMode === 'both' || chartFilterDisplayMode === 'tags'" class="collapse collapse-arrow bg-base-200/50 mb-2 rounded-lg">
-                <summary class="collapse-title font-semibold flex items-center gap-2 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                  </svg>
-                  Tags
-                  <span class="badge badge-sm badge-secondary ml-auto">{{ selectedTagsChart.length }}/{{ availableTagsForChart.length }}</span>
-                </summary>
-                <div class="collapse-content space-y-3">
-                  <p class="text-xs text-base-content/60">
-                    Select tags to include in chart filtering. Click tags to toggle selection.
-                  </p>
-                  <div 
-                    class="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-3 border border-base-300 rounded-lg bg-base-100"
-                    role="listbox"
-                    aria-multiselectable="true"
-                    aria-label="Available tags"
-                  >
-                    <button
-                      v-for="tag in availableTagsForChart"
-                      :key="tag"
-                      type="button"
-                      class="badge badge-md badge-outline cursor-pointer focus-ring target-min transition-all hover:scale-105"
-                      :class="{
-                        'badge-secondary text-secondary-content': selectedTagsChart.includes(tag),
-                        'opacity-40': selectedTagsChart.length === availableTagsForChart.length
-                      }"
-                      role="option"
-                      :aria-selected="selectedTagsChart.includes(tag)"
-                      @click="toggleTagForChart(tag)"
-                    >
-                      {{ tag }}
-                    </button>
-                    <span v-if="availableTagsForChart.length === 0" class="text-xs text-base-content/50 italic">
-                      No tags available. Add tags to transactions first.
-                    </span>
-                  </div>
-                  <div class="flex gap-2">
-                    <button type="button" class="btn btn-xs btn-outline focus-ring target-min flex-1" @click="selectAllAvailableTagsForChart">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
-                      Select All
-                    </button>
-                    <button type="button" class="btn btn-xs btn-ghost focus-ring target-min flex-1" @click="unselectAllTagsForChart">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                      Clear Selection
-                    </button>
-                  </div>
-                </div>
-              </details>
-            </div>
-
-            <!-- Sticky Action Bar -->
-            <div class="sticky bottom-0 bg-base-100/95 backdrop-blur border-t border-base-300 p-3 -mx-3 flex justify-between gap-2 safe-area-pb advanced-modal-footer" style="z-index: 10;">
-                <button type="button" class="btn btn-sm btn-outline btn-error focus-ring target-min gap-1" @click="resetChartSettings()">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
                   Reset All
                 </button>
-                <button type="button" class="btn btn-sm btn-primary focus-ring target-min gap-1" @click="showAdvancedFilters = false">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                <button type="button" class="btn btn-sm btn-primary focus-ring target-min gap-1"
+                  @click="showAdvancedFilters = false">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                  </svg>
                   Done
                 </button>
               </div>
@@ -2198,14 +2337,8 @@
 
 
         <!-- About Section -->
-        <section
-          v-if="activeTab === 'about'"
-          :id="'panel-about'"
-          role="tabpanel"
-          :aria-labelledby="'tab-about'"
-          class="card bg-base-100 shadow-xl max-w-4xl mx-auto mt-8"
-          tabindex="0"
-        >
+        <section v-if="activeTab === 'about'" :id="'panel-about'" role="tabpanel" :aria-labelledby="'tab-about'"
+          class="card bg-base-100 shadow-xl max-w-4xl mx-auto mt-8" tabindex="0">
           <div class="card-body">
             <h2 id="aboutHeading" class="card-title text-2xl font-bold">
               ℹ️ About
@@ -2537,7 +2670,8 @@
             <label class="label" for="ssFrom">
               <span class="label-text">From</span>
             </label>
-            <DatePicker id="ssFrom" v-model="smartSelect.from" aria-label="selection start date" :max="smartSelect.to" />
+            <DatePicker id="ssFrom" v-model="smartSelect.from" aria-label="selection start date"
+              :max="smartSelect.to" />
           </div>
 
           <div class="form-control">
@@ -2728,14 +2862,14 @@
             <label class="label" for="exportPrefix">
               <span class="label-text">Filename Prefix</span>
             </label>
-            <input id="exportPrefix" v-model="exportFilenamePrefix" type="text"
-              class="input input-bordered" placeholder="financial-export" />
+            <input id="exportPrefix" v-model="exportFilenamePrefix" type="text" class="input input-bordered"
+              placeholder="financial-export" />
           </div>
 
           <!-- Format Info -->
           <div class="alert alert-info text-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5"
-              fill="none" viewBox="0 0 24 24">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none"
+              viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -2762,8 +2896,7 @@
         </div>
 
         <div class="modal-action">
-          <button type="button" class="btn btn-ghost" @click="exportModalOpen = false"
-            :disabled="exportInProgress">
+          <button type="button" class="btn btn-ghost" @click="exportModalOpen = false" :disabled="exportInProgress">
             Cancel
           </button>
           <button type="button" class="btn btn-primary" @click="handleExport(exportFormat)"
@@ -2789,8 +2922,8 @@
         <div class="space-y-4">
           <!-- Batch Info -->
           <div class="alert alert-info text-sm" v-if="shareBatchCount > 1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5"
-              fill="none" viewBox="0 0 24 24">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none"
+              viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -2822,8 +2955,8 @@
 
           <!-- Phase 4: Expiration Info -->
           <div class="alert alert-warning text-sm" v-if="shareExpirationDays > 0">
-            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5"
-              fill="none" viewBox="0 0 24 24">
+            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none"
+              viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
@@ -2866,26 +2999,25 @@
               <label class="label" for="sharePassword">
                 <span class="label-text">Password</span>
               </label>
-              <input id="sharePassword" v-model="sharePassword" type="password"
-                class="input input-bordered" placeholder="Enter password" />
+              <input id="sharePassword" v-model="sharePassword" type="password" class="input input-bordered"
+                placeholder="Enter password" />
             </div>
 
             <div class="form-control">
               <label class="label" for="confirmPassword">
                 <span class="label-text">Confirm Password</span>
               </label>
-              <input id="confirmPassword" v-model="shareConfirmPassword" type="password"
-                class="input input-bordered" placeholder="Confirm password" />
+              <input id="confirmPassword" v-model="shareConfirmPassword" type="password" class="input input-bordered"
+                placeholder="Confirm password" />
             </div>
 
-            <div v-if="sharePassword && sharePassword !== shareConfirmPassword"
-              class="alert alert-error text-sm">
+            <div v-if="sharePassword && sharePassword !== shareConfirmPassword" class="alert alert-error text-sm">
               <span>Passwords do not match</span>
             </div>
 
             <div class="alert alert-info text-sm">
-              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5"
-                fill="none" viewBox="0 0 24 24">
+              <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-5 w-5" fill="none"
+                viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
@@ -3555,7 +3687,7 @@ function txMatches(t: Transaction, f: ParsedQuery): boolean {
   const desc = (t.description || "").toLowerCase();
   const cat = (t.category || "").toLowerCase();
   const src = (t.source || "").toLowerCase();
-  
+
   if (f.text.length) {
     for (const q of f.text) {
       if (!desc.includes(q) && !cat.includes(q) && !src.includes(q)) return false;
@@ -5576,7 +5708,7 @@ const filteredTransactionIndices = computed(() => {
   const type = typeFilter.value;
   const field = sortField.value;
   const order = sortOrder.value === "asc" ? 1 : -1;
-  
+
   // Build indices of matching transactions (avoids array copy)
   const indices: number[] = [];
   for (let i = 0; i < list.length; i++) {
@@ -5584,22 +5716,22 @@ const filteredTransactionIndices = computed(() => {
     if (type && t.type !== type) continue;
     indices.push(i);
   }
-  
+
   // PARTIAL SORT: For large datasets, only sort the page window
   // For small datasets (< 5000), full sort is faster due to lower overhead
   const threshold = 5000;
   if (indices.length > threshold) {
     const offset = (currentPage.value - 1) * itemsPerPage;
     const end = Math.min(offset + itemsPerPage + 20, indices.length);
-    
+
     // Build comparator closure (avoids recreating on each comparison)
     const cmp = buildTxComparator(list, field, order);
-    
+
     // Quickselect: partition so [lo, hi) contains the correct elements
     if (end < indices.length) {
       quickSelectRange(indices, cmp, 0, indices.length - 1, offset, end);
     }
-    
+
     // In-place heapsort only the window [offset, end)
     heapSortRange(indices, cmp, offset, end);
   } else {
@@ -5607,7 +5739,7 @@ const filteredTransactionIndices = computed(() => {
     const cmp = buildTxComparator(list, field, order);
     indices.sort(cmp);
   }
-  
+
   return indices;
 });
 
@@ -5640,14 +5772,14 @@ function quickSelectRange(
   hi: number
 ) {
   if (left >= right) return;
-  
+
   // Median-of-3 pivot selection for better worst-case
   const mid = left + ((right - left) >> 1);
   if (cmp(arr[left], arr[mid]) > 0) [arr[left], arr[mid]] = [arr[mid], arr[left]];
   if (cmp(arr[left], arr[right]) > 0) [arr[left], arr[right]] = [arr[right], arr[left]];
   if (cmp(arr[mid], arr[right]) > 0) [arr[mid], arr[right]] = [arr[right], arr[mid]];
   [arr[mid], arr[right]] = [arr[right], arr[mid]];
-  
+
   const pivot = arr[right];
   let storeIndex = left;
   for (let i = left; i < right; i++) {
@@ -5657,7 +5789,7 @@ function quickSelectRange(
     }
   }
   [arr[storeIndex], arr[right]] = [arr[right], arr[storeIndex]];
-  
+
   if (storeIndex > lo) {
     quickSelectRange(arr, cmp, left, storeIndex - 1, lo, hi);
   }
@@ -5695,14 +5827,14 @@ function heapify(
   let largest = root;
   const left = (root << 1) + 1;
   const right = (root << 1) + 2;
-  
+
   if (left < heapSize && cmp(arr[offset + left], arr[offset + largest]) > 0) {
     largest = left;
   }
   if (right < heapSize && cmp(arr[offset + right], arr[offset + largest]) > 0) {
     largest = right;
   }
-  
+
   if (largest !== root) {
     [arr[offset + root], arr[offset + largest]] = [arr[offset + largest], arr[offset + root]];
     heapify(arr, offset, heapSize, largest, cmp);
@@ -5717,7 +5849,7 @@ const paginatedTransactions = computed(() => {
   const indices = filteredTransactionIndices.value;
   const offset = (currentPage.value - 1) * itemsPerPage;
   const end = offset + itemsPerPage;
-  
+
   // Slice the indices we need, then map to actual transactions
   const pageIndices = indices.slice(offset, end);
   const list: Transaction[] = new Array(pageIndices.length);
@@ -6132,20 +6264,20 @@ let _cssVarCache: Map<string, string> | null = null;
 function cssVarToRGB(varName: string): string {
   // Fast path: return cached value if cache is still valid
   if (_cssVarCache?.has(varName)) return _cssVarCache.get(varName)!;
-  
+
   const rootStyles = getComputedStyle(document.documentElement);
   const value = rootStyles.getPropertyValue(varName).trim();
   if (!value) {
     _cssVarCache?.set(varName, "rgb(0,0,0)");
     return "rgb(0,0,0)";
   }
-  
+
   // If the value is already an RGB/RGBA string, return it directly
   if (value.startsWith('rgb')) {
     _cssVarCache?.set(varName, value);
     return value;
   }
-  
+
   // Use Canvas pixel rendering to convert OKLCH to RGB
   // Modern browsers keep OKLCH internally, so fillStyle returns OKLCH as-is
   // Drawing a pixel and reading the image data gives us actual RGB values
@@ -6508,7 +6640,7 @@ const chartData = computed(() => {
   // ── Radar ──
   if (chartConfig.value.type === 'radar') {
     const byMonth: Record<string, Record<string, number>> = {};
-    
+
     base.forEach(t => {
       const d = typeof t.date === 'string' ? new Date(t.date) : t.date;
       const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
@@ -6520,7 +6652,7 @@ const chartData = computed(() => {
     const allCategories = Array.from(
       new Set(Object.values(byMonth).flatMap(m => Object.keys(m)))
     ).sort();
-    
+
     const months = Object.keys(byMonth).sort();
     const datasets = allCategories
       .filter((_) => months.length > 0) // Only include if we have months
@@ -6760,13 +6892,13 @@ async function debouncedRenderChart() {
     clearTimeout(renderTimeoutId);
     renderTimeoutId = null;
   }
-  
+
   // If a render is already in progress, mark as pending
   if (chartRenderPromise) {
     pendingRenderChart = true;
     return;
   }
-  
+
   // Schedule render after debounce delay
   renderTimeoutId = setTimeout(async () => {
     renderTimeoutId = null;
@@ -7305,8 +7437,8 @@ async function renderChart() {
             chartConfig.value.type === "pie" ||
               chartConfig.value.type === "doughnut"
               ? {}
-            : chartConfig.value.type === "radar"
-              ? {
+              : chartConfig.value.type === "radar"
+                ? {
                   r: {
                     beginAtZero: true,
                     grid: { color: withAlpha(themeColor('primary'), 0.12) },
@@ -7317,87 +7449,87 @@ async function renderChart() {
                     },
                   },
                 }
-            : chartConfig.value.type === "scatter"
-              ? {
-                  y: {
-                    beginAtZero: true,
-                    ticks: {
-                      callback: (v: any) => "$" + Number(v).toFixed(0),
-                      font: { size: 10 },
-                      color: withAlpha(cssVarToRGB("--bc"), 0.7),
-                    },
-                    grid: { color: withAlpha(themeColor('primary'), 0.1) },
-                    title: {
-                      display: true,
-                      text: 'Amount ($)',
-                      font: { size: 11, weight: '600' },
-                      color: withAlpha(themeColor('primary'), 0.8),
-                    },
-                  },
-                  x: {
-                    type: 'linear',
-                    position: 'bottom',
-                    ticks: {
-                      font: { size: 10 },
-                      color: withAlpha(cssVarToRGB("--bc"), 0.7),
-                      callback: (v: any) => {
-                        // Format timestamp as date
-                        const d = new Date(v);
-                        return d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+                : chartConfig.value.type === "scatter"
+                  ? {
+                    y: {
+                      beginAtZero: true,
+                      ticks: {
+                        callback: (v: any) => "$" + Number(v).toFixed(0),
+                        font: { size: 10 },
+                        color: withAlpha(cssVarToRGB("--bc"), 0.7),
+                      },
+                      grid: { color: withAlpha(themeColor('primary'), 0.1) },
+                      title: {
+                        display: true,
+                        text: 'Amount ($)',
+                        font: { size: 11, weight: '600' },
+                        color: withAlpha(themeColor('primary'), 0.8),
                       },
                     },
-                    grid: { color: withAlpha(themeColor('primary'), 0.1) },
-                    title: {
-                      display: true,
-                      text: 'Date',
-                      font: { size: 11, weight: '600' },
-                      color: withAlpha(themeColor('primary'), 0.8),
-                    },
-                  },
-                }
-              : {
-                  y: {
-                    suggestedMin: typeof data.yMin === 'number' ? data.yMin : undefined,
-                    suggestedMax: typeof data.yMax === 'number' ? data.yMax : undefined,
-                    ticks: {
-                      callback: (v: any) => {
-                        const abs = Math.abs(v);
-                        const sign = v < 0 ? '-' : '';
-                        if (abs >= 1000000) return `${sign}$${(abs / 1000000).toFixed(1)}M`;
-                        if (abs >= 1000) return `${sign}$${(abs / 1000).toFixed(0)}k`;
-                        return `${sign}$${Number(v).toFixed(0)}`;
+                    x: {
+                      type: 'linear',
+                      position: 'bottom',
+                      ticks: {
+                        font: { size: 10 },
+                        color: withAlpha(cssVarToRGB("--bc"), 0.7),
+                        callback: (v: any) => {
+                          // Format timestamp as date
+                          const d = new Date(v);
+                          return d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+                        },
                       },
-                      font: { size: 10 },
-                      maxTicksLimit: 8,
-                      color: withAlpha(cssVarToRGB("--bc"), 0.7),
+                      grid: { color: withAlpha(themeColor('primary'), 0.1) },
+                      title: {
+                        display: true,
+                        text: 'Date',
+                        font: { size: 11, weight: '600' },
+                        color: withAlpha(themeColor('primary'), 0.8),
+                      },
                     },
-                    grid: {
-                      color: withAlpha(themeColor('primary'), 0.1),
-                      drawBorder: false,
+                  }
+                  : {
+                    y: {
+                      suggestedMin: typeof data.yMin === 'number' ? data.yMin : undefined,
+                      suggestedMax: typeof data.yMax === 'number' ? data.yMax : undefined,
+                      ticks: {
+                        callback: (v: any) => {
+                          const abs = Math.abs(v);
+                          const sign = v < 0 ? '-' : '';
+                          if (abs >= 1000000) return `${sign}$${(abs / 1000000).toFixed(1)}M`;
+                          if (abs >= 1000) return `${sign}$${(abs / 1000).toFixed(0)}k`;
+                          return `${sign}$${Number(v).toFixed(0)}`;
+                        },
+                        font: { size: 10 },
+                        maxTicksLimit: 8,
+                        color: withAlpha(cssVarToRGB("--bc"), 0.7),
+                      },
+                      grid: {
+                        color: withAlpha(themeColor('primary'), 0.1),
+                        drawBorder: false,
+                      },
+                      border: {
+                        display: false,
+                      },
                     },
-                    border: {
-                      display: false,
+                    x: {
+                      ticks: {
+                        font: { size: 10 },
+                        maxRotation: 30,
+                        minRotation: 0,
+                        maxTicksLimit: 8,
+                        autoSkip: true,
+                        skipBlank: true,
+                        align: 'center',
+                        color: withAlpha(cssVarToRGB("--bc"), 0.7),
+                      },
+                      grid: {
+                        display: false,
+                      },
+                      border: {
+                        display: false,
+                      },
                     },
                   },
-                  x: {
-                    ticks: {
-                      font: { size: 10 },
-                      maxRotation: 30,
-                      minRotation: 0,
-                      maxTicksLimit: 8,
-                      autoSkip: true,
-                      skipBlank: true,
-                      align: 'center',
-                      color: withAlpha(cssVarToRGB("--bc"), 0.7),
-                    },
-                    grid: {
-                      display: false,
-                    },
-                    border: {
-                      display: false,
-                    },
-                  },
-                },
         },
       });
       chartLoading.value = false;
@@ -7442,8 +7574,16 @@ watch(
 watch(activeTab, (tab) => {
   if (tab === 'chart') {
     ensureAllCatsSelected();
-    // Chart render is already handled by the master watcher watching [chartData, chartConfig, ...]
-    // No need to trigger render here - the master watcher will pick up any state changes
+    // Data may have changed while another tab was active (e.g. CSV import) —
+    // the master watcher skips renders when the chart tab is hidden, so render now.
+    nextTick(() => {
+      if (showBalanceTable.value) return;
+      if (chartConfig.value.type === 'bubbleHierarchy') {
+        renderBubbleHierarchy();
+      } else {
+        debouncedRenderChart();
+      }
+    });
   }
 });
 
@@ -7925,28 +8065,28 @@ async function renderBubbleHierarchy() {
     function positionBubbleTooltip(mouseX: number, mouseY: number): { left: number; top: number } | null {
       const tooltipNode = tooltip.node();
       if (!tooltipNode || !container) return null;
-      
+
       const tooltipWidth = tooltipNode.offsetWidth || 200;
       const tooltipHeight = tooltipNode.offsetHeight || 120;
-      
+
       const containerRect = container.getBoundingClientRect();
       let left = mouseX - containerRect.left + 15;
       let top = mouseY - containerRect.top - 15;
-      
+
       // Adjust if tooltip would go off-right edge
       if (left + tooltipWidth > containerRect.width - 10) {
         left = mouseX - containerRect.left - tooltipWidth - 15;
       }
-      
+
       // Adjust if tooltip would go off-bottom edge
       if (top + tooltipHeight > containerRect.height - 10) {
         top = mouseY - containerRect.top - tooltipHeight - 15;
       }
-      
+
       // Clamp to container bounds to prevent overflow
       left = Math.max(10, Math.min(left, containerRect.width - tooltipWidth - 10));
       top = Math.max(10, Math.min(top, containerRect.height - tooltipHeight - 10));
-      
+
       return { left, top };
     }
 
@@ -7992,7 +8132,7 @@ async function renderBubbleHierarchy() {
         html += `<span class="mt-1 h-3 w-3 rounded-full border border-white/20 flex-shrink-0" style="background-color: ${nodeColor}"></span>`;
         html += `<div class="min-w-0"><div class="font-bold text-base leading-tight truncate" style="color: ${accentColor}" title="${esc(d.data.name)}">${esc(d.data.name)}</div>`;
         html += `<div class="text-[10px] uppercase tracking-widest font-medium" style="color: ${labelColor}">${nodeKind}</div></div></div>`;
-        
+
         // Details section with DaisyUI divider
         if (parentName) {
           html += `<div class="text-xs mb-1"><span class="font-semibold" style="color: ${labelColor}">Category:</span> <span class="text-base-content" style="color: ${textColor}">${esc(parentName)}</span></div>`;
@@ -8004,7 +8144,7 @@ async function renderBubbleHierarchy() {
         if (d.data.count) {
           html += `<div class="text-sm"><span style="color: ${labelColor}">Transactions:</span> <span class="font-mono" style="color: ${textColor}">${d.data.count}</span></div>`;
         }
-        
+
         // Footer hint for categories
         if (d.data.type === "category") {
           const tagCount = d.children ? d.children.length : 0;
@@ -8015,7 +8155,7 @@ async function renderBubbleHierarchy() {
           .html(html)
           .style("opacity", 1)
           .style("border-color", withAlpha(nodeColor, 0.35));
-        
+
         // Position tooltip with boundary awareness
         const pos = positionBubbleTooltip(event.pageX, event.pageY);
         if (pos) {
@@ -8730,10 +8870,10 @@ function resetDateFilter() {
 function resetChartSettings() {
   // Reset date filter
   resetDateFilter();
-  
+
   // Reset selection mode
   chartSelectionMode.value = 'or';
-  
+
   // Reset series toggles
   seriesToggles.value = {
     income: true,
@@ -8741,17 +8881,17 @@ function resetChartSettings() {
     balance: true,
     allTimeCumulativeNetBalance: true,
   };
-  
+
   // Reset category/tag selections
   ensureAllCatsSelected();
   selectedTagsChart.value = [];
-  
+
   // Reset filter display mode (pie/doughnut only)
   chartFilterDisplayMode.value = 'both';
-  
+
   // Reset group by
   chartConfig.value.groupBy = 'monthly';
-  
+
   pushToast('Chart settings reset to defaults', 'success', 2000);
 }
 
@@ -8806,44 +8946,44 @@ function onAddDateInput(e: Event) {
 
   const input = e.target as HTMLInputElement;
   const oldValue = input.value;
-  
+
   // Get cursor position BEFORE updating value
   let cursorPos = input.selectionStart ?? oldValue.length;
-  
+
   // Format the date
   const formattedValue = formatDDMMProgressive(oldValue);
-  
+
   // Count how many dashes were added before the cursor
   const oldDashesBeforeCursor = (oldValue.slice(0, cursorPos).match(/-/g) || []).length;
   const newDashesBeforeCursor = (formattedValue.slice(0, cursorPos).match(/-/g) || []).length;
-  
+
   // Adjust cursor position based on dashes added/removed before cursor
   const adjustedCursorPos = cursorPos + (newDashesBeforeCursor - oldDashesBeforeCursor);
-  
+
   // Update value
   input.value = formattedValue;
   newTxDateText.value = formattedValue;
-  
+
   // Restore cursor position - use nextTick for reliability
   nextTick(() => {
     if (input === document.activeElement) {
       input.setSelectionRange(adjustedCursorPos, adjustedCursorPos);
     }
   });
-  
+
   addDateTextRef.value?.setCustomValidity?.("");
 }
 
 function onAddDateBlur() {
   const ddmmyyyy = finalizeDDMM(newTxDateText.value);
-  
+
   if (!ddmmyyyy) {
     // Empty is okay - not required until submit
     newTxDateError.value = "";
     addDateTextRef.value?.setCustomValidity?.("");
     return;
   }
-  
+
   const iso = ddmmyyyyToISO(ddmmyyyy);
   if (iso) {
     newTxDateText.value = ddmmyyyy;
@@ -9070,7 +9210,7 @@ function rememberCategory(cat: string) {
   const list = dedupeCI([cat, ...recentCategories.value]).slice(0, 6);
   recentCategories.value = list;
   safeLocalStorageSet(LS_KEYS.recent, list);
-  
+
   // Also store as last selected category for pre-fill
   safeLocalStorageSet("last-selected-category", cat);
   lastSelectedCategory.value = cat;
@@ -9109,14 +9249,14 @@ function removeTagFromTransaction(name: string) {
 function addTransaction() {
   // Clear previous errors
   amountError.value = "";
-  
+
   // Validate amount
   if (newTransaction.amount <= 0) {
     amountError.value = "Please enter a valid amount greater than 0.";
     amountInputRef.value?.focus();
     return;
   }
-  
+
   // Validate category
   if (!newTransaction.category) {
     const categorySummary = categoryDropdownRef.value?.querySelector('summary');
@@ -9286,7 +9426,7 @@ function resetForm() {
     seriesId: undefined, // clear any series link left over from an edit
   });
   currentlyEditingId.value = null;
-  
+
   // Clear validation errors
   amountError.value = "";
   newTxDateError.value = "";
@@ -9302,7 +9442,7 @@ function editTransaction(t: Transaction) {
   activeTab.value = "add";
   scrollAddIntoView();
   focusAmount();
-  
+
   // Remember category for pre-fill when editing
   if (t.category) rememberCategory(t.category);
 }
@@ -10958,14 +11098,22 @@ function goHome() {
    unreachable. The old hack existed so the date-picker calendar could escape
    the box, but the calendar is teleported to <body> now and never clips. */
 .advanced-modal-content {
-  min-height: 0; /* Allow flex shrinking */
+  min-height: 0;
+  /* Allow flex shrinking */
 }
 
-#advancedSettingsModal { z-index: 10000; }
-.advanced-modal-box { position: relative; z-index: 10001; }
+#advancedSettingsModal {
+  z-index: 10000;
+}
+
+.advanced-modal-box {
+  position: relative;
+  z-index: 10001;
+}
 
 /* Mobile: advanced modal full screen with proper scroll */
 @media screen and (max-width: 640px) {
+
   /* Advanced modal: full screen on small devices with proper scroll */
   .advanced-modal-box {
     width: 100vw !important;
@@ -11160,6 +11308,7 @@ details.dropdown[open]>.dropdown-content {
       opacity: 0;
       transform: translateY(-0.5rem) scale(0.95);
     }
+
     to {
       opacity: 1;
       transform: translateY(0) scale(1);
@@ -11237,6 +11386,7 @@ tbody tr.bg-base-200 {
 
   /* Hide Tags column on very small screens to save space */
   @media (max-width: 520px) {
+
     table thead th:nth-child(5),
     table tbody td:nth-child(5) {
       display: none;
@@ -11263,17 +11413,49 @@ tbody tr.bg-base-200 {
     opacity: 0;
   }
 
-  table.table tbody tr:nth-child(1) { animation-delay: 0.02s; }
-  table.table tbody tr:nth-child(2) { animation-delay: 0.04s; }
-  table.table tbody tr:nth-child(3) { animation-delay: 0.06s; }
-  table.table tbody tr:nth-child(4) { animation-delay: 0.08s; }
-  table.table tbody tr:nth-child(5) { animation-delay: 0.10s; }
-  table.table tbody tr:nth-child(6) { animation-delay: 0.12s; }
-  table.table tbody tr:nth-child(7) { animation-delay: 0.14s; }
-  table.table tbody tr:nth-child(8) { animation-delay: 0.16s; }
-  table.table tbody tr:nth-child(9) { animation-delay: 0.18s; }
-  table.table tbody tr:nth-child(10) { animation-delay: 0.20s; }
-  table.table tbody tr:nth-child(n+11) { animation-delay: 0.22s; }
+  table.table tbody tr:nth-child(1) {
+    animation-delay: 0.02s;
+  }
+
+  table.table tbody tr:nth-child(2) {
+    animation-delay: 0.04s;
+  }
+
+  table.table tbody tr:nth-child(3) {
+    animation-delay: 0.06s;
+  }
+
+  table.table tbody tr:nth-child(4) {
+    animation-delay: 0.08s;
+  }
+
+  table.table tbody tr:nth-child(5) {
+    animation-delay: 0.10s;
+  }
+
+  table.table tbody tr:nth-child(6) {
+    animation-delay: 0.12s;
+  }
+
+  table.table tbody tr:nth-child(7) {
+    animation-delay: 0.14s;
+  }
+
+  table.table tbody tr:nth-child(8) {
+    animation-delay: 0.16s;
+  }
+
+  table.table tbody tr:nth-child(9) {
+    animation-delay: 0.18s;
+  }
+
+  table.table tbody tr:nth-child(10) {
+    animation-delay: 0.20s;
+  }
+
+  table.table tbody tr:nth-child(n+11) {
+    animation-delay: 0.22s;
+  }
 
   /* Row press feedback */
   table.table tbody tr {
@@ -11413,6 +11595,7 @@ header .navbar-end .balance-badge .badge-value {
 
 /* Mobile header adjustments */
 @media screen and (max-width: 767px) {
+
   /* Mobile nav: compact fixed height so badge extends below */
   header.navbar.sticky {
     height: 3.5rem;
@@ -11492,7 +11675,7 @@ header .navbar-end .balance-badge .badge-value {
   }
 
   /* Force dropdowns to open below on mobile, centered on the page when content overflows */
-  header details.dropdown[open] > .mobile-dropdown-content {
+  header details.dropdown[open]>.mobile-dropdown-content {
     position: fixed !important;
     top: calc(var(--header-height, 3.5rem) + 0.75rem) !important;
     bottom: auto !important;
@@ -11514,6 +11697,7 @@ header .navbar-end .balance-badge .badge-value {
       opacity: 0;
       transform: translateX(-50%) translateY(-0.5rem) scale(0.95);
     }
+
     to {
       opacity: 1;
       transform: translateX(-50%) translateY(0) scale(1);
@@ -11526,6 +11710,7 @@ header .navbar-end .balance-badge .badge-value {
       opacity: 0;
       transform: translateY(0.5rem);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -11537,6 +11722,7 @@ header .navbar-end .balance-badge .badge-value {
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
@@ -11547,6 +11733,7 @@ header .navbar-end .balance-badge .badge-value {
     from {
       box-shadow: 0 0 0 2px oklch(var(--p) / 0.2);
     }
+
     to {
       box-shadow: 0 0 0 4px oklch(var(--p) / 0.15);
     }
@@ -11579,12 +11766,14 @@ header .navbar-end .balance-badge .badge-value {
     max-width: 60%;
     overflow: hidden;
   }
+
   header .navbar-end .balance-badge .badge-value {
     font-size: 0.8rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
   header .navbar-end .balance-badge .badge-label {
     font-size: 0.65rem;
   }
@@ -11637,6 +11826,7 @@ header .navbar-end .balance-badge .badge-value {
 
 /* Mobile adjustments for main content */
 @media screen and (max-width: 767px) {
+
   /* Reduce padding on main content for small screens */
   main.container {
     padding-left: 0.75rem;
@@ -11697,6 +11887,7 @@ header .navbar-end .balance-badge .badge-value {
       opacity: 0;
       transform: translateY(0.75rem);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -11788,7 +11979,8 @@ header .navbar-end .balance-badge .badge-value {
   /* Fix for iOS Safari address bar */
   .min-h-\[100dvh\] {
     min-height: 100dvh;
-    min-height: 100vh; /* Fallback */
+    min-height: 100vh;
+    /* Fallback */
   }
 }
 
@@ -11804,13 +11996,15 @@ header .navbar-end .balance-badge .badge-value {
   .modal-box {
     width: 95vw;
     max-height: 90dvh;
-    max-height: 90vh; /* Fallback */
+    max-height: 90vh;
+    /* Fallback */
   }
 
   /* Fix dropdown height on mobile */
   .dropdown .dropdown-content {
     max-height: 70dvh;
-    max-height: 70vh; /* Fallback */
+    max-height: 70vh;
+    /* Fallback */
     /* Prevent dropdowns from overflowing viewport */
     right: auto;
     left: 0;
@@ -11826,12 +12020,17 @@ header .navbar-end .balance-badge .badge-value {
 
 /* iPhone specific: Prevent zoom on input focus */
 @media screen and (max-width: 768px) {
-  input, textarea, select {
-    font-size: 16px !important; /* Prevents iOS zoom on focus */
+
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+    /* Prevents iOS zoom on focus */
   }
 
   /* Prevent horizontal scroll on mobile */
-  html, body {
+  html,
+  body {
     overflow-x: hidden;
   }
 
@@ -11856,6 +12055,7 @@ header .navbar-end .balance-badge .badge-value {
 /* ===== Cards / sections ===== */
 .card {
   border-radius: 1rem;
+  padding: 1.5rem 1.5rem 0 1.5rem;
 }
 
 .card-body {
@@ -11905,9 +12105,21 @@ canvas {
     min-width: 0;
   }
 
-  .chart-canvas-area { width: 100%; min-width: 0; overflow: hidden; }
-  .chart-card [role="group"][aria-label="Chart type"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .chart-card [role="group"][aria-label="Chart type"] .btn { width: 100%; min-width: 0; padding-inline: .25rem; }
+  .chart-canvas-area {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .chart-card [role="group"][aria-label="Chart type"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .chart-card [role="group"][aria-label="Chart type"] .btn {
+    width: 100%;
+    min-width: 0;
+    padding-inline: .25rem;
+  }
 
   /* Chart canvas: better mobile height */
   .chart-card canvas,
@@ -11953,6 +12165,7 @@ canvas {
       opacity: 0;
       transform: translateY(-0.5rem);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -11962,6 +12175,7 @@ canvas {
 
 /* XS screen optimizations (iPhone 5, 320px) */
 @media screen and (max-width: 375px) {
+
   /* Tighter chart card padding */
   .chart-card .card-body {
     padding: 0.5rem;
@@ -12012,6 +12226,7 @@ canvas {
 
 /* Desktop chart: larger canvas */
 @media screen and (min-width: 1024px) {
+
   .chart-card canvas,
   .chart-card svg {
     max-height: 500px;
@@ -12019,6 +12234,7 @@ canvas {
 }
 
 @media screen and (min-width: 1280px) {
+
   .chart-card canvas,
   .chart-card svg {
     max-height: 600px;
@@ -12086,7 +12302,7 @@ section:has(.chart-view-toggle[aria-pressed="true"]) .chart-canvas-area {
 }
 
 /* Keep chart type selector icons visible in table mode - only hide the canvas. */
-section:has(.chart-view-toggle[aria-pressed="true"]) [aria-label="Chart type"] > label {
+section:has(.chart-view-toggle[aria-pressed="true"]) [aria-label="Chart type"]>label {
   /* No longer hidden - icons stay visible */
 }
 
@@ -12116,6 +12332,7 @@ a:focus-visible,
 /* 2. Touch Target Sizes (WCAG 2.5.8 Target Size Minimum) */
 /* Minimum 24x24px, with 44x44px recommended for primary actions */
 @media (hover: none) and (pointer: coarse) {
+
   /* Primary interactive elements */
   .btn,
   .tab,
@@ -12123,27 +12340,27 @@ a:focus-visible,
     min-height: 44px;
     padding: 0.5rem 1rem;
   }
-  
+
   /* Form controls */
   input[type="checkbox"],
   input[type="radio"] {
     width: 24px;
     height: 24px;
   }
-  
+
   .form-control input,
   .form-control select,
   .form-control textarea {
     min-height: 44px;
   }
-  
+
   /* Category/Tag badges in modal */
   .badge.badge-lg {
     min-height: 36px;
     min-width: 36px;
     padding: 0.25rem 0.75rem;
   }
-  
+
   /* Radio group buttons */
   .join .btn {
     min-height: 44px;
@@ -12162,21 +12379,21 @@ a:focus-visible,
   .badge-outline {
     border-width: 2px !important;
   }
-  
+
   .btn-ghost {
     border: 2px solid oklch(var(--bc) / 0.6);
   }
-  
+
   .input-bordered,
   .select-bordered {
     border-width: 2px !important;
   }
-  
+
   /* Increase contrast for interactive elements */
   .tab {
     border: 2px solid transparent;
   }
-  
+
   .tab-active {
     border-color: oklch(var(--p) / 1);
   }
@@ -12232,13 +12449,18 @@ a:focus-visible,
 
 /* 9. Spacing for motor impairments */
 /* Minimum 8px gap between interactive elements */
-.flex-wrap.gap-2 > * {
+.flex-wrap.gap-2>* {
   margin: 0.25rem;
 }
 
 /* 10. Heading hierarchy */
 /* Ensure proper heading structure */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   color: oklch(var(--bc) / 1);
 }
@@ -12266,7 +12488,7 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0.35rem 0.5rem;
     font-size: 0.7rem;
   }
-  
+
   /* Smaller touch targets for chart type grid on mobile */
   .chart-type-join .btn {
     min-height: 2rem;
