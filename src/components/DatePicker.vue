@@ -1,4 +1,5 @@
 <template>
+
   <div ref="root" class="date-picker relative" :class="{ 'date-picker-open': open }">
     <div class="join w-full">
       <input
@@ -26,12 +27,12 @@
     <p v-if="error" :id="`${id}-error`" class="text-error text-xs mt-1">{{ error }}</p>
 
     <Teleport to="body">
-    <div v-if="open" :id="`${id}-calendar`" ref="popover" class="date-picker-popover card bg-base-100 shadow-2xl border border-base-300" role="dialog" :aria-label="`Choose ${ariaLabel}`" :style="mobilePopoverStyle" @pointerdown="isInteracting = true" @pointerup="() => { isInteracting = false; lastInteractionTime = Date.now(); }" @pointerleave="isInteracting = false" style="touch-action: manipulation;">
+    <div v-if="open" :id="`${id}-calendar`" ref="popover" class="date-picker-popover card bg-base-100 shadow-2xl border border-base-300" role="dialog" :aria-label="`Choose ${ariaLabel}`" :style="mobilePopoverStyle" @pointerdown.stop.prevent="isInteracting = true" @pointerup.stop="() => { isInteracting = false; lastInteractionTime = Date.now(); }" @pointerleave.stop="isInteracting = false" style="touch-action: manipulation;">
       <div class="card-body p-3">
         <div class="flex items-center justify-between mb-2">
-          <button type="button" class="btn btn-ghost btn-sm btn-square" aria-label="Previous month" @click="moveMonth(-1)">‹</button>
+          <button type="button" class="btn btn-ghost btn-sm btn-square" aria-label="Previous month" @click.stop="moveMonth(-1)">‹</button>
           <strong class="text-sm">{{ monthLabel }}</strong>
-          <button type="button" class="btn btn-ghost btn-sm btn-square" aria-label="Next month" @click="moveMonth(1)">›</button>
+          <button type="button" class="btn btn-ghost btn-sm btn-square" aria-label="Next month" @click.stop="moveMonth(1)">›</button>
         </div>
         <div class="grid grid-cols-7 text-center text-xs opacity-70 mb-1" aria-hidden="true">
           <span v-for="day in ['Su','Mo','Tu','We','Th','Fr','Sa']" :key="day">{{ day }}</span>
@@ -45,14 +46,14 @@
               cell.iso === today && cell.iso === modelValue ? 'date-picker-today-selected' : ''
             ]"
             :disabled="isDisabled(cell.iso)" :aria-pressed="cell.iso === modelValue"
-            :aria-current="cell.iso === today ? 'date' : undefined" :aria-label="cell.iso === today ? `${display(cell.iso)} (today)` : display(cell.iso)" @click="pick(cell.iso)">
+            :aria-current="cell.iso === today ? 'date' : undefined" :aria-label="cell.iso === today ? `${display(cell.iso)} (today)` : display(cell.iso)" @click.stop="pick(cell.iso)">
             {{ Number(cell.iso.slice(-2)) }}
           </button>
         </div>
         <div class="flex flex-wrap justify-end gap-2 mt-3">
-          <button type="button" class="btn btn-ghost btn-sm" @click="pick('')">Clear</button>
-          <button type="button" class="btn btn-primary btn-sm" :disabled="isDisabled(today)" @click="pick(today)">Today</button>
-          <button type="button" class="btn btn-outline btn-sm" @click="open = false">Close</button>
+          <button type="button" class="btn btn-ghost btn-sm" @click.stop="pick('')">Clear</button>
+          <button type="button" class="btn btn-primary btn-sm" :disabled="isDisabled(today)" @click.stop="pick(today)">Today</button>
+          <button type="button" class="btn btn-outline btn-sm" @click.stop="open = false">Close</button>
         </div>
       </div>
     </div>
@@ -94,7 +95,8 @@ function onBlur(e: FocusEvent) {
   // Defer so we can check whether focus moved inside this component (e.g., to the calendar button).
   // When focus stays inside, skip formatting to avoid cursor-jumping on mobile.
   const el = e.relatedTarget as Node | null;
-  if (root.value?.contains(el)) return;
+  // The popover is teleported to <body>, so check it separately from root.
+  if (root.value?.contains(el) || popover.value?.contains(el)) return;
   queueMicrotask(() => {
     if (document.activeElement === inputEl.value) return; // still focused
     if (!text.value) { emit('update:modelValue',''); error.value=''; return; }
@@ -198,6 +200,14 @@ onBeforeUnmount(() => {
   max-width: min(calc(100vw - 2rem), 20rem);
   isolation: isolate;
 }
+/* The popover is positioned by transform; a global .card:hover "lift" effect
+   replacing that transform moves it mid-tap and cancels date selection.
+   The :hover variants keep the popover's transform stable no matter what. */
+.date-picker-popover,
+.date-picker-popover:hover {
+  transform: none;
+  transition: none;
+}
 @media (max-width: 480px) {
   .date-picker-popover {
     position: fixed;
@@ -205,11 +215,12 @@ onBeforeUnmount(() => {
     top: 50%;
     left: 50%;
     width: calc(100vw - 1rem);
-    transform: translate(-50%, -50%);
     max-height: calc(100dvh - 1rem);
     overflow: auto;
-    /* Smooth repositioning when keyboard dismisses and viewport changes */
-    transition: top 150ms ease-out;
+  }
+  .date-picker-popover,
+  .date-picker-popover:hover {
+    transform: translate(-50%, -50%);
   }
 }
 </style>
